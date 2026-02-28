@@ -1,4 +1,4 @@
-import type { StbConfig, BaseStyleElementDef, BaseStylesSpacingPadding, BaseStylesSpacing } from '../types.js';
+import type { C2bConfig, BaseStyleElementDef, BaseStylesSpacingPadding, BaseStylesSpacing } from '../types.js';
 import { camelToKebab } from '../types.js';
 import { resolveForScss, ensureFontStyle } from '../config.js';
 
@@ -8,7 +8,7 @@ const PROPERTY_ORDER = ['fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'li
 /** Padding sides in output order */
 const PADDING_SIDES = ['top', 'right', 'bottom', 'left'] as const;
 
-export function generateContentScss(config: StbConfig): string | null {
+export function generateContentScss(config: C2bConfig): string | null {
   if (!config.baseStyles) return null;
 
   const lines: string[] = [
@@ -134,7 +134,7 @@ function appendDeclarations(
   lines: string[],
   def: BaseStyleElementDef,
   prefix: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
   indent: string,
 ): void {
   // Typography declarations
@@ -166,7 +166,7 @@ function appendRootPaddingVars(
   lines: string[],
   padding: BaseStylesSpacingPadding,
   prefix: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
 ): void {
   for (const side of PADDING_SIDES) {
     const value = padding[side];
@@ -184,7 +184,7 @@ function appendBlockGapVar(
   lines: string[],
   spacing: BaseStylesSpacing,
   prefix: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
 ): void {
   if (!spacing.blockGap) return;
   const resolvedValue = resolveForScss(spacing.blockGap, prefix, tokens, 'spacing');

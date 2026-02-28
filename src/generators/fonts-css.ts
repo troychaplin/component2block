@@ -1,4 +1,4 @@
-import type { StbConfig } from '../types.js';
+import type { C2bConfig } from '../types.js';
 
 const FORMAT_MAP: Record<string, string> = {
   '.woff2': 'woff2',
@@ -12,7 +12,7 @@ function inferFormat(filename: string): string {
   return FORMAT_MAP[ext] ?? 'woff2';
 }
 
-export function generateFontsCss(config: StbConfig): string | null {
+export function generateFontsCss(config: C2bConfig): string | null {
   const group = config.tokens.fontFamily;
   if (!group) return null;
 

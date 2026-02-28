@@ -194,7 +194,7 @@ export const CATEGORY_ORDER = [...VALID_CATEGORIES].sort(
 );
 
 /** Internal config after normalization — uses flat category keys like colorPalette */
-export interface StbConfig {
+export interface C2bConfig {
   prefix: string;
   tokensPath: string;
   outDir: string;
@@ -219,7 +219,7 @@ export type TokenGroupInput = Record<string, TokenEntryInput>;
  * - Token values can be strings (shorthand) or full objects
  * - slug is auto-derived from key, name is auto-derived from key (title-case)
  */
-export interface StbConfigInput {
+export interface C2bConfigInput {
   prefix: string;
   tokensPath?: string;
   outDir?: string;

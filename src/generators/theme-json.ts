@@ -1,11 +1,11 @@
-import type { StbConfig, TokenCategory, TokenGroup, BaseStylesConfig, BaseStyleElementDef } from '../types.js';
+import type { C2bConfig, TokenCategory, TokenGroup, BaseStylesConfig, BaseStyleElementDef } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, kebabToCamel } from '../types.js';
 import { resolveForThemeJson, ensureFontStyle } from '../config.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AnySettings = Record<string, any>;
 
-export function generateThemeJson(config: StbConfig): string {
+export function generateThemeJson(config: C2bConfig): string {
   const settings: AnySettings = {};
   const custom: Record<string, Record<string, string>> = {};
 
@@ -153,7 +153,7 @@ function setNestedValue(obj: AnySettings, path: string, value: unknown): void {
  */
 function buildStylesBlock(
   baseStyles: BaseStylesConfig,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
 ): Record<string, unknown> | null {
   const styles: Record<string, unknown> = {};
 
@@ -248,7 +248,7 @@ function buildStylesBlock(
  */
 function buildTypographyObject(
   def: BaseStyleElementDef,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
 ): Record<string, string> {
   const result: Record<string, string> = {};
 
@@ -278,7 +278,7 @@ function buildTypographyObject(
  */
 function buildColorObject(
   def: BaseStyleElementDef,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
 ): Record<string, string> {
   const result: Record<string, string> = {};
 

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { StbConfig, StbConfigInput, TokenCategory, TokenEntry, TokenEntryInput, TokenGroup, TokenGroupInput, BaseStyleElementDef } from './types.js';
+import type { C2bConfig, C2bConfigInput, TokenCategory, TokenEntry, TokenEntryInput, TokenGroup, TokenGroupInput, BaseStyleElementDef } from './types.js';
 import { CATEGORY_REGISTRY, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
 
 const DEFAULTS = {
@@ -11,7 +11,7 @@ const DEFAULTS = {
 /** Reserved config keys that are not token categories */
 const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'baseStyles'] as const;
 
-export function loadConfig(configPath?: string): StbConfig {
+export function loadConfig(configPath?: string): C2bConfig {
   const resolvedPath = resolve(configPath ?? 'c2b.config.json');
 
   let raw: string;
@@ -21,9 +21,9 @@ export function loadConfig(configPath?: string): StbConfig {
     throw new Error(`Config file not found: ${resolvedPath}`);
   }
 
-  let input: StbConfigInput;
+  let input: C2bConfigInput;
   try {
-    input = JSON.parse(raw) as StbConfigInput;
+    input = JSON.parse(raw) as C2bConfigInput;
   } catch {
     throw new Error(`Invalid JSON in config file: ${resolvedPath}`);
   }
@@ -89,7 +89,7 @@ function normalizeTokenGroup(group: TokenGroupInput, isDirectMap?: boolean): Tok
  * Extract token categories from the flat config input.
  * Maps user-facing category names to internal names (e.g. "color" → "colorPalette").
  */
-function extractTokens(input: StbConfigInput): Partial<Record<TokenCategory, TokenGroup>> {
+function extractTokens(input: C2bConfigInput): Partial<Record<TokenCategory, TokenGroup>> {
   const tokens: Partial<Record<TokenCategory, TokenGroup>> = {};
   const validInputCategories = [
     ...Object.keys(INPUT_CATEGORY_MAP),
@@ -123,7 +123,7 @@ function extractTokens(input: StbConfigInput): Partial<Record<TokenCategory, Tok
   return tokens;
 }
 
-export function validateConfig(input: StbConfigInput): StbConfig {
+export function validateConfig(input: C2bConfigInput): C2bConfig {
   if (!input.prefix || typeof input.prefix !== 'string') {
     throw new Error('Config error: "prefix" is required and must be a string.');
   }
@@ -163,7 +163,7 @@ export interface ResolvedTokenRef {
  */
 export function resolveTokenRef(
   value: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
   preferCategory?: TokenCategory,
 ): ResolvedTokenRef | null {
   // Check preferred category first to resolve ambiguous keys
@@ -205,7 +205,7 @@ export function resolveTokenRef(
 export function resolveForScss(
   value: string,
   prefix: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
   preferCategory?: TokenCategory,
 ): string {
   const ref = resolveTokenRef(value, tokens, preferCategory);
@@ -223,7 +223,7 @@ export function resolveForScss(
  */
 export function resolveForThemeJson(
   value: string,
-  tokens: StbConfig['tokens'],
+  tokens: C2bConfig['tokens'],
   preferCategory?: TokenCategory,
 ): string {
   const ref = resolveTokenRef(value, tokens, preferCategory);
