@@ -15,7 +15,7 @@ export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
 export { generateFontsCss } from './generators/fonts-css.js';
 export { generateContentScss } from './generators/content-scss.js';
-export type { StbConfig, StbConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig } from './types.js';
+export type { C2bConfig, C2bConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig } from './types.js';
 
 export interface GenerateResult {
   files: Array<{ path: string; size: number }>;

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateTokensWpCss } from '../src/generators/tokens-wp-css.js';
-import type { StbConfig } from '../src/types.js';
+import type { C2bConfig } from '../src/types.js';
 
-const config: StbConfig = {
+const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
@@ -86,7 +86,7 @@ describe('generateTokensWpCss', () => {
 });
 
 describe('generateTokensWpCss — shadow presets', () => {
-  const shadowConfig: StbConfig = {
+  const shadowConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -113,7 +113,7 @@ describe('generateTokensWpCss — shadow presets', () => {
 });
 
 describe('generateTokensWpCss — layout tokens', () => {
-  const layoutConfig: StbConfig = {
+  const layoutConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -136,7 +136,7 @@ describe('generateTokensWpCss — layout tokens', () => {
 });
 
 describe('generateTokensWpCss — fluid font size fallbacks', () => {
-  const fluidConfig: StbConfig = {
+  const fluidConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',

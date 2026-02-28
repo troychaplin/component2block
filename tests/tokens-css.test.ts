@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateTokensCss } from '../src/generators/tokens-css.js';
-import type { StbConfig } from '../src/types.js';
+import type { C2bConfig } from '../src/types.js';
 
-const config: StbConfig = {
+const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
@@ -74,7 +74,7 @@ describe('generateTokensCss', () => {
 });
 
 describe('generateTokensCss — layout tokens', () => {
-  const layoutConfig: StbConfig = {
+  const layoutConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -99,7 +99,7 @@ describe('generateTokensCss — layout tokens', () => {
 });
 
 describe('generateTokensCss — fluid font sizes', () => {
-  const fluidConfig: StbConfig = {
+  const fluidConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',

@@ -8,10 +8,12 @@ Add the preset to your `.storybook/main.ts` addons:
 
 ```ts
 // .storybook/main.ts
-addons: [
-  '@storybook/addon-docs',
-  '../component2block/dist/preset.js',
-],
+export default {
+  addons: [
+    '@storybook/addon-docs',
+    '../component2block/dist/preset.js',
+  ],
+};
 ```
 
 ## What It Injects
@@ -22,8 +24,8 @@ The preset reads `c2b.config.json`, derives file paths from `tokensPath`, and in
 |------|-------------|
 | `tokens.css` | CSS custom properties (generated) |
 | `fonts.css` | @font-face declarations (generated, if fontFace defined) |
-| `reset.scss` | Structural CSS reset (authored) |
-| `content.scss` | Base typography — imports `_content-generated.scss` + behavioral rules (authored) |
+| `reset.scss` | Structural CSS reset (authored by you) |
+| `content.scss` | Base typography — imports `_content-generated.scss` + your behavioral rules (authored by you) |
 
 All paths are derived from the `tokensPath` config value. If `tokensPath` is `src/styles/tokens.css`, the preset looks for `src/styles/fonts.css`, `src/styles/reset.scss`, and `src/styles/content.scss` in the same directory.
 
@@ -31,7 +33,7 @@ All paths are derived from the `tokensPath` config value. If `tokensPath` is `sr
 
 The preset uses Storybook's `previewAnnotations` API to return file paths for auto-import. Each file path becomes an import in the Storybook preview iframe, making the styles available to all stories.
 
-Files that don't exist on disk are silently skipped — you only get what you've created. For example, if you haven't defined any `fontFace` entries in your config, `fonts.css` won't exist and the preset won't try to inject it.
+Files that don't exist on disk are silently skipped. For example, if you haven't defined any `fontFace` entries, `fonts.css` won't exist and the preset won't try to inject it.
 
 ## Verifying It Works
 

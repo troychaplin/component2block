@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateFontsCss } from '../src/generators/fonts-css.js';
-import type { StbConfig } from '../src/types.js';
+import type { C2bConfig } from '../src/types.js';
 
-const config: StbConfig = {
+const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
@@ -54,7 +54,7 @@ describe('generateFontsCss', () => {
   });
 
   it('returns null when no fontFace entries exist', () => {
-    const noFaceConfig: StbConfig = {
+    const noFaceConfig: C2bConfig = {
       ...config,
       tokens: {
         fontFamily: {
@@ -66,7 +66,7 @@ describe('generateFontsCss', () => {
   });
 
   it('returns null when no fontFamily tokens exist', () => {
-    const noFontConfig: StbConfig = {
+    const noFontConfig: C2bConfig = {
       ...config,
       tokens: {},
     };

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { validateConfig } from '../src/config.js';
-import type { StbConfigInput } from '../src/types.js';
+import type { C2bConfigInput } from '../src/types.js';
 
-const minimalConfig: StbConfigInput = {
+const minimalConfig: C2bConfigInput = {
   prefix: 'test',
   color: {
     primary: { value: '#0073aa' },
@@ -140,7 +140,7 @@ describe('validateConfig — string shorthand (CSS-only)', () => {
     const result = validateConfig({
       prefix: 'test',
       fontWeight: { normal: '400', bold: '700' },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.fontWeight!.normal.value).toBe('400');
     expect(result.tokens.fontWeight!.bold.value).toBe('700');
   });
@@ -149,7 +149,7 @@ describe('validateConfig — string shorthand (CSS-only)', () => {
     const result = validateConfig({
       prefix: 'test',
       fontWeight: { 'semi-bold': '600' },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.fontWeight!['semi-bold'].slug).toBeUndefined();
     expect(result.tokens.fontWeight!['semi-bold'].name).toBeUndefined();
   });
@@ -158,7 +158,7 @@ describe('validateConfig — string shorthand (CSS-only)', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { muted: '#999' },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.colorPalette!.muted.value).toBe('#999');
     expect(result.tokens.colorPalette!.muted.slug).toBeUndefined();
     expect(result.tokens.colorPalette!.muted.name).toBeUndefined();
@@ -168,7 +168,7 @@ describe('validateConfig — string shorthand (CSS-only)', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { primary: { value: '#0073aa' } },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.colorPalette!.primary.value).toBe('#0073aa');
     expect(result.tokens.colorPalette!.primary.slug).toBe('primary');
     expect(result.tokens.colorPalette!.primary.name).toBe('Primary');
@@ -182,7 +182,7 @@ describe('validateConfig — fluid value auto-derive', () => {
       fontSize: {
         small: { fluid: { min: '0.875rem', max: '1rem' } },
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.fontSize!.small.value).toBe('1rem');
   });
 
@@ -192,7 +192,7 @@ describe('validateConfig — fluid value auto-derive', () => {
       fontSize: {
         small: { value: '1rem', fluid: { min: '0.875rem', max: '1rem' } },
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.fontSize!.small.value).toBe('1rem');
   });
 });
@@ -222,7 +222,7 @@ describe('validateConfig — cssOnly flag', () => {
       color: {
         'primary-hover': { value: '#005a87', cssOnly: true },
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.colorPalette!['primary-hover'].value).toBe('#005a87');
     expect(result.tokens.colorPalette!['primary-hover'].slug).toBeUndefined();
     expect(result.tokens.colorPalette!['primary-hover'].name).toBeUndefined();
@@ -235,7 +235,7 @@ describe('validateConfig — cssOnly flag', () => {
       color: {
         primary: { value: '#0073aa' },
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens.colorPalette!.primary.slug).toBe('primary');
     expect(result.tokens.colorPalette!.primary.name).toBe('Primary');
   });
@@ -248,7 +248,7 @@ describe('validateConfig — cssOnly flag', () => {
         'primary-hover': { value: '#005a87', cssOnly: true },
         border: '#e2e8f0',
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     // Object without cssOnly — preset
     expect(result.tokens.colorPalette!.primary.slug).toBe('primary');
     // Object with cssOnly — CSS-only
@@ -267,7 +267,7 @@ describe('validateConfig — baseStyles', () => {
         body: { fontFamily: 'inter', fontSize: 'medium' },
         h1: { fontSize: '3rem' },
       },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.baseStyles).toBeDefined();
     expect(result.baseStyles!.body!.fontFamily).toBe('inter');
     expect(result.baseStyles!.h1!.fontSize).toBe('3rem');
@@ -278,7 +278,7 @@ describe('validateConfig — baseStyles', () => {
       prefix: 'test',
       color: { primary: { value: '#000' } },
       baseStyles: { body: { fontFamily: 'inter' } },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.tokens).not.toHaveProperty('baseStyles');
   });
 
@@ -286,7 +286,7 @@ describe('validateConfig — baseStyles', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { primary: { value: '#000' } },
-    } as StbConfigInput);
+    } as C2bConfigInput);
     expect(result.baseStyles).toBeUndefined();
   });
 });

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateContentScss } from '../src/generators/content-scss.js';
-import type { StbConfig } from '../src/types.js';
+import type { C2bConfig } from '../src/types.js';
 
-const config: StbConfig = {
+const config: C2bConfig = {
   prefix: 'design-system',
   tokensPath: 'src/styles/tokens.css',
   outDir: 'dist/wp',
@@ -115,7 +115,7 @@ describe('generateContentScss', () => {
 });
 
 describe('generateContentScss — spacing padding', () => {
-  const spacingConfig: StbConfig = {
+  const spacingConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -183,7 +183,7 @@ describe('generateContentScss — spacing padding', () => {
   });
 
   it('creates body block with just padding vars when no body typography', () => {
-    const spacingOnlyConfig: StbConfig = {
+    const spacingOnlyConfig: C2bConfig = {
       ...spacingConfig,
       baseStyles: {
         spacing: {
@@ -198,7 +198,7 @@ describe('generateContentScss — spacing padding', () => {
   });
 
   it('produces no padding or alignfull rules when no spacing config', () => {
-    const noSpacingConfig: StbConfig = {
+    const noSpacingConfig: C2bConfig = {
       ...spacingConfig,
       baseStyles: {
         body: { fontFamily: 'inter' },
@@ -211,7 +211,7 @@ describe('generateContentScss — spacing padding', () => {
   });
 
   it('only outputs defined padding sides', () => {
-    const partialConfig: StbConfig = {
+    const partialConfig: C2bConfig = {
       ...spacingConfig,
       baseStyles: {
         spacing: {
@@ -228,7 +228,7 @@ describe('generateContentScss — spacing padding', () => {
 });
 
 describe('generateContentScss — spacing blockGap', () => {
-  const blockGapConfig: StbConfig = {
+  const blockGapConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -275,7 +275,7 @@ describe('generateContentScss — spacing blockGap', () => {
   });
 
   it('passes raw blockGap values through unchanged', () => {
-    const rawConfig: StbConfig = {
+    const rawConfig: C2bConfig = {
       ...blockGapConfig,
       baseStyles: {
         spacing: { blockGap: '2rem' },
@@ -286,7 +286,7 @@ describe('generateContentScss — spacing blockGap', () => {
   });
 
   it('does not produce block gap rules when blockGap absent', () => {
-    const noGapConfig: StbConfig = {
+    const noGapConfig: C2bConfig = {
       ...blockGapConfig,
       baseStyles: {
         spacing: {
@@ -302,7 +302,7 @@ describe('generateContentScss — spacing blockGap', () => {
   });
 
   it('generates both blockGap and padding when both defined', () => {
-    const bothConfig: StbConfig = {
+    const bothConfig: C2bConfig = {
       ...blockGapConfig,
       baseStyles: {
         spacing: {
@@ -328,7 +328,7 @@ describe('generateContentScss — spacing blockGap', () => {
 });
 
 describe('generateContentScss — baseStyles color', () => {
-  const colorConfig: StbConfig = {
+  const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -346,7 +346,7 @@ describe('generateContentScss — baseStyles color', () => {
   };
 
   it('emits color declaration in body block', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: 'secondary' },
@@ -357,7 +357,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('emits background-color declaration in body block', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { background: 'base' },
@@ -368,7 +368,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('emits both color and background-color alongside typography', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { fontFamily: 'inter', color: 'secondary', background: 'base' },
@@ -381,7 +381,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('emits heading color', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         heading: { color: 'primary' },
@@ -393,7 +393,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('emits individual heading color', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         h1: { fontSize: '4.5rem', color: 'primary' },
@@ -405,7 +405,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('passes raw color values through', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: '#333333', background: '#ffffff' },
@@ -417,7 +417,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('does not emit color declarations when not defined', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { fontFamily: 'inter' },
@@ -429,7 +429,7 @@ describe('generateContentScss — baseStyles color', () => {
   });
 
   it('emits caption color', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         caption: { color: 'secondary' },
@@ -442,7 +442,7 @@ describe('generateContentScss — baseStyles color', () => {
 });
 
 describe('generateContentScss — button element', () => {
-  const colorConfig: StbConfig = {
+  const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -456,7 +456,7 @@ describe('generateContentScss — button element', () => {
   };
 
   it('emits :where(button) selector with color and background', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         button: { color: 'off-white', background: 'primary' },
@@ -469,7 +469,7 @@ describe('generateContentScss — button element', () => {
   });
 
   it('emits button with only background', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         button: { background: 'primary' },
@@ -481,7 +481,7 @@ describe('generateContentScss — button element', () => {
   });
 
   it('does not emit :where(button) when button not defined', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: 'primary' },
@@ -493,7 +493,7 @@ describe('generateContentScss — button element', () => {
 });
 
 describe('generateContentScss — link element', () => {
-  const colorConfig: StbConfig = {
+  const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -507,7 +507,7 @@ describe('generateContentScss — link element', () => {
   };
 
   it('emits :where(a) selector with color', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary' },
@@ -519,7 +519,7 @@ describe('generateContentScss — link element', () => {
   });
 
   it('emits :where(a:hover) selector when hoverColor is defined', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary', hoverColor: 'warning' },
@@ -533,7 +533,7 @@ describe('generateContentScss — link element', () => {
   });
 
   it('does not emit :where(a:hover) when hoverColor is not defined', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary' },
@@ -545,7 +545,7 @@ describe('generateContentScss — link element', () => {
   });
 
   it('passes raw hoverColor values through', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: '#0000ff', hoverColor: '#ff0000' },
@@ -559,7 +559,7 @@ describe('generateContentScss — link element', () => {
   });
 
   it('does not emit :where(a) when link not defined', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: 'primary' },

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateThemeJson } from '../src/generators/theme-json.js';
-import type { StbConfig } from '../src/types.js';
+import type { C2bConfig } from '../src/types.js';
 
-const config: StbConfig = {
+const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
@@ -120,7 +120,7 @@ describe('generateThemeJson', () => {
 });
 
 describe('generateThemeJson — layout tokens', () => {
-  const layoutConfig: StbConfig = {
+  const layoutConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -146,7 +146,7 @@ describe('generateThemeJson — layout tokens', () => {
 });
 
 describe('generateThemeJson — shadow presets', () => {
-  const shadowConfig: StbConfig = {
+  const shadowConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -188,7 +188,7 @@ describe('generateThemeJson — shadow presets', () => {
 });
 
 describe('generateThemeJson — fluid font sizes', () => {
-  const fluidConfig: StbConfig = {
+  const fluidConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -218,7 +218,7 @@ describe('generateThemeJson — fluid font sizes', () => {
 
 describe('generateThemeJson — typography flags', () => {
   it('sets fluid when fontSize tokens exist', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       prefix: 'test',
       tokensPath: 'src/styles/tokens.css',
     
@@ -235,7 +235,7 @@ describe('generateThemeJson — typography flags', () => {
   });
 
   it('does not set typography.fluid when no fontSize tokens', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       prefix: 'test',
       tokensPath: 'src/styles/tokens.css',
     
@@ -261,7 +261,7 @@ describe('generateThemeJson — WordPress default preset flags', () => {
   };
 
   it('never sets default preset flags (theme responsibility, not library)', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: false,
       tokens: {
@@ -280,7 +280,7 @@ describe('generateThemeJson — WordPress default preset flags', () => {
   });
 
   it('does not set shadow defaults when no shadow tokens', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: false,
       tokens: {
@@ -300,7 +300,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   };
 
   it('disables custom color, duotone, and gradient when wpThemeable is false', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: false,
       tokens: {
@@ -314,7 +314,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   });
 
   it('does not set custom flags when wpThemeable is true', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: true,
       tokens: {
@@ -328,7 +328,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   });
 
   it('places custom flags before palette and gradients in output', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: false,
       tokens: {
@@ -351,7 +351,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   });
 
   it('creates color settings object for custom flags even without color tokens', () => {
-    const cfg: StbConfig = {
+    const cfg: C2bConfig = {
       ...baseConfig,
       wpThemeable: false,
       tokens: {
@@ -367,7 +367,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
 });
 
 describe('generateThemeJson — fontFace', () => {
-  const fontConfig: StbConfig = {
+  const fontConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
@@ -414,7 +414,7 @@ describe('generateThemeJson — fontFace', () => {
 });
 
 describe('generateThemeJson — baseStyles', () => {
-  const baseStylesConfig: StbConfig = {
+  const baseStylesConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -487,7 +487,7 @@ describe('generateThemeJson — baseStyles', () => {
 });
 
 describe('generateThemeJson — baseStyles spacing', () => {
-  const spacingConfig: StbConfig = {
+  const spacingConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -531,7 +531,7 @@ describe('generateThemeJson — baseStyles spacing', () => {
   });
 
   it('handles partial padding (only some sides defined)', () => {
-    const partialConfig: StbConfig = {
+    const partialConfig: C2bConfig = {
       ...spacingConfig,
       baseStyles: {
         spacing: {
@@ -549,7 +549,7 @@ describe('generateThemeJson — baseStyles spacing', () => {
   });
 
   it('does not produce styles.spacing when no spacing in baseStyles', () => {
-    const noSpacingConfig: StbConfig = {
+    const noSpacingConfig: C2bConfig = {
       ...spacingConfig,
       baseStyles: {
         body: { fontFamily: 'inter' },
@@ -561,7 +561,7 @@ describe('generateThemeJson — baseStyles spacing', () => {
 });
 
 describe('generateThemeJson — baseStyles blockGap', () => {
-  const baseConfig: StbConfig = {
+  const baseConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -575,7 +575,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
   };
 
   it('resolves blockGap token ref to wp preset variable', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...baseConfig,
       baseStyles: {
         spacing: { blockGap: 'medium' },
@@ -586,7 +586,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
   });
 
   it('passes raw blockGap values through unchanged', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...baseConfig,
       baseStyles: {
         spacing: { blockGap: '2rem' },
@@ -597,7 +597,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
   });
 
   it('includes blockGap alongside padding in styles.spacing', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...baseConfig,
       baseStyles: {
         spacing: {
@@ -613,7 +613,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
   });
 
   it('produces only blockGap when no padding defined', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...baseConfig,
       baseStyles: {
         spacing: { blockGap: 'large' },
@@ -626,7 +626,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
 });
 
 describe('generateThemeJson — baseStyles color', () => {
-  const colorConfig: StbConfig = {
+  const colorConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
     outDir: 'dist/wp',
@@ -644,7 +644,7 @@ describe('generateThemeJson — baseStyles color', () => {
   };
 
   it('maps body color to styles.color.text', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: 'secondary' },
@@ -655,7 +655,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps body background to styles.color.background', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { background: 'base' },
@@ -666,7 +666,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps body color and background together', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: 'secondary', background: 'base' },
@@ -678,7 +678,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('includes body color alongside body typography', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { fontFamily: 'inter', color: 'secondary', background: 'base' },
@@ -691,7 +691,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps heading color to styles.elements.heading.color.text', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         heading: { fontFamily: 'inter', color: 'primary' },
@@ -703,7 +703,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps individual heading color', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         h1: { fontSize: '4.5rem', color: 'primary' },
@@ -715,7 +715,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('passes raw color values through unchanged', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { color: '#333333', background: '#ffffff' },
@@ -727,7 +727,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('does not produce styles.color when no color in baseStyles', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         body: { fontFamily: 'inter' },
@@ -739,7 +739,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('creates element with only color and no typography', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         caption: { color: 'secondary' },
@@ -751,7 +751,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps button color and background to styles.elements.button.color', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         button: { color: 'base', background: 'primary' },
@@ -763,7 +763,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps link color to styles.elements.link.color.text', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary' },
@@ -774,7 +774,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('maps link hoverColor to styles.elements.link.:hover.color.text', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary', hoverColor: 'secondary' },
@@ -786,7 +786,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('does not include :hover when hoverColor is not defined', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: 'primary' },
@@ -797,7 +797,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('passes raw hoverColor values through unchanged', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         link: { color: '#0000ff', hoverColor: '#ff0000' },
@@ -809,7 +809,7 @@ describe('generateThemeJson — baseStyles color', () => {
   });
 
   it('creates button element with only background', () => {
-    const config: StbConfig = {
+    const config: C2bConfig = {
       ...colorConfig,
       baseStyles: {
         button: { background: 'primary' },
