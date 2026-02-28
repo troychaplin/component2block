@@ -1,0 +1,49 @@
+{
+  "name": "component2block",
+  "version": "0.1.0",
+  "description": "Generate WordPress theme.json and CSS token files from a single config for component libraries",
+  "type": "module",
+  "bin": {
+    "c2b": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./preset": {
+      "import": "./dist/preset.js",
+      "types": "./dist/preset.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "storybook",
+    "wordpress",
+    "gutenberg",
+    "block-theme",
+    "design-tokens",
+    "theme-json",
+    "css-variables"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
