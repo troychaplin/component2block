@@ -99,16 +99,37 @@ import {
 
 ## Documentation
 
+[Getting Started](./docs/README.md) — Install, configure, and generate
+
+### Configuration Reference
+
 | Guide | Description |
 |-------|-------------|
-| [Getting Started](./docs/README.md) | Install, configure, and generate — the minimum to get running |
-| [Configuration](./docs/configuration.md) | Full config reference (fields, categories, base styles) |
-| [Tokens](./docs/tokens.md) | Token syntax, categories, fluid fonts, CSS output |
-| [Base Styles](./docs/base-styles.md) | Typography, spacing, `:where()` selectors, alignfull |
-| [Storybook Preset](./docs/storybook-preset.md) | Auto-injected styles, setup, and verification |
-| [WordPress Integration](./docs/wordpress-integration.md) | Adding compiled assets to a WordPress theme |
-| [WordPress Theming](./docs/wordpress-theming.md) | Locked vs themeable, overrides, style variations |
-| [WordPress Blocks](./docs/wordpress-blocks.md) | Block plugin setup and component registration |
+| [Overview](./docs/config/README.md) | Global fields, token categories, generated files, and full example |
+| [Colors & Gradients](./docs/config/colors.md) | Color palette, gradients, cssOnly tokens, and locked vs themeable mode |
+| [Spacing](./docs/config/spacing.md) | Spacing scale, WordPress slug conventions, and responsive values |
+| [Shadows](./docs/config/shadow.md) | Box shadows, preset vs custom behavior, and Site Editor integration |
+| [Fonts](./docs/config/fonts.md) | Static fonts, variable fonts, Google Fonts, and file placement |
+| [Base Styles](./docs/config/base-styles.md) | Elements, typography, colors, spacing, and `:where()` selectors |
+
+### Guides
+
+| Guide | Description |
+|-------|-------------|
+| [Tokens](./docs/guides/tokens.md) | Token syntax, categories, fluid fonts, CSS output |
+| [Markup Patterns](./docs/guides/markup.md) | Layout classes for Storybook and WordPress |
+| [Storybook Preset](./docs/guides/storybook-preset.md) | Auto-injecting generated styles into Storybook |
+| [CLI & Build](./docs/guides/cli-and-build.md) | CLI commands, build scripts, and publishing setup |
+
+### WordPress
+
+| Guide | Description |
+|-------|-------------|
+| [Integration](./docs/wordpress/integration.md) | Adding compiled assets to a WordPress block theme |
+| [Theming](./docs/wordpress/theming.md) | Locked vs themeable mode, overrides, style variations |
+| [Blocks](./docs/wordpress/blocks.md) | Block plugin setup and component registration |
+| [Editor Styles](./docs/wordpress/editor-styles.md) | Loading styles inside the block editor iframe |
+| [theme.json Reference](./docs/wordpress/theme-json-reference.md) | Full settings and styles structure |
 
 ### Advanced
 
@@ -116,8 +137,6 @@ import {
 |-------|-------------|
 | [Architecture](./docs/advanced/architecture.md) | Design decisions, project structure, category registry |
 | [Token Flow](./docs/advanced/token-flow.md) | How tokens resolve differently per output |
-| [Editor Styles](./docs/advanced/editor-styles.md) | WordPress editor iframe specifics |
-| [theme.json Reference](./docs/advanced/theme-json-reference.md) | theme.json settings and examples |
 
 ## Development
 
