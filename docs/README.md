@@ -143,5 +143,6 @@ The generate step ensures `tokens.css` exists before Storybook or Vite needs it.
 
 - [Configuration](./configuration.md) — Full config reference with all fields and options
 - [Tokens](./tokens.md) — Token categories, syntax, fluid fonts, and CSS output
+- [Fonts](./fonts.md) — Static fonts, variable fonts, Google Fonts, and file placement
 - [Base Styles](./base-styles.md) — Typography, spacing, `:where()` selectors, and alignfull
 - [WordPress Integration](./wordpress-integration.md) — Adding compiled assets to a WordPress theme
