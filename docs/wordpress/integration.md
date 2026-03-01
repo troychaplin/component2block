@@ -109,7 +109,7 @@ Your theme's `theme.json` only needs to define what's different. Everything else
 }
 ```
 
-For details on locked vs themeable mode, style variations, and advanced override patterns, see [WordPress Theming](./wordpress-theming.md).
+For details on locked vs themeable mode, style variations, and advanced override patterns, see [WordPress Theming](./theming.md).
 
 ## Troubleshooting
 
@@ -127,4 +127,4 @@ For details on locked vs themeable mode, style variations, and advanced override
 
 ### Theme overrides not affecting components
 
-This is expected if you're using `tokens.css` (locked mode). Components use hardcoded values and ignore Site Editor changes. Switch to `tokens.wp.css` by setting `wpThemeable: true` in the library's config. See [WordPress Theming](./wordpress-theming.md) for details.
+This is expected if you're using `tokens.css` (locked mode). Components use hardcoded values and ignore Site Editor changes. Switch to `tokens.wp.css` by setting `wpThemeable: true` in the library's config. See [WordPress Theming](./theming.md) for details.

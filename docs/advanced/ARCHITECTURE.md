@@ -38,24 +38,31 @@ component2block/
 ├── templates/
 │   └── integrate.php.tpl        PHP template for WordPress integration
 ├── docs/
-│   ├── README.md                Getting started
-│   ├── configuration.md         Full config reference
-│   ├── tokens.md                Token syntax and categories
-│   ├── config/                  Per-category config guides
+│   ├── README.md                Getting started & navigation hub
+│   ├── config/                  Config reference and per-category guides
+│   │   ├── README.md            Global fields, token categories, full example
 │   │   ├── colors.md
 │   │   ├── spacing.md
 │   │   ├── shadow.md
 │   │   ├── fonts.md
 │   │   └── base-styles.md
-│   ├── storybook-preset.md      Storybook preset setup
-│   ├── wordpress-integration.md Theme integration
-│   ├── wordpress-theming.md     Locked vs themeable, overrides
-│   ├── wordpress-blocks.md      Block plugin setup
-│   └── advanced/
+│   ├── guides/                  Usage docs
+│   │   ├── README.md
+│   │   ├── tokens.md            Token syntax and categories
+│   │   ├── markup.md            Layout class patterns
+│   │   ├── storybook-preset.md  Storybook preset setup
+│   │   └── cli-and-build.md     CLI, build scripts, publishing
+│   ├── wordpress/               WordPress integration
+│   │   ├── README.md
+│   │   ├── integration.md       Theme setup
+│   │   ├── theming.md           Locked vs themeable, overrides
+│   │   ├── blocks.md            Block plugin setup
+│   │   ├── editor-styles.md     Editor iframe styles
+│   │   └── theme-json-reference.md
+│   └── advanced/                Internals
+│       ├── README.md
 │       ├── architecture.md      This file
-│       ├── token-flow.md        Token resolution internals
-│       ├── editor-styles.md     WordPress editor iframe
-│       └── theme-json-reference.md
+│       └── token-flow.md        Token resolution internals
 └── tests/
     ├── config.test.ts           Config loading and validation
     ├── tokens-css.test.ts       CSS token generation

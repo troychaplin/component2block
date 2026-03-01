@@ -431,4 +431,4 @@ export default {
 };
 ```
 
-See [Storybook Preset](../storybook-preset.md) for the full list of injected files.
+See [Storybook Preset](../guides/storybook-preset.md) for the full list of injected files.

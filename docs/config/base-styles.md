@@ -476,7 +476,7 @@ Content styles are split into two files:
 
 The generator only writes `_content-generated.scss`. Your `content.scss` is never touched.
 
-The Storybook preset auto-injects `content.scss` when it exists. See [Storybook Preset](../storybook-preset.md) for details.
+The Storybook preset auto-injects `content.scss` when it exists. See [Storybook Preset](../guides/storybook-preset.md) for details.
 
 ### theme.json
 

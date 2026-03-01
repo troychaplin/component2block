@@ -2,7 +2,7 @@
 
 This guide covers how WordPress themes interact with a component library built with `component2block` — locked vs themeable mode, overriding tokens, and style variations.
 
-For basic setup, see [WordPress Integration](./wordpress-integration.md) first.
+For basic setup, see [WordPress Integration](./integration.md) first.
 
 ## Locked vs Themeable Mode
 
