@@ -41,7 +41,12 @@ component2block/
 │   ├── README.md                Getting started
 │   ├── configuration.md         Full config reference
 │   ├── tokens.md                Token syntax and categories
-│   ├── base-styles.md           Base typography and spacing
+│   ├── config/                  Per-category config guides
+│   │   ├── colors.md
+│   │   ├── spacing.md
+│   │   ├── shadow.md
+│   │   ├── fonts.md
+│   │   └── base-styles.md
 │   ├── storybook-preset.md      Storybook preset setup
 │   ├── wordpress-integration.md Theme integration
 │   ├── wordpress-theming.md     Locked vs themeable, overrides

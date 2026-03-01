@@ -258,7 +258,7 @@ Token keys resolve to the corresponding CSS variable:
 
 The `hoverColor` property is specific to the `link` element — it generates a `:hover` pseudo-class rule.
 
-See [Base Styles](../base-styles.md) for the full list of supported elements and properties.
+See [Base Styles](./base-styles.md) for the full list of supported elements and properties.
 
 ## Using Colors in Components
 

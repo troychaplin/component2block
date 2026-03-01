@@ -57,7 +57,7 @@ Create `c2b.config.json` in your project root. The `prefix` field is the only re
 }
 ```
 
-For the full list of token categories and syntax options, see [Tokens](./tokens.md). For base typography and spacing configuration, see [Base Styles](./base-styles.md).
+For the full list of token categories and syntax options, see [Tokens](./tokens.md). For base typography and spacing configuration, see [Base Styles](./config/base-styles.md).
 
 ## Generate
 
@@ -144,6 +144,8 @@ The generate step ensures `tokens.css` exists before Storybook or Vite needs it.
 - [Configuration](./configuration.md) — Full config reference with all fields and options
 - [Tokens](./tokens.md) — Token categories, syntax, fluid fonts, and CSS output
 - [Colors & Gradients](./config/colors.md) — Color palette, gradients, cssOnly tokens, and locked vs themeable mode
+- [Spacing](./config/spacing.md) — Spacing scale, WordPress slug conventions, and responsive values
+- [Shadows](./config/shadow.md) — Box shadows, preset vs custom behavior, and Site Editor integration
 - [Fonts](./config/fonts.md) — Static fonts, variable fonts, Google Fonts, and file placement
-- [Base Styles](./base-styles.md) — Typography, spacing, `:where()` selectors, and alignfull
+- [Base Styles](./config/base-styles.md) — Elements, typography, colors, spacing, and `:where()` selectors
 - [WordPress Integration](./wordpress-integration.md) — Adding compiled assets to a WordPress theme

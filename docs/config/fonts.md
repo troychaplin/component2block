@@ -235,7 +235,7 @@ Reference font size tokens by key:
 }
 ```
 
-Token keys like `"medium"` resolve to the corresponding CSS variable. Raw values like `"4.5rem"` pass through as-is. See [Base Styles](../base-styles.md) for details.
+Token keys like `"medium"` resolve to the corresponding CSS variable. Raw values like `"4.5rem"` pass through as-is. See [Base Styles](./base-styles.md) for details.
 
 ### Using Font Sizes in Components
 
@@ -405,7 +405,7 @@ Reference font tokens by key in the `baseStyles` section:
 }
 ```
 
-The value `"inter"` resolves to `var(--prefix--font-family-inter)` in SCSS and `var(--wp--preset--font-family--inter)` in theme.json. See [Base Styles](../base-styles.md) for details.
+The value `"inter"` resolves to `var(--prefix--font-family-inter)` in SCSS and `var(--wp--preset--font-family--inter)` in theme.json. See [Base Styles](./base-styles.md) for details.
 
 ## Using Fonts in Components
 

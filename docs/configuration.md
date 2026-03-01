@@ -10,7 +10,7 @@ The `c2b.config.json` file is the single source of truth for all generated outpu
 | `tokensPath` | No | `src/styles/tokens.css` | Output path for the generated tokens CSS file |
 | `outDir` | No | `dist/wp` | Output directory for WordPress files |
 | `wpThemeable` | No | `false` | When `true`, generates `tokens.wp.css` with `--wp--preset--*` mappings |
-| `baseStyles` | No | — | Element typography, spacing, and layout. See [Base Styles](./base-styles.md) |
+| `baseStyles` | No | — | Element typography, spacing, and layout. See [Base Styles](./config/base-styles.md) |
 
 Token categories are defined at the top level alongside these fields.
 
