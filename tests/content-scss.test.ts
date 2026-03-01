@@ -327,6 +327,118 @@ describe('generateContentScss — spacing blockGap', () => {
   });
 });
 
+describe('generateContentScss — layout constraints', () => {
+  const layoutConfig: C2bConfig = {
+    prefix: 'design-system',
+    tokensPath: 'src/styles/tokens.css',
+    outDir: 'dist/wp',
+    wpThemeable: false,
+    tokens: {
+      layout: {
+        'content-size': { value: '768px' },
+        'wide-size': { value: '1280px' },
+      },
+    },
+    baseStyles: {
+      body: { fontWeight: '400' },
+    },
+  };
+
+  it('generates default content-size constraint rule', () => {
+    const result = generateContentScss(layoutConfig)!;
+    expect(result).toContain('.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {');
+    expect(result).toContain('  max-width: var(--design-system--layout-content-size);');
+  });
+
+  it('generates alignwide rule with wide-size', () => {
+    const result = generateContentScss(layoutConfig)!;
+    expect(result).toContain('.is-layout-constrained > .alignwide {');
+    expect(result).toContain('  max-width: var(--design-system--layout-wide-size);');
+  });
+
+  it('includes !important on auto margins for both rules', () => {
+    const result = generateContentScss(layoutConfig)!;
+    const contentBlock = result.split('.is-layout-constrained > :where(:not')[1].split('}')[0];
+    expect(contentBlock).toContain('margin-left: auto !important;');
+    expect(contentBlock).toContain('margin-right: auto !important;');
+    const wideBlock = result.split('.is-layout-constrained > .alignwide {')[1].split('}')[0];
+    expect(wideBlock).toContain('margin-left: auto !important;');
+    expect(wideBlock).toContain('margin-right: auto !important;');
+  });
+
+  it('generates only content-size rule when wide-size absent', () => {
+    const contentOnlyConfig: C2bConfig = {
+      ...layoutConfig,
+      tokens: {
+        layout: { 'content-size': { value: '768px' } },
+      },
+    };
+    const result = generateContentScss(contentOnlyConfig)!;
+    expect(result).toContain('var(--design-system--layout-content-size)');
+    expect(result).not.toContain('.alignwide');
+  });
+
+  it('generates only alignwide rule when content-size absent', () => {
+    const wideOnlyConfig: C2bConfig = {
+      ...layoutConfig,
+      tokens: {
+        layout: { 'wide-size': { value: '1280px' } },
+      },
+    };
+    const result = generateContentScss(wideOnlyConfig)!;
+    expect(result).toContain('.is-layout-constrained > .alignwide {');
+    expect(result).not.toContain(':where(:not(.alignleft)');
+  });
+
+  it('does not generate constraint rules when no layout tokens defined', () => {
+    const noLayoutConfig: C2bConfig = {
+      ...layoutConfig,
+      tokens: {},
+    };
+    const result = generateContentScss(noLayoutConfig)!;
+    expect(result).not.toContain('.is-layout-constrained > :where');
+    expect(result).not.toContain('.alignwide');
+  });
+
+  it('does not generate constraint rules when layout tokens exist but no baseStyles', () => {
+    const noBaseStylesConfig: C2bConfig = {
+      ...layoutConfig,
+      baseStyles: undefined,
+    };
+    const result = generateContentScss(noBaseStylesConfig);
+    expect(result).toBeNull();
+  });
+
+  it('works alongside block gap and padding rules', () => {
+    const fullConfig: C2bConfig = {
+      ...layoutConfig,
+      tokens: {
+        layout: {
+          'content-size': { value: '768px' },
+          'wide-size': { value: '1280px' },
+        },
+        spacing: {
+          medium: { value: '1rem', slug: '50', name: 'Medium' },
+          large: { value: '1.5rem', slug: '60', name: 'Large' },
+        },
+      },
+      baseStyles: {
+        body: { fontWeight: '400' },
+        spacing: {
+          blockGap: 'medium',
+          padding: { right: 'large', left: 'large' },
+        },
+      },
+    };
+    const result = generateContentScss(fullConfig)!;
+    expect(result).toContain(':where(.is-layout-constrained) > * + * {');
+    expect(result).toContain('.is-layout-constrained > :where(:not(.alignleft)');
+    expect(result).toContain('.is-layout-constrained > .alignwide {');
+    expect(result).toContain('.has-global-padding {');
+    expect(result).toContain('.has-global-padding > .alignfull {');
+  });
+});
+
 describe('generateContentScss — baseStyles color', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',

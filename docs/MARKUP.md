@@ -4,28 +4,37 @@ Reference examples for layout markup that works in both Storybook and WordPress.
 
 ## Layout Classes
 
-| Class | Applied to | Role |
-|-------|-----------|------|
-| `alignfull` | Section | Breaks out of parent padding for full-width backgrounds |
-| `has-global-padding` | Section | Applies root left/right padding so children never touch the viewport edge |
-| `is-layout-constrained` | Section | Adds block gap (vertical spacing) between direct children |
-| `max-w-content` | Child | Constrains to `contentSize` (e.g. 768px) — readable prose width |
-| `max-w-wide` | Child | Constrains to `wideSize` (e.g. 1280px) — wider layouts |
-| `max-w-full` | Child | No max-width constraint, fills the padded area |
+### Section Classes
+
+| Class | Role |
+|-------|------|
+| `alignfull` | Breaks out of parent padding for full-width backgrounds |
+| `has-global-padding` | Applies root left/right padding so children never touch the viewport edge |
+| `is-layout-constrained` | Constrains children to `contentSize` by default + adds block gap between them |
+
+### Child Alignment Classes
+
+Children inside `is-layout-constrained` are automatically constrained to `contentSize` and centered. You only add a class to override the default:
+
+| Class | Role |
+|-------|------|
+| *(none)* | Default — constrained to `contentSize` (e.g. 768px) |
+| `alignwide` | Overrides to `wideSize` (e.g. 1280px) |
+| `alignfull` | Breaks out of the Section's padding entirely |
 
 ## Page Structure
 
-`<main>` is the page wrapper. It doesn't use layout classes. Sections inside it own the padding and backgrounds, while each direct child of a Section declares its own width.
+`<main>` is the page wrapper. It doesn't use layout classes. Sections inside it own the padding and backgrounds, and their children are automatically constrained.
 
 ```html
 <main>
 
   <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-    <!-- children here -->
+    <!-- children automatically constrained to contentSize -->
   </section>
 
   <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-    <!-- children here -->
+    <!-- children automatically constrained to contentSize -->
   </section>
 
 </main>
@@ -33,29 +42,29 @@ Reference examples for layout markup that works in both Storybook and WordPress.
 
 ## Content Width Section
 
-The most common pattern. All children constrained to `contentSize` for readable prose.
+The most common pattern. All children are automatically constrained to `contentSize` for readable prose. No classes needed on the children.
 
 ```html
 <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-  <h2 class="max-w-content">Our Story</h2>
-  <p class="max-w-content">First paragraph of readable prose at contentSize width.</p>
-  <p class="max-w-content">Second paragraph. Block gap provides vertical spacing above.</p>
+  <h2>Our Story</h2>
+  <p>First paragraph of readable prose at contentSize width.</p>
+  <p>Second paragraph. Block gap provides vertical spacing above.</p>
 </section>
 ```
 
 - Section goes edge-to-edge (background color fills the viewport)
 - Root padding keeps children off the viewport edges
 - Block gap spaces out each direct child vertically
-- Each child is centered at `contentSize`
+- Each child is automatically centered at `contentSize`
 
-## Wide Width Section
+## Wide Content Within a Section
 
-Children constrained to `wideSize` for wider layouts like card grids.
+Add `alignwide` to children that need more room. Everything else stays at the default `contentSize`.
 
 ```html
 <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-  <h2 class="max-w-content">Our Team</h2>
-  <div class="max-w-wide card-grid">
+  <h2>Our Team</h2>
+  <div class="alignwide card-grid">
     <div class="card">...</div>
     <div class="card">...</div>
     <div class="card">...</div>
@@ -63,44 +72,44 @@ Children constrained to `wideSize` for wider layouts like card grids.
 </section>
 ```
 
-- The heading stays at `contentSize` for readability
-- The card grid expands to `wideSize` for more room
+- The heading stays at `contentSize` for readability (no class needed)
+- The card grid expands to `wideSize` via `alignwide`
 - Both are direct children of the same Section, spaced by block gap
 
-## Full Width Section
+## Full Width Content Within a Section
 
-Children fill the padded area with no max-width constraint.
+Add `alignfull` to children that should break out of the Section's padding entirely.
 
 ```html
 <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-  <img class="max-w-full" src="hero.jpg" alt="Hero" />
-  <h2 class="max-w-content">Hero headline below the image</h2>
+  <img class="alignfull" src="hero.jpg" alt="Hero" />
+  <h2>Hero headline below the image</h2>
 </section>
 ```
 
-- The image stretches to the root padding edges
-- The heading below it is constrained to `contentSize`
+- The image breaks past the root padding to the viewport edges
+- The heading below it is automatically constrained to `contentSize`
 - Block gap spaces the heading below the image
 
 ## Mixed Widths in One Section
 
-Different children can use different widths within the same Section. This is one of the strengths of the pattern — width is a per-child decision, not a per-section decision.
+Different children can use different alignments within the same Section. Width is a per-child decision, not a per-section decision.
 
 ```html
 <section class="mylib-section mylib-section--dark alignfull has-global-padding is-layout-constrained">
-  <h2 class="max-w-content">Featured Work</h2>
-  <p class="max-w-content">A short intro paragraph at readable width.</p>
-  <div class="max-w-wide card-grid">
+  <h2>Featured Work</h2>
+  <p>A short intro paragraph at readable width.</p>
+  <div class="alignwide card-grid">
     <div class="card">...</div>
     <div class="card">...</div>
     <div class="card">...</div>
   </div>
-  <a class="max-w-content" href="/work">View all projects</a>
+  <a href="/work">View all projects</a>
 </section>
 ```
 
-- Heading, paragraph, and link are at `contentSize`
-- Card grid is at `wideSize`
+- Heading, paragraph, and link are at `contentSize` (no class needed)
+- Card grid is at `wideSize` via `alignwide`
 - All share the same Section background and root padding
 - Block gap provides consistent vertical rhythm throughout
 
@@ -112,19 +121,19 @@ Sections stacked in a page, each with its own background and mixed child widths.
 <main>
 
   <section class="mylib-section mylib-section--hero alignfull has-global-padding is-layout-constrained">
-    <h1 class="max-w-content">Page Title</h1>
-    <p class="max-w-content">Introductory text at readable width.</p>
+    <h1>Page Title</h1>
+    <p>Introductory text at readable width.</p>
   </section>
 
   <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-    <h2 class="max-w-content">About Us</h2>
-    <p class="max-w-content">Prose content constrained for readability.</p>
-    <p class="max-w-content">Another paragraph, same width.</p>
+    <h2>About Us</h2>
+    <p>Prose content constrained for readability.</p>
+    <p>Another paragraph, same width.</p>
   </section>
 
   <section class="mylib-section mylib-section--dark alignfull has-global-padding is-layout-constrained">
-    <h2 class="max-w-content">Our Team</h2>
-    <div class="max-w-wide card-grid">
+    <h2>Our Team</h2>
+    <div class="alignwide card-grid">
       <div class="card">...</div>
       <div class="card">...</div>
       <div class="card">...</div>
@@ -132,17 +141,46 @@ Sections stacked in a page, each with its own background and mixed child widths.
   </section>
 
   <section class="mylib-section alignfull has-global-padding is-layout-constrained">
-    <img class="max-w-full" src="banner.jpg" alt="Banner" />
-    <h2 class="max-w-content">Final Section</h2>
-    <p class="max-w-content">Closing content at readable width.</p>
+    <img class="alignfull" src="banner.jpg" alt="Banner" />
+    <h2>Final Section</h2>
+    <p>Closing content at readable width.</p>
   </section>
 
 </main>
 ```
 
+## How Layout Constraints Work
+
+The `is-layout-constrained` class constrains all direct children to `contentSize` by default. The `alignwide` class overrides to `wideSize`. These rules mirror WordPress exactly:
+
+```scss
+.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+  max-width: var(--prefix--layout-content-size);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.is-layout-constrained > .alignwide {
+  max-width: var(--prefix--layout-wide-size);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+```
+
+The constraint values come from the `layout` tokens in your config:
+
+```json
+{
+  "layout": {
+    "content-size": "768px",
+    "wide-size": "1280px"
+  }
+}
+```
+
 ## How Block Gap Works
 
-The `is-layout-constrained` class triggers the block gap rule:
+The `is-layout-constrained` class also triggers the block gap rule:
 
 ```scss
 :where(.is-layout-constrained) > * + * {
@@ -213,9 +251,9 @@ These patterns use the same classes WordPress applies to its block markup:
 
 | This markup | WordPress equivalent |
 |-------------|---------------------|
-| `alignfull` | Block set to "Full Width" alignment |
-| `has-global-padding` | Container block with root padding enabled |
-| `is-layout-constrained` | Group block with constrained layout |
-| `max-w-content` child | Block at default alignment (`contentSize`) |
-| `max-w-wide` child | Block set to "Wide" alignment (`wideSize`) |
-| `max-w-full` child | Block set to "Full" alignment within a padded container |
+| `alignfull` on Section | Block set to "Full Width" alignment |
+| `has-global-padding` on Section | Container block with root padding enabled |
+| `is-layout-constrained` on Section | Group block with constrained layout |
+| No class on child | Block at default alignment (`contentSize`) |
+| `alignwide` on child | Block set to "Wide" alignment (`wideSize`) |
+| `alignfull` on child | Block set to "Full Width" alignment within a padded container |
