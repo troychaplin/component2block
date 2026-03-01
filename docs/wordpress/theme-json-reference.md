@@ -191,7 +191,7 @@ Background images are a `styles` concern, configured in the theme:
 
 ## styles Block
 
-When `baseStyles` is configured, the generator adds a `styles` block. See [Base Styles](../base-styles.md) for the full structure.
+When `baseStyles` is configured, the generator adds a `styles` block. See [Base Styles](../config/base-styles.md) for the full structure.
 
 ### styles.typography (body defaults)
 

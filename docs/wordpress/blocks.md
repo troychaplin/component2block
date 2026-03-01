@@ -30,7 +30,7 @@ wp_register_style(
 );
 ```
 
-The `c2b-tokens` handle is registered by `integrate.php` (see [WordPress Integration](./wordpress-integration.md)).
+The `c2b-tokens` handle is registered by `integrate.php` (see [WordPress Integration](./integration.md)).
 
 ### Per-Block Loading
 
@@ -47,4 +47,4 @@ WordPress only enqueues CSS for blocks present on the page. A page with 5 differ
 
 ### Editor Iframe
 
-The block editor uses an iframe. Styles must be loaded inside it via `editorStyle` — stylesheets on the parent page don't reach the editor content. See [Editor Styles](./advanced/editor-styles.md) for details.
+The block editor uses an iframe. Styles must be loaded inside it via `editorStyle` — stylesheets on the parent page don't reach the editor content. See [Editor Styles](./editor-styles.md) for details.

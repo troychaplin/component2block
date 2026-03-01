@@ -57,7 +57,7 @@ Create `c2b.config.json` in your project root. The `prefix` field is the only re
 }
 ```
 
-For the full list of token categories and syntax options, see [Tokens](./tokens.md). For base typography and spacing configuration, see [Base Styles](./base-styles.md).
+For the full list of token categories and syntax options, see [Tokens](./guides/tokens.md). For base typography and spacing configuration, see [Base Styles](./config/base-styles.md).
 
 ## Generate
 
@@ -106,7 +106,7 @@ It injects any of these files that exist in your `tokensPath` directory:
 | `reset.scss` | Structural CSS reset (authored by you) |
 | `content.scss` | Base typography — imports `_content-generated.scss` + your behavioral rules (authored by you) |
 
-See [Storybook Preset](./storybook-preset.md) for details.
+See [Storybook Preset](./guides/storybook-preset.md) for details.
 
 ## Use Tokens in Components
 
@@ -141,7 +141,23 @@ The generate step ensures `tokens.css` exists before Storybook or Vite needs it.
 
 ## What's Next
 
-- [Configuration](./configuration.md) — Full config reference with all fields and options
-- [Tokens](./tokens.md) — Token categories, syntax, fluid fonts, and CSS output
-- [Base Styles](./base-styles.md) — Typography, spacing, `:where()` selectors, and alignfull
-- [WordPress Integration](./wordpress-integration.md) — Adding compiled assets to a WordPress theme
+- [Configuration Reference](./config/README.md) — Global fields, token categories, generated files, and full example
+  - [Colors & Gradients](./config/colors.md) — Color palette, gradients, cssOnly tokens, and locked vs themeable mode
+  - [Spacing](./config/spacing.md) — Spacing scale, WordPress slug conventions, and responsive values
+  - [Shadows](./config/shadow.md) — Box shadows, preset vs custom behavior, and Site Editor integration
+  - [Fonts](./config/fonts.md) — Static fonts, variable fonts, Google Fonts, and file placement
+  - [Base Styles](./config/base-styles.md) — Elements, typography, colors, spacing, and `:where()` selectors
+- [Guides](./guides/README.md) — Usage docs for building with component2block
+  - [Tokens](./guides/tokens.md) — Token categories, syntax, fluid fonts, and CSS output
+  - [Markup Patterns](./guides/markup.md) — Layout classes for Storybook and WordPress
+  - [Storybook Preset](./guides/storybook-preset.md) — Auto-injecting generated styles into Storybook
+  - [CLI & Build](./guides/cli-and-build.md) — CLI commands, build scripts, and publishing setup
+- [WordPress](./wordpress/README.md) — Theme integration, theming modes, and block setup
+  - [Integration](./wordpress/integration.md) — Adding compiled assets to a WordPress block theme
+  - [Theming](./wordpress/theming.md) — Locked vs themeable mode, style variations, and overrides
+  - [Blocks](./wordpress/blocks.md) — Registering block plugins that use library tokens
+  - [Editor Styles](./wordpress/editor-styles.md) — Loading styles inside the block editor iframe
+  - [theme.json Reference](./wordpress/theme-json-reference.md) — Full settings and styles structure
+- [Advanced](./advanced/README.md) — Architecture and internal pipeline
+  - [Architecture](./advanced/architecture.md) — Design decisions and project structure
+  - [Token Flow](./advanced/token-flow.md) — How tokens flow from config to generated output
