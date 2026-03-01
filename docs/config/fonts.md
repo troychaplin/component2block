@@ -122,6 +122,133 @@ For system fonts that don't need `@font-face` declarations, use the string short
 
 String entries are always CSS-only — they produce a CSS variable but no WordPress preset and no `@font-face` output.
 
+## Font Sizes
+
+Font sizes are defined in the `fontSize` category. They support both static values and fluid (responsive) sizing using `clamp()`.
+
+### Fluid Font Sizes
+
+Fluid entries scale smoothly between a minimum and maximum size based on viewport width. Provide a `fluid` object with `min` and `max`:
+
+```json
+{
+  "fontSize": {
+    "small":   { "fluid": { "min": "0.875rem", "max": "1rem" } },
+    "medium":  { "fluid": { "min": "1rem", "max": "1.125rem" } },
+    "large":   { "fluid": { "min": "1.125rem", "max": "1.25rem" } },
+    "x-large": { "fluid": { "min": "1.25rem", "max": "1.5rem" } }
+  }
+}
+```
+
+The generator produces a `clamp()` value matching WordPress's fluid typography formula:
+
+```css
+:root {
+  --mylib--font-size-small: clamp(0.875rem, 0.875rem + ((0.125) * ((100vw - 320px) / 1280)), 1rem);
+}
+```
+
+The formula scales linearly between the `min` value at a 320px viewport and the `max` value at a 1600px viewport. These breakpoints match WordPress's fluid typography defaults.
+
+The `value` field is auto-derived from `fluid.max` when not provided, so you don't need to specify it.
+
+### Static Font Sizes
+
+For sizes that shouldn't scale with the viewport, use a plain `value`:
+
+```json
+{
+  "fontSize": {
+    "fixed": { "value": "1rem" }
+  }
+}
+```
+
+This produces a simple CSS variable with no `clamp()`:
+
+```css
+:root {
+  --mylib--font-size-fixed: 1rem;
+}
+```
+
+### Font Size Properties
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `value` | Yes* | The CSS value. *Auto-derived from `fluid.max` for fluid sizes |
+| `fluid` | No | `{ min, max }` for responsive sizing |
+| `name` | No | Human-readable label (auto-derived from key) |
+| `slug` | No | WordPress preset slug (auto-derived from key) |
+| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+
+Fluid `min` and `max` accept `rem`, `em`, or `px` units. Both values must use the same unit.
+
+### Generated Output
+
+#### tokens.css
+
+Fluid sizes produce `clamp()` values; static sizes pass through as-is:
+
+```css
+:root {
+  --mylib--font-size-small: clamp(0.875rem, 0.875rem + ((0.125) * ((100vw - 320px) / 1280)), 1rem);
+  --mylib--font-size-fixed: 1rem;
+}
+```
+
+#### theme.json
+
+Font sizes register as WordPress presets with the fluid range, enabling the Site Editor size picker:
+
+```json
+{
+  "settings": {
+    "typography": {
+      "fluid": true,
+      "fontSizes": [
+        {
+          "slug": "small",
+          "name": "Small",
+          "size": "1rem",
+          "fluid": { "min": "0.875rem", "max": "1rem" }
+        }
+      ]
+    }
+  }
+}
+```
+
+When any `fontSize` tokens are defined, the generator sets `typography.fluid: true` in theme.json so WordPress uses its own fluid engine for the Site Editor.
+
+### Using Font Sizes in Base Styles
+
+Reference font size tokens by key:
+
+```json
+{
+  "baseStyles": {
+    "body": { "fontSize": "medium" },
+    "h1": { "fontSize": "4.5rem" }
+  }
+}
+```
+
+Token keys like `"medium"` resolve to the corresponding CSS variable. Raw values like `"4.5rem"` pass through as-is. See [Base Styles](../base-styles.md) for details.
+
+### Using Font Sizes in Components
+
+```scss
+.mylib-card__content {
+  font-size: var(--mylib--font-size-medium);
+}
+```
+
+The variable pattern is `--{prefix}--font-size-{key}`.
+
+---
+
 ## fontFace Entry Properties
 
 | Property | Required | Description |
@@ -278,7 +405,7 @@ Reference font tokens by key in the `baseStyles` section:
 }
 ```
 
-The value `"inter"` resolves to `var(--prefix--font-family-inter)` in SCSS and `var(--wp--preset--font-family--inter)` in theme.json. See [Base Styles](./base-styles.md) for details.
+The value `"inter"` resolves to `var(--prefix--font-family-inter)` in SCSS and `var(--wp--preset--font-family--inter)` in theme.json. See [Base Styles](../base-styles.md) for details.
 
 ## Using Fonts in Components
 
@@ -304,4 +431,4 @@ export default {
 };
 ```
 
-See [Storybook Preset](./storybook-preset.md) for the full list of injected files.
+See [Storybook Preset](../storybook-preset.md) for the full list of injected files.
