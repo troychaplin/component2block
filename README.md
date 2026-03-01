@@ -31,7 +31,7 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 
 - **Single source of truth** — One config drives all outputs. Change a color once, it updates everywhere.
 - **12 token categories** — Colors, gradients, spacing, font families, font sizes, shadows, layout, font weights, line heights, border radii, transitions, and z-index.
-- **Locked vs themeable** — By default, tokens are hardcoded (locked). Set `wpThemeable: true` to let WordPress themes override them.
+- **Locked vs themeable** — By default, tokens are hardcoded (locked). Set `output.wpThemeable: true` to let WordPress themes override them.
 - **Zero-specificity base styles** — Generated SCSS uses `:where()` selectors so component BEM classes always win over base typography.
 - **Storybook preset** — Auto-injects all generated styles into Storybook. No manual imports.
 - **WordPress default layer** — The generated `theme.json` injects at the lowest priority layer, so any theme can override it.
@@ -41,12 +41,14 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 ```json
 {
   "prefix": "mylib",
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true }
-  },
-  "fontSize": {
-    "small": { "fluid": { "min": "0.875rem", "max": "1rem" } }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "primary-hover": { "value": "#005a87", "cssOnly": true }
+    },
+    "fontSize": {
+      "small": { "min": "0.875rem", "max": "1rem" }
+    }
   }
 }
 ```

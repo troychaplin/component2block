@@ -4,18 +4,20 @@ This guide covers how to configure spacing tokens in `c2b.config.json`, includin
 
 ## Spacing Configuration
 
-Spacing tokens are defined in the `spacing` category. Each entry produces a CSS custom property and — unless marked CSS-only — registers as a WordPress spacing preset.
+Spacing tokens are defined in the `spacing` category under `tokens`. Each entry produces a CSS custom property and — unless marked CSS-only — registers as a WordPress spacing preset. The `name` field is auto-derived from the key, so you only need `value` and `slug`:
 
 ```json
 {
-  "spacing": {
-    "2x-small": { "value": "0.25rem", "slug": "20", "name": "2X-Small" },
-    "x-small":  { "value": "0.5rem",  "slug": "30", "name": "X-Small" },
-    "small":    { "value": "min(0.75rem, 1vw)",  "slug": "40", "name": "Small" },
-    "medium":   { "value": "min(1.5rem, 2vw)",   "slug": "50", "name": "Medium" },
-    "large":    { "value": "min(2.25rem, 3vw)",   "slug": "60", "name": "Large" },
-    "x-large":  { "value": "min(3rem, 4vw)",      "slug": "70", "name": "X-Large" },
-    "2x-large": { "value": "min(4.5rem, 6vw)",    "slug": "80", "name": "2X-Large" }
+  "tokens": {
+    "spacing": {
+      "2x-small": { "value": "0.25rem", "slug": "20" },
+      "x-small":  { "value": "0.5rem",  "slug": "30" },
+      "small":    { "value": "min(0.75rem, 1vw)",  "slug": "40" },
+      "medium":   { "value": "min(1.5rem, 2vw)",   "slug": "50" },
+      "large":    { "value": "min(2.25rem, 3vw)",   "slug": "60" },
+      "x-large":  { "value": "min(3rem, 4vw)",      "slug": "70" },
+      "2x-large": { "value": "min(4.5rem, 6vw)",    "slug": "80" }
+    }
   }
 }
 ```
@@ -42,10 +44,12 @@ The `value` field accepts any valid CSS value. Use viewport-relative values for 
 
 ```json
 {
-  "spacing": {
-    "small":  { "value": "min(0.75rem, 1vw)",  "slug": "40", "name": "Small" },
-    "medium": { "value": "min(1.5rem, 2vw)",   "slug": "50", "name": "Medium" },
-    "large":  { "value": "min(2.25rem, 3vw)",   "slug": "60", "name": "Large" }
+  "tokens": {
+    "spacing": {
+      "small":  { "value": "min(0.75rem, 1vw)",  "slug": "40" },
+      "medium": { "value": "min(1.5rem, 2vw)",   "slug": "50" },
+      "large":  { "value": "min(2.25rem, 3vw)",   "slug": "60" }
+    }
   }
 }
 ```
@@ -58,12 +62,14 @@ For spacing that shouldn't scale, use fixed values:
 
 ```json
 {
-  "spacing": {
-    "xs": { "value": "0.25rem", "slug": "20", "name": "Extra Small" },
-    "sm": { "value": "0.5rem",  "slug": "30", "name": "Small" },
-    "md": { "value": "1rem",    "slug": "40", "name": "Medium" },
-    "lg": { "value": "1.5rem",  "slug": "50", "name": "Large" },
-    "xl": { "value": "2rem",    "slug": "60", "name": "Extra Large" }
+  "tokens": {
+    "spacing": {
+      "xs": { "value": "0.25rem", "slug": "20" },
+      "sm": { "value": "0.5rem",  "slug": "30" },
+      "md": { "value": "1rem",    "slug": "40" },
+      "lg": { "value": "1.5rem",  "slug": "50" },
+      "xl": { "value": "2rem",    "slug": "60" }
+    }
   }
 }
 ```
@@ -74,11 +80,13 @@ Use `cssOnly` for spacing tokens that are only needed in component styles and sh
 
 ```json
 {
-  "spacing": {
-    "small":    { "value": "0.5rem",  "slug": "30", "name": "Small" },
-    "medium":   { "value": "1rem",    "slug": "40", "name": "Medium" },
-    "card-gap": { "value": "0.75rem", "cssOnly": true },
-    "nav-pad":  { "value": "0.625rem", "cssOnly": true }
+  "tokens": {
+    "spacing": {
+      "small":    { "value": "0.5rem",  "slug": "30" },
+      "medium":   { "value": "1rem",    "slug": "40" },
+      "card-gap": { "value": "0.75rem", "cssOnly": true },
+      "nav-pad":  { "value": "0.625rem", "cssOnly": true }
+    }
   }
 }
 ```
@@ -88,8 +96,8 @@ Use `cssOnly` for spacing tokens that are only needed in component styles and sh
 | Property | Required | Description |
 |----------|----------|-------------|
 | `value` | Yes | Any valid CSS length — `rem`, `px`, `min()`, `clamp()`, etc. |
-| `name` | No | Human-readable label for the Site Editor (auto-derived from key) |
 | `slug` | No | WordPress preset slug — use numeric slugs like `"40"` (auto-derived from key) |
+| `name` | No | Human-readable label for the Site Editor (auto-derived from key — rarely needed) |
 | `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
 
 ---
@@ -111,7 +119,7 @@ Every spacing token becomes a CSS custom property with a static value:
 
 ### tokens.wp.css
 
-Only generated when `wpThemeable: true`. Preset tokens map to WordPress variables with the original value as a fallback:
+Only generated when `output.wpThemeable: true`. Preset tokens map to WordPress variables with the original value as a fallback:
 
 ```css
 :root {

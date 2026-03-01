@@ -39,12 +39,12 @@ export function generate(configPath, cwd) {
         write(contentScssPath, contentScss);
     }
     // Generate WordPress assets
-    write(`${config.outDir}/tokens.css`, generateTokensCss(config));
+    write(`${config.wpDir}/tokens.css`, generateTokensCss(config));
     if (config.wpThemeable) {
-        write(`${config.outDir}/tokens.wp.css`, generateTokensWpCss(config));
+        write(`${config.wpDir}/tokens.wp.css`, generateTokensWpCss(config));
     }
-    write(`${config.outDir}/theme.json`, generateThemeJson(config));
-    write(`${config.outDir}/integrate.php`, generateIntegratePhp());
+    write(`${config.wpDir}/theme.json`, generateThemeJson(config));
+    write(`${config.wpDir}/integrate.php`, generateIntegratePhp());
     return { files };
 }
 //# sourceMappingURL=index.js.map

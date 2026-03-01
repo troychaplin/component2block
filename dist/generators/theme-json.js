@@ -1,4 +1,4 @@
-import { CATEGORY_REGISTRY, CATEGORY_ORDER, kebabToCamel } from '../types.js';
+import { CATEGORY_REGISTRY, CATEGORY_ORDER } from '../types.js';
 import { resolveForThemeJson, ensureFontStyle } from '../config.js';
 export function generateThemeJson(config) {
     const settings = {};
@@ -29,10 +29,11 @@ export function generateThemeJson(config) {
         if (def.exclude)
             continue;
         // Direct-map categories (layout) — map token keys directly to a settings object
+        // Layout keys are expected in camelCase (e.g. "contentSize", "wideSize")
         if (def.directMap && def.themeJson) {
             const obj = {};
             for (const [key, entry] of Object.entries(group)) {
-                obj[kebabToCamel(key)] = entry.value;
+                obj[key] = entry.value;
             }
             if (Object.keys(obj).length > 0) {
                 setNestedValue(settings, def.themeJson.path, obj);

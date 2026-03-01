@@ -3,10 +3,10 @@ import { resolve } from 'node:path';
 import { CATEGORY_REGISTRY, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
 const DEFAULTS = {
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
 };
-/** Reserved config keys that are not token categories */
-const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'baseStyles'];
+/** Reserved config keys that are not token categories (legacy flat format) */
+const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'output', 'tokens', 'baseStyles'];
 export function loadConfig(configPath) {
     const resolvedPath = resolve(configPath ?? 'c2b.config.json');
     let raw;
@@ -26,20 +26,48 @@ export function loadConfig(configPath) {
     return validateConfig(input);
 }
 /**
- * Expand a token entry input (string or object) into a full TokenEntry.
- *
- * CSS-only tokens (no preset registration) are created by either:
- * - String shorthand: "bold": "700"
- * - Explicit flag: { "value": "#005a87", "cssOnly": true }
- *
- * All other object entries auto-derive slug/name and register as presets.
+ * Check if an input looks like a fluid shorthand: { min: string, max: string }
+ * without a "value" key. Distinguishes from a full TokenEntry object.
  */
-function expandTokenEntry(key, input, isDirectMap) {
+function isFluidInput(input) {
+    if (typeof input !== 'object' || input === null)
+        return false;
+    const obj = input;
+    return (typeof obj.min === 'string' &&
+        typeof obj.max === 'string' &&
+        !('value' in obj));
+}
+/**
+ * Determine if string shorthand should register as a preset for this category.
+ * Preset-capable categories (those with wpPreset) register strings as presets.
+ * Custom-only and excluded categories keep strings as CSS-only.
+ */
+function isPresetCategory(internalCategory) {
+    const def = CATEGORY_REGISTRY[internalCategory];
+    return !!def?.wpPreset;
+}
+/**
+ * Expand a token entry input (string, fluid shorthand, or object) into a full TokenEntry.
+ *
+ * String shorthand behavior depends on the category:
+ * - Preset categories (color, gradient, shadow, fontFamily, fontSize): registers as preset
+ * - Custom-only categories (fontWeight, radius): CSS-only
+ *
+ * Fluid shorthand { "min": "...", "max": "..." } expands to { value: max, fluid: { min, max } }.
+ */
+function expandTokenEntry(key, input, isDirectMap, internalCategory) {
     const isShorthand = typeof input === 'string';
-    // String shorthand expands to { value: string }
-    const entry = isShorthand
-        ? { value: input }
-        : { ...input };
+    let entry;
+    if (isShorthand) {
+        entry = { value: input };
+    }
+    else if (isFluidInput(input)) {
+        // Fluid shorthand: { min, max } → { value: max, fluid: { min, max } }
+        entry = { value: input.max, fluid: { min: input.min, max: input.max } };
+    }
+    else {
+        entry = { ...input };
+    }
     // Direct-map categories (layout) don't use name/slug
     if (isDirectMap) {
         return entry;
@@ -48,9 +76,11 @@ function expandTokenEntry(key, input, isDirectMap) {
     if (!entry.value && entry.fluid?.max) {
         entry.value = entry.fluid.max;
     }
-    // CSS-only tokens: string shorthand or explicit cssOnly flag
-    // These produce a CSS variable but skip preset registration
-    const isCssOnly = isShorthand || entry.cssOnly === true;
+    // Determine CSS-only status based on category and entry form
+    const presetCapable = internalCategory ? isPresetCategory(internalCategory) : false;
+    const isCssOnly = isShorthand
+        ? !presetCapable // String shorthand: preset for preset categories, CSS-only otherwise
+        : entry.cssOnly === true;
     if (!isCssOnly) {
         if (!entry.slug) {
             entry.slug = key;
@@ -62,17 +92,18 @@ function expandTokenEntry(key, input, isDirectMap) {
     return entry;
 }
 /**
- * Normalize a token group, expanding string shorthand and auto-deriving slug/name.
+ * Normalize a token group, expanding shorthand and auto-deriving slug/name.
  */
-function normalizeTokenGroup(group, isDirectMap) {
+function normalizeTokenGroup(group, isDirectMap, internalCategory) {
     const normalized = {};
     for (const [key, input] of Object.entries(group)) {
-        normalized[key] = expandTokenEntry(key, input, isDirectMap);
+        normalized[key] = expandTokenEntry(key, input, isDirectMap, internalCategory);
     }
     return normalized;
 }
 /**
- * Extract token categories from the flat config input.
+ * Extract token categories from the config input.
+ * Supports both new format (tokens wrapper) and legacy flat format.
  * Maps user-facing category names to internal names (e.g. "color" → "colorPalette").
  */
 function extractTokens(input) {
@@ -81,8 +112,10 @@ function extractTokens(input) {
         ...Object.keys(INPUT_CATEGORY_MAP),
         ...VALID_CATEGORIES,
     ];
-    for (const [key, value] of Object.entries(input)) {
-        // Skip reserved config keys
+    // Determine source: new tokens wrapper or legacy flat format
+    const source = input.tokens ?? input;
+    for (const [key, value] of Object.entries(source)) {
+        // Skip reserved config keys (only relevant for legacy flat format)
         if (CONFIG_KEYS.includes(key))
             continue;
         // Skip undefined values
@@ -90,6 +123,9 @@ function extractTokens(input) {
             continue;
         // Must be an object (token group)
         if (typeof value !== 'object') {
+            // In legacy flat format, non-object values like booleans are config keys
+            if (!input.tokens)
+                continue;
             throw new Error(`Config error: "${key}" must be an object.`);
         }
         // Map user-facing name to internal category name
@@ -99,7 +135,7 @@ function extractTokens(input) {
             throw new Error(`Config error: Unknown token category "${key}". Valid categories: ${validInputCategories.filter(c => VALID_CATEGORIES.includes((INPUT_CATEGORY_MAP[c] ?? c))).join(', ')}`);
         }
         const def = CATEGORY_REGISTRY[internalCategory];
-        tokens[internalCategory] = normalizeTokenGroup(value, def.directMap);
+        tokens[internalCategory] = normalizeTokenGroup(value, def.directMap, internalCategory);
     }
     return tokens;
 }
@@ -112,11 +148,16 @@ export function validateConfig(input) {
     for (const [category, group] of Object.entries(tokens)) {
         validateTokenGroup(category, group);
     }
+    // Resolve output settings: new output wrapper takes precedence over legacy root-level keys
+    const output = input.output ?? {};
+    const tokensPath = output.tokensPath ?? input.tokensPath ?? DEFAULTS.tokensPath;
+    const wpDir = output.wpDir ?? input.outDir ?? DEFAULTS.wpDir;
+    const wpThemeable = output.wpThemeable ?? input.wpThemeable ?? false;
     return {
         prefix: input.prefix,
-        tokensPath: input.tokensPath ?? DEFAULTS.tokensPath,
-        outDir: input.outDir ?? DEFAULTS.outDir,
-        wpThemeable: input.wpThemeable === true,
+        tokensPath,
+        wpDir,
+        wpThemeable: wpThemeable === true,
         tokens,
         baseStyles: input.baseStyles,
     };

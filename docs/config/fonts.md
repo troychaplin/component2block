@@ -4,25 +4,27 @@ This guide covers how to configure web fonts in `c2b.config.json`, including sta
 
 ## Font Configuration
 
-Fonts are defined in the `fontFamily` category. Each entry can be either an object (with optional `fontFace` declarations) or a string shorthand for CSS-only system stacks.
+Fonts are defined in the `fontFamily` category under `tokens`. Each entry can be either an object (with optional `fontFace` declarations) or a string shorthand.
 
 ```json
 {
-  "fontFamily": {
-    "inter": {
-      "value": "Inter, sans-serif",
-      "fontFace": [
-        { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
-        { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" }
-      ]
-    },
-    "system": "-apple-system, BlinkMacSystemFont, sans-serif"
+  "tokens": {
+    "fontFamily": {
+      "inter": {
+        "value": "Inter, sans-serif",
+        "fontFace": [
+          { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
+          { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" }
+        ]
+      },
+      "system": "-apple-system, BlinkMacSystemFont, sans-serif"
+    }
   }
 }
 ```
 
 - **Object entries** register as WordPress presets and appear in the Site Editor font picker
-- **String shorthand** entries produce a CSS variable only — no WordPress preset, no `@font-face`
+- **String shorthand** entries also register as WordPress presets (with auto-derived `slug` and `name`), but without `@font-face` declarations
 
 ## Static Fonts
 
@@ -30,15 +32,17 @@ Static font files have a fixed weight and style baked in. Add one `fontFace` ent
 
 ```json
 {
-  "fontFamily": {
-    "inter": {
-      "value": "Inter, sans-serif",
-      "fontFace": [
-        { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
-        { "weight": "400", "style": "italic", "src": "inter-400-italic.woff2" },
-        { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" },
-        { "weight": "700", "style": "italic", "src": "inter-700-italic.woff2" }
-      ]
+  "tokens": {
+    "fontFamily": {
+      "inter": {
+        "value": "Inter, sans-serif",
+        "fontFace": [
+          { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
+          { "weight": "400", "style": "italic", "src": "inter-400-italic.woff2" },
+          { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" },
+          { "weight": "700", "style": "italic", "src": "inter-700-italic.woff2" }
+        ]
+      }
     }
   }
 }
@@ -52,12 +56,14 @@ Variable fonts contain multiple weights (and sometimes styles) in a single file.
 
 ```json
 {
-  "fontFamily": {
-    "inter": {
-      "value": "Inter, sans-serif",
-      "fontFace": [
-        { "weight": "100 900", "style": "normal", "src": "inter-variable-normal.woff2" }
-      ]
+  "tokens": {
+    "fontFamily": {
+      "inter": {
+        "value": "Inter, sans-serif",
+        "fontFace": [
+          { "weight": "100 900", "style": "normal", "src": "inter-variable-normal.woff2" }
+        ]
+      }
     }
   }
 }
@@ -87,19 +93,21 @@ Google Fonts offers variable font files for most of its catalog. To use one:
 
 ```json
 {
-  "fontFamily": {
-    "inter": {
-      "value": "Inter, sans-serif",
-      "fontFace": [
-        { "weight": "100 900", "style": "normal", "src": "Inter-VariableFont_wght.woff2" }
-      ]
-    },
-    "playfair": {
-      "value": "Playfair Display, serif",
-      "fontFace": [
-        { "weight": "400 900", "style": "normal", "src": "PlayfairDisplay-VariableFont_wght.woff2" },
-        { "weight": "400 900", "style": "italic", "src": "PlayfairDisplay-Italic-VariableFont_wght.woff2" }
-      ]
+  "tokens": {
+    "fontFamily": {
+      "inter": {
+        "value": "Inter, sans-serif",
+        "fontFace": [
+          { "weight": "100 900", "style": "normal", "src": "Inter-VariableFont_wght.woff2" }
+        ]
+      },
+      "playfair": {
+        "value": "Playfair Display, serif",
+        "fontFace": [
+          { "weight": "400 900", "style": "normal", "src": "PlayfairDisplay-VariableFont_wght.woff2" },
+          { "weight": "400 900", "style": "italic", "src": "PlayfairDisplay-Italic-VariableFont_wght.woff2" }
+        ]
+      }
     }
   }
 }
@@ -113,33 +121,39 @@ For system fonts that don't need `@font-face` declarations, use the string short
 
 ```json
 {
-  "fontFamily": {
-    "system": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    "mono": "'SF Mono', 'Fira Code', 'Fira Mono', monospace"
+  "tokens": {
+    "fontFamily": {
+      "system": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "'SF Mono', 'Fira Code', 'Fira Mono', monospace"
+    }
   }
 }
 ```
 
-String entries are always CSS-only — they produce a CSS variable but no WordPress preset and no `@font-face` output.
+String entries register as WordPress presets (with auto-derived `slug` and `name`) but produce no `@font-face` output.
 
 ## Font Sizes
 
-Font sizes are defined in the `fontSize` category. They support both static values and fluid (responsive) sizing using `clamp()`.
+Font sizes are defined in the `fontSize` category under `tokens`. They support both static values and fluid (responsive) sizing using `clamp()`.
 
 ### Fluid Font Sizes
 
-Fluid entries scale smoothly between a minimum and maximum size based on viewport width. Provide a `fluid` object with `min` and `max`:
+Fluid entries scale smoothly between a minimum and maximum size based on viewport width. Use the shorthand `{ "min": "...", "max": "..." }` directly on the entry:
 
 ```json
 {
-  "fontSize": {
-    "small":   { "fluid": { "min": "0.875rem", "max": "1rem" } },
-    "medium":  { "fluid": { "min": "1rem", "max": "1.125rem" } },
-    "large":   { "fluid": { "min": "1.125rem", "max": "1.25rem" } },
-    "x-large": { "fluid": { "min": "1.25rem", "max": "1.5rem" } }
+  "tokens": {
+    "fontSize": {
+      "small":   { "min": "0.875rem", "max": "1rem" },
+      "medium":  { "min": "1rem", "max": "1.125rem" },
+      "large":   { "min": "1.125rem", "max": "1.25rem" },
+      "x-large": { "min": "1.25rem", "max": "1.5rem" }
+    }
   }
 }
 ```
+
+The old `{ "fluid": { "min": "...", "max": "..." } }` form still works but the shorthand above is preferred.
 
 The generator produces a `clamp()` value matching WordPress's fluid typography formula:
 
@@ -159,8 +173,10 @@ For sizes that shouldn't scale with the viewport, use a plain `value`:
 
 ```json
 {
-  "fontSize": {
-    "fixed": { "value": "1rem" }
+  "tokens": {
+    "fontSize": {
+      "fixed": { "value": "1rem" }
+    }
   }
 }
 ```
@@ -177,8 +193,10 @@ This produces a simple CSS variable with no `clamp()`:
 
 | Property | Required | Description |
 |----------|----------|-------------|
-| `value` | Yes* | The CSS value. *Auto-derived from `fluid.max` for fluid sizes |
-| `fluid` | No | `{ min, max }` for responsive sizing |
+| `value` | Yes* | The CSS value. *Auto-derived from `max` for fluid sizes |
+| `min` | No | Minimum size for fluid responsive sizing (shorthand) |
+| `max` | No | Maximum size for fluid responsive sizing (shorthand) |
+| `fluid` | No | `{ min, max }` for responsive sizing (legacy form, shorthand preferred) |
 | `name` | No | Human-readable label (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
 | `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
@@ -319,7 +337,7 @@ Copy your font files into your WordPress theme at `assets/fonts/{slug}/` to matc
 
 ### fonts.css
 
-Generated when any `fontFamily` entry has a `fontFace` array. Placed in the same directory as `tokensPath`:
+Generated when any `fontFamily` entry has a `fontFace` array. Placed in the same directory as `output.tokensPath`:
 
 ```css
 /* Auto-generated by component2block — do not edit manually */

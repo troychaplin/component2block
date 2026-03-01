@@ -6,7 +6,7 @@ const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
-  outDir: 'dist/wp',
+  wpDir: 'dist/wp',
   tokens: {
     fontFamily: {
       inter: {

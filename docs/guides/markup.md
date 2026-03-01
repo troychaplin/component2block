@@ -171,9 +171,11 @@ The constraint values come from the `layout` tokens in your config:
 
 ```json
 {
-  "layout": {
-    "content-size": "768px",
-    "wide-size": "1280px"
+  "tokens": {
+    "layout": {
+      "contentSize": "768px",
+      "wideSize": "1280px"
+    }
   }
 }
 ```

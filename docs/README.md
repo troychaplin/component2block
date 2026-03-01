@@ -16,43 +16,51 @@ Create `c2b.config.json` in your project root. The `prefix` field is the only re
 {
   "prefix": "mylib",
 
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "secondary": { "value": "#23282d" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true }
+  "output": {
+    "tokensPath": "src/styles/tokens.css",
+    "wpDir": "dist/wp",
+    "wpThemeable": false
   },
 
-  "spacing": {
-    "sm": { "value": "0.5rem", "slug": "30", "name": "Small" },
-    "md": { "value": "1rem", "slug": "40", "name": "Medium" },
-    "lg": { "value": "1.5rem", "slug": "50", "name": "Large" }
-  },
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "secondary": "#23282d",
+      "primary-hover": { "value": "#005a87", "cssOnly": true }
+    },
 
-  "fontFamily": {
-    "inter": {
-      "value": "Inter, sans-serif",
-      "fontFace": [
-        { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
-        { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" }
-      ]
+    "spacing": {
+      "sm": { "value": "0.5rem", "slug": "30", "name": "Small" },
+      "md": { "value": "1rem", "slug": "40", "name": "Medium" },
+      "lg": { "value": "1.5rem", "slug": "50", "name": "Large" }
+    },
+
+    "fontFamily": {
+      "inter": {
+        "value": "Inter, sans-serif",
+        "fontFace": [
+          { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" },
+          { "weight": "700", "style": "normal", "src": "inter-700-normal.woff2" }
+        ]
+      }
+    },
+
+    "fontSize": {
+      "small": { "min": "0.875rem", "max": "1rem" },
+      "medium": { "min": "1rem", "max": "1.125rem" },
+      "large": { "min": "1.125rem", "max": "1.25rem" }
+    },
+
+    "fontWeight": {
+      "normal": "400",
+      "bold": "700"
+    },
+
+    "radius": {
+      "sm": "2px",
+      "md": "4px",
+      "lg": "8px"
     }
-  },
-
-  "fontSize": {
-    "small": { "fluid": { "min": "0.875rem", "max": "1rem" } },
-    "medium": { "fluid": { "min": "1rem", "max": "1.125rem" } },
-    "large": { "fluid": { "min": "1.125rem", "max": "1.25rem" } }
-  },
-
-  "fontWeight": {
-    "normal": "400",
-    "bold": "700"
-  },
-
-  "radius": {
-    "sm": "2px",
-    "md": "4px",
-    "lg": "8px"
   }
 }
 ```
@@ -97,7 +105,7 @@ export default {
 };
 ```
 
-It injects any of these files that exist in your `tokensPath` directory:
+It injects any of these files that exist in your `output.tokensPath` directory:
 
 | File | Description |
 |------|-------------|

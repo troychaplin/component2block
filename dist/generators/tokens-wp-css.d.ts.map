@@ -1,1 +1,1 @@
-{"version":3,"file":"tokens-wp-css.d.ts","sourceRoot":"","sources":["../../src/generators/tokens-wp-css.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAI7C,wBAAgB,mBAAmB,CAAC,MAAM,EAAE,SAAS,GAAG,MAAM,CAsC7D"}
+{"version":3,"file":"tokens-wp-css.d.ts","sourceRoot":"","sources":["../../src/generators/tokens-wp-css.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAI7C,wBAAgB,mBAAmB,CAAC,MAAM,EAAE,SAAS,GAAG,MAAM,CAwC7D"}

@@ -14,17 +14,29 @@ describe('validateConfig', () => {
     const result = validateConfig(minimalConfig);
     expect(result.prefix).toBe('test');
     expect(result.tokensPath).toBe('src/styles/tokens.css');
-    expect(result.outDir).toBe('dist/wp');
+    expect(result.wpDir).toBe('dist/wp');
   });
 
-  it('applies custom tokensPath and outDir', () => {
+  it('applies custom tokensPath and wpDir via legacy outDir', () => {
     const result = validateConfig({
       ...minimalConfig,
       tokensPath: 'custom/tokens.css',
       outDir: 'build/wp',
     });
     expect(result.tokensPath).toBe('custom/tokens.css');
-    expect(result.outDir).toBe('build/wp');
+    expect(result.wpDir).toBe('build/wp');
+  });
+
+  it('applies custom tokensPath and wpDir via output wrapper', () => {
+    const result = validateConfig({
+      ...minimalConfig,
+      output: {
+        tokensPath: 'custom/tokens.css',
+        wpDir: 'build/wp',
+      },
+    });
+    expect(result.tokensPath).toBe('custom/tokens.css');
+    expect(result.wpDir).toBe('build/wp');
   });
 
   it('throws if prefix is missing', () => {
@@ -128,14 +140,14 @@ describe('validateConfig — auto-derived fields', () => {
   it('does not add slug/name to layout tokens (directMap)', () => {
     const result = validateConfig({
       prefix: 'test',
-      layout: { 'content-size': { value: '768px' } },
+      layout: { contentSize: { value: '768px' } },
     });
-    expect(result.tokens.layout!['content-size'].slug).toBeUndefined();
-    expect(result.tokens.layout!['content-size'].name).toBeUndefined();
+    expect(result.tokens.layout!.contentSize.slug).toBeUndefined();
+    expect(result.tokens.layout!.contentSize.name).toBeUndefined();
   });
 });
 
-describe('validateConfig — string shorthand (CSS-only)', () => {
+describe('validateConfig — string shorthand', () => {
   it('expands string value to { value: string }', () => {
     const result = validateConfig({
       prefix: 'test',
@@ -154,14 +166,14 @@ describe('validateConfig — string shorthand (CSS-only)', () => {
     expect(result.tokens.fontWeight!['semi-bold'].name).toBeUndefined();
   });
 
-  it('produces CSS variable but no preset for string shorthand colors', () => {
+  it('registers string shorthand as preset for preset-capable categories (color)', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { muted: '#999' },
     } as C2bConfigInput);
     expect(result.tokens.colorPalette!.muted.value).toBe('#999');
-    expect(result.tokens.colorPalette!.muted.slug).toBeUndefined();
-    expect(result.tokens.colorPalette!.muted.name).toBeUndefined();
+    expect(result.tokens.colorPalette!.muted.slug).toBe('muted');
+    expect(result.tokens.colorPalette!.muted.name).toBe('Muted');
   });
 
   it('auto-derives slug/name on object entries', () => {
@@ -253,8 +265,9 @@ describe('validateConfig — cssOnly flag', () => {
     expect(result.tokens.colorPalette!.primary.slug).toBe('primary');
     // Object with cssOnly — CSS-only
     expect(result.tokens.colorPalette!['primary-hover'].slug).toBeUndefined();
-    // String shorthand — CSS-only
-    expect(result.tokens.colorPalette!.border.slug).toBeUndefined();
+    // String shorthand on preset-capable category — registers as preset
+    expect(result.tokens.colorPalette!.border.slug).toBe('border');
+    expect(result.tokens.colorPalette!.border.name).toBe('Border');
   });
 });
 
@@ -288,5 +301,150 @@ describe('validateConfig — baseStyles', () => {
       color: { primary: { value: '#000' } },
     } as C2bConfigInput);
     expect(result.baseStyles).toBeUndefined();
+  });
+});
+
+describe('validateConfig — output wrapper format', () => {
+  it('reads wpThemeable from output wrapper', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      output: { wpThemeable: true },
+    });
+    expect(result.wpThemeable).toBe(true);
+  });
+
+  it('output wrapper takes precedence over legacy root-level keys', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      tokensPath: 'legacy/tokens.css',
+      outDir: 'legacy/wp',
+      wpThemeable: false,
+      output: {
+        tokensPath: 'new/tokens.css',
+        wpDir: 'new/wp',
+        wpThemeable: true,
+      },
+    });
+    expect(result.tokensPath).toBe('new/tokens.css');
+    expect(result.wpDir).toBe('new/wp');
+    expect(result.wpThemeable).toBe(true);
+  });
+});
+
+describe('validateConfig — tokens wrapper format', () => {
+  it('reads token categories from tokens wrapper', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: {
+        color: { primary: { value: '#0073aa' } },
+        fontWeight: { bold: { value: '700' } },
+      },
+    });
+    expect(result.tokens.colorPalette).toBeDefined();
+    expect(result.tokens.colorPalette!.primary.value).toBe('#0073aa');
+    expect(result.tokens.fontWeight).toBeDefined();
+    expect(result.tokens.fontWeight!.bold.value).toBe('700');
+  });
+
+  it('maps color and gradient aliases inside tokens wrapper', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: {
+        color: { primary: { value: '#0073aa' } },
+        gradient: { sunset: { value: 'linear-gradient(135deg, #ff6b6b, #feca57)' } },
+      },
+    });
+    expect(result.tokens.colorPalette).toBeDefined();
+    expect(result.tokens.colorGradient).toBeDefined();
+  });
+
+  it('throws on unknown category inside tokens wrapper', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: {
+          bogus: { x: { value: '1' } },
+        },
+      }),
+    ).toThrow('Unknown token category');
+  });
+});
+
+describe('validateConfig — fluid fontSize shorthand', () => {
+  it('expands { min, max } shorthand to { value, fluid }', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      fontSize: {
+        small: { min: '0.875rem', max: '1rem' },
+      },
+    } as C2bConfigInput);
+    expect(result.tokens.fontSize!.small.value).toBe('1rem');
+    expect(result.tokens.fontSize!.small.fluid).toEqual({ min: '0.875rem', max: '1rem' });
+  });
+});
+
+describe('validateConfig — string shorthand preset registration', () => {
+  it('registers string shorthand as preset for spacing (preset-capable)', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      spacing: { small: '0.5rem', large: '2rem' },
+    } as C2bConfigInput);
+    expect(result.tokens.spacing!.small.value).toBe('0.5rem');
+    expect(result.tokens.spacing!.small.slug).toBe('small');
+    expect(result.tokens.spacing!.small.name).toBe('Small');
+  });
+
+  it('does NOT register string shorthand as preset for fontWeight (custom-only)', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      fontWeight: { bold: '700' },
+    } as C2bConfigInput);
+    expect(result.tokens.fontWeight!.bold.value).toBe('700');
+    expect(result.tokens.fontWeight!.bold.slug).toBeUndefined();
+    expect(result.tokens.fontWeight!.bold.name).toBeUndefined();
+  });
+
+  it('does NOT register string shorthand as preset for lineHeight (custom-only)', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      lineHeight: { normal: '1.5' },
+    } as C2bConfigInput);
+    expect(result.tokens.lineHeight!.normal.value).toBe('1.5');
+    expect(result.tokens.lineHeight!.normal.slug).toBeUndefined();
+    expect(result.tokens.lineHeight!.normal.name).toBeUndefined();
+  });
+
+  it('registers string shorthand as preset for gradient (preset-capable)', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      gradient: { sunset: 'linear-gradient(135deg, #ff6b6b, #feca57)' },
+    } as C2bConfigInput);
+    expect(result.tokens.colorGradient!.sunset.slug).toBe('sunset');
+    expect(result.tokens.colorGradient!.sunset.name).toBe('Sunset');
+  });
+});
+
+describe('validateConfig — layout camelCase keys', () => {
+  it('accepts camelCase layout keys', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      layout: {
+        contentSize: { value: '768px' },
+        wideSize: { value: '1200px' },
+      },
+    });
+    expect(result.tokens.layout!.contentSize.value).toBe('768px');
+    expect(result.tokens.layout!.wideSize.value).toBe('1200px');
+  });
+
+  it('does not add slug/name to camelCase layout tokens', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      layout: { contentSize: { value: '768px' } },
+    });
+    expect(result.tokens.layout!.contentSize.slug).toBeUndefined();
+    expect(result.tokens.layout!.contentSize.name).toBeUndefined();
   });
 });

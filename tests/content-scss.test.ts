@@ -5,7 +5,7 @@ import type { C2bConfig } from '../src/types.js';
 const config: C2bConfig = {
   prefix: 'design-system',
   tokensPath: 'src/styles/tokens.css',
-  outDir: 'dist/wp',
+  wpDir: 'dist/wp',
   wpThemeable: false,
   tokens: {
     fontFamily: {
@@ -118,7 +118,7 @@ describe('generateContentScss — spacing padding', () => {
   const spacingConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       spacing: {
@@ -231,7 +231,7 @@ describe('generateContentScss — spacing blockGap', () => {
   const blockGapConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       spacing: {
@@ -331,12 +331,12 @@ describe('generateContentScss — layout constraints', () => {
   const layoutConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       layout: {
-        'content-size': { value: '768px' },
-        'wide-size': { value: '1280px' },
+        contentSize: { value: '768px' },
+        wideSize: { value: '1280px' },
       },
     },
     baseStyles: {
@@ -370,7 +370,7 @@ describe('generateContentScss — layout constraints', () => {
     const contentOnlyConfig: C2bConfig = {
       ...layoutConfig,
       tokens: {
-        layout: { 'content-size': { value: '768px' } },
+        layout: { contentSize: { value: '768px' } },
       },
     };
     const result = generateContentScss(contentOnlyConfig)!;
@@ -382,7 +382,7 @@ describe('generateContentScss — layout constraints', () => {
     const wideOnlyConfig: C2bConfig = {
       ...layoutConfig,
       tokens: {
-        layout: { 'wide-size': { value: '1280px' } },
+        layout: { wideSize: { value: '1280px' } },
       },
     };
     const result = generateContentScss(wideOnlyConfig)!;
@@ -414,8 +414,8 @@ describe('generateContentScss — layout constraints', () => {
       ...layoutConfig,
       tokens: {
         layout: {
-          'content-size': { value: '768px' },
-          'wide-size': { value: '1280px' },
+          contentSize: { value: '768px' },
+          wideSize: { value: '1280px' },
         },
         spacing: {
           medium: { value: '1rem', slug: '50', name: 'Medium' },
@@ -443,7 +443,7 @@ describe('generateContentScss — baseStyles color', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       colorPalette: {
@@ -557,7 +557,7 @@ describe('generateContentScss — button element', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       colorPalette: {
@@ -608,7 +608,7 @@ describe('generateContentScss — link element', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       colorPalette: {

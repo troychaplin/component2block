@@ -4,16 +4,20 @@ This guide covers how to configure box-shadow tokens in `c2b.config.json`, inclu
 
 ## Shadow Configuration
 
-Shadows are defined in the `shadow` category. Each entry produces a CSS custom property and can optionally register as a WordPress shadow preset.
+Shadows are defined in the `shadow` category under `tokens`. Each entry produces a CSS custom property and can optionally register as a WordPress shadow preset.
+
+String shorthand registers as a preset with auto-derived `slug` and `name`:
 
 ```json
 {
-  "shadow": {
-    "natural":  { "value": "6px 6px 9px rgba(0, 0, 0, 0.2)" },
-    "deep":     { "value": "12px 12px 50px rgba(0, 0, 0, 0.4)" },
-    "sharp":    { "value": "6px 6px 0px rgba(0, 0, 0, 0.2)" },
-    "outlined": { "value": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)" },
-    "crisp":    { "value": "6px 6px 0px rgb(0, 0, 0)" }
+  "tokens": {
+    "shadow": {
+      "natural":  "6px 6px 9px rgba(0, 0, 0, 0.2)",
+      "deep":     "12px 12px 50px rgba(0, 0, 0, 0.4)",
+      "sharp":    "6px 6px 0px rgba(0, 0, 0, 0.2)",
+      "outlined": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)",
+      "crisp":    "6px 6px 0px rgb(0, 0, 0)"
+    }
   }
 }
 ```
@@ -29,10 +33,12 @@ Since `name` and `slug` are auto-derived from the key by default, all shadow tok
 
 ```json
 {
-  "shadow": {
-    "natural": { "value": "6px 6px 9px rgba(0, 0, 0, 0.2)" },
-    "deep":    { "value": "12px 12px 50px rgba(0, 0, 0, 0.4)" },
-    "inner":   { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true }
+  "tokens": {
+    "shadow": {
+      "natural": "6px 6px 9px rgba(0, 0, 0, 0.2)",
+      "deep":    "12px 12px 50px rgba(0, 0, 0, 0.4)",
+      "inner":   { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true }
+    }
   }
 }
 ```
@@ -54,12 +60,12 @@ The `value` field accepts any valid CSS `box-shadow` syntax, including multiple 
 
 ```json
 {
-  "shadow": {
-    "soft":     { "value": "0 2px 8px rgba(0, 0, 0, 0.1)" },
-    "elevated": { "value": "0 4px 16px rgba(0, 0, 0, 0.12)" },
-    "inset":    { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true },
-    "outlined": {
-      "value": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)"
+  "tokens": {
+    "shadow": {
+      "soft":     "0 2px 8px rgba(0, 0, 0, 0.1)",
+      "elevated": "0 4px 16px rgba(0, 0, 0, 0.12)",
+      "inset":    { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true },
+      "outlined": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)"
     }
   }
 }
@@ -86,7 +92,7 @@ Every shadow token becomes a CSS custom property:
 
 ### tokens.wp.css
 
-Only generated when `wpThemeable: true`. Named tokens map to WordPress preset variables; CSS-only tokens stay hardcoded:
+Only generated when `output.wpThemeable: true`. Preset tokens map to WordPress preset variables; CSS-only tokens stay hardcoded:
 
 ```css
 :root {
@@ -157,10 +163,12 @@ The variable pattern is `--{prefix}--shadow-{key}`.
 
 ```json
 {
-  "shadow": {
-    "natural":  { "value": "6px 6px 9px rgba(0, 0, 0, 0.2)" },
-    "elevated": { "value": "0 4px 16px rgba(0, 0, 0, 0.12)" },
-    "deep":     { "value": "12px 12px 50px rgba(0, 0, 0, 0.4)" }
+  "tokens": {
+    "shadow": {
+      "natural":  "6px 6px 9px rgba(0, 0, 0, 0.2)",
+      "elevated": "0 4px 16px rgba(0, 0, 0, 0.12)",
+      "deep":     "12px 12px 50px rgba(0, 0, 0, 0.4)"
+    }
   }
 }
 ```
@@ -169,11 +177,13 @@ The variable pattern is `--{prefix}--shadow-{key}`.
 
 ```json
 {
-  "shadow": {
-    "natural":    { "value": "6px 6px 9px rgba(0, 0, 0, 0.2)" },
-    "deep":       { "value": "12px 12px 50px rgba(0, 0, 0, 0.4)" },
-    "focus-ring": { "value": "0 0 0 3px rgba(0, 115, 170, 0.4)", "cssOnly": true },
-    "inset":      { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true }
+  "tokens": {
+    "shadow": {
+      "natural":    "6px 6px 9px rgba(0, 0, 0, 0.2)",
+      "deep":       "12px 12px 50px rgba(0, 0, 0, 0.4)",
+      "focus-ring": { "value": "0 0 0 3px rgba(0, 115, 170, 0.4)", "cssOnly": true },
+      "inset":      { "value": "inset 0 2px 4px rgba(0, 0, 0, 0.1)", "cssOnly": true }
+    }
   }
 }
 ```

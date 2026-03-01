@@ -8,8 +8,12 @@ const STYLES_DIR = join(TEST_DIR, 'src/styles');
 
 const minimalConfig = {
   prefix: 'test',
-  tokensPath: 'src/styles/tokens.css',
-  color: { primary: { value: '#000', name: 'Primary' } },
+  output: {
+    tokensPath: 'src/styles/tokens.css',
+  },
+  tokens: {
+    color: { primary: { value: '#000', name: 'Primary' } },
+  },
 };
 
 describe('preset: previewAnnotations — partial files', () => {
