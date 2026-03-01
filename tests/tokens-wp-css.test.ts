@@ -6,7 +6,7 @@ const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
-  outDir: 'dist/wp',
+  wpDir: 'dist/wp',
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -90,7 +90,7 @@ describe('generateTokensWpCss — shadow presets', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     tokens: {
       shadow: {
         sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
@@ -117,11 +117,11 @@ describe('generateTokensWpCss — layout tokens', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     tokens: {
       layout: {
-        'content-size': { value: '645px' },
-        'wide-size': { value: '1340px' },
+        contentSize: { value: '645px' },
+        wideSize: { value: '1340px' },
       },
     },
   };
@@ -139,7 +139,7 @@ describe('generateTokensWpCss — fluid font size fallbacks', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     tokens: {
       fontSize: {
         medium: {

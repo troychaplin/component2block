@@ -36,6 +36,8 @@ export function generateContentScss(config) {
     if (hasBlockGap) {
         appendBlockGapRules(lines, prefix);
     }
+    // Layout constraint rules (contentSize / wideSize)
+    appendLayoutConstraintRules(lines, prefix, tokens);
     // Global padding + alignfull rules
     if (hasSpacingPadding) {
         lines.push('');
@@ -173,5 +175,33 @@ function appendBlockGapRules(lines, prefix) {
     lines.push(`:where(.is-layout-grid) {`);
     lines.push(`  gap: var(--${prefix}--root-block-gap);`);
     lines.push('}');
+}
+/**
+ * Append layout constraint rules that mirror WordPress constrained layout behavior.
+ * Default children are constrained to contentSize, .alignwide overrides to wideSize.
+ * Uses the same selectors and !important as WordPress for identical behavior.
+ */
+function appendLayoutConstraintRules(lines, prefix, tokens) {
+    const layoutTokens = tokens.layout;
+    if (!layoutTokens)
+        return;
+    const hasContentSize = 'contentSize' in layoutTokens;
+    const hasWideSize = 'wideSize' in layoutTokens;
+    if (hasContentSize) {
+        lines.push('');
+        lines.push(`.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {`);
+        lines.push(`  max-width: var(--${prefix}--layout-content-size);`);
+        lines.push(`  margin-left: auto !important;`);
+        lines.push(`  margin-right: auto !important;`);
+        lines.push('}');
+    }
+    if (hasWideSize) {
+        lines.push('');
+        lines.push(`.is-layout-constrained > .alignwide {`);
+        lines.push(`  max-width: var(--${prefix}--layout-wide-size);`);
+        lines.push(`  margin-left: auto !important;`);
+        lines.push(`  margin-right: auto !important;`);
+        lines.push('}');
+    }
 }
 //# sourceMappingURL=content-scss.js.map

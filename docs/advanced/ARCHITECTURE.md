@@ -12,7 +12,7 @@ Design decisions, project structure, and internals of the `component2block` pack
 - **Zero-specificity content styles** — `:where()` selectors ensure component BEM classes always win over base typography
 - **Two-layer content approach** — Generated `_content-generated.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
 - **No default preset flags** — The generator never sets `defaultPalette`, `defaultGradients`, etc. — that's the theme's responsibility
-- **Locked mode enforcement** — When `wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
+- **Locked mode enforcement** — When `output.wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
 
 ## Project Structure
 
@@ -122,10 +122,11 @@ See [Token Flow](./token-flow.md) for the full resolution walkthrough.
 
 ## Token Entry Types
 
-- **Object with name/slug** — Registers as a WordPress preset (visible in Site Editor)
-- **String shorthand** (`"bold": "700"`) — CSS variable only, no preset
+- **String shorthand in preset categories** (`"primary": "#0073aa"`) — Registers as a WordPress preset (visible in Site Editor)
+- **Object with name/slug** — Registers as a WordPress preset with explicit overrides
 - **Object with `cssOnly: true`** — CSS variable only, keeps object format
-- **Fluid** (`{ fluid: { min, max } }`) — Generates `clamp()` values
+- **String shorthand in custom categories** (`"bold": "700"`) — CSS variable only, no preset
+- **Fluid shorthand** (`{ "min": "...", "max": "..." }`) — Generates `clamp()` values (also supports nested `{ fluid: { min, max } }`)
 
 ## Testing
 

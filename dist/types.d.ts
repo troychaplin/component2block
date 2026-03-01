@@ -45,6 +45,14 @@ export interface TokenEntry {
     };
     fontFace?: FontFaceEntry[];
 }
+/**
+ * Fluid fontSize shorthand as written by user.
+ * { "min": "0.875rem", "max": "1rem" } expands to { value: "1rem", fluid: { min, max } }.
+ */
+export interface FluidInput {
+    min: string;
+    max: string;
+}
 export type TokenGroup = Record<string, TokenEntry>;
 /**
  * Defines how a token category maps to CSS variables,
@@ -96,32 +104,49 @@ export declare const CATEGORY_ORDER: TokenCategory[];
 export interface C2bConfig {
     prefix: string;
     tokensPath: string;
-    outDir: string;
+    wpDir: string;
     wpThemeable: boolean;
     tokens: Partial<Record<TokenCategory, TokenGroup>>;
     baseStyles?: BaseStylesConfig;
 }
+/** Output configuration group */
+export interface OutputConfig {
+    tokensPath?: string;
+    wpDir?: string;
+    wpThemeable?: boolean;
+}
 /**
  * Token entry as written by user — can be a string (shorthand) or full object.
- * String "value" expands to { value: "value" }.
+ * String shorthand behavior depends on the category:
+ * - Preset categories (color, gradient, shadow, fontFamily, fontSize): registers as preset
+ * - Custom-only categories (fontWeight, radius): CSS-only
+ * - Excluded categories (zIndex): CSS-only
  */
-export type TokenEntryInput = string | TokenEntry;
-/** Token group as written by user — supports string shorthand for values */
+export type TokenEntryInput = string | FluidInput | TokenEntry;
+/** Token group as written by user — supports string and fluid shorthand */
 export type TokenGroupInput = Record<string, TokenEntryInput>;
 /**
  * Config as written by the user:
- * - Categories at top level (no "tokens" wrapper)
+ * - Token categories under a "tokens" wrapper
+ * - Output settings under an "output" wrapper
  * - "color" maps to colorPalette, "gradient" maps to colorGradient
- * - Token values can be strings (shorthand) or full objects
+ * - Token values can be strings (shorthand), fluid shorthand, or full objects
  * - slug is auto-derived from key, name is auto-derived from key (title-case)
+ * - String shorthand registers as preset for preset-capable categories
  */
 export interface C2bConfigInput {
     prefix: string;
-    tokensPath?: string;
-    outDir?: string;
-    wpThemeable?: boolean;
+    output?: OutputConfig;
+    tokens?: Record<string, TokenGroupInput>;
     baseStyles?: BaseStylesConfig;
-    [category: string]: string | boolean | BaseStylesConfig | TokenGroupInput | undefined;
+    /** @deprecated Use output.tokensPath */
+    tokensPath?: string;
+    /** @deprecated Use output.wpDir */
+    outDir?: string;
+    /** @deprecated Use output.wpThemeable */
+    wpThemeable?: boolean;
+    /** @deprecated Use tokens wrapper */
+    [category: string]: string | boolean | OutputConfig | BaseStylesConfig | TokenGroupInput | undefined;
 }
 /**
  * Convert a kebab-case key to camelCase.

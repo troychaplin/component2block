@@ -231,8 +231,8 @@ function appendLayoutConstraintRules(
   const layoutTokens = tokens.layout;
   if (!layoutTokens) return;
 
-  const hasContentSize = 'content-size' in layoutTokens;
-  const hasWideSize = 'wide-size' in layoutTokens;
+  const hasContentSize = 'contentSize' in layoutTokens;
+  const hasWideSize = 'wideSize' in layoutTokens;
 
   if (hasContentSize) {
     lines.push('');

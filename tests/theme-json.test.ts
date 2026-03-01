@@ -6,7 +6,7 @@ const config: C2bConfig = {
   prefix: 'test',
   tokensPath: 'src/styles/tokens.css',
 
-  outDir: 'dist/wp',
+  wpDir: 'dist/wp',
   wpThemeable: false,
   tokens: {
     colorPalette: {
@@ -124,12 +124,12 @@ describe('generateThemeJson — layout tokens', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       layout: {
-        'content-size': { value: '645px' },
-        'wide-size': { value: '1340px' },
+        contentSize: { value: '645px' },
+        wideSize: { value: '1340px' },
       },
     },
   };
@@ -150,7 +150,7 @@ describe('generateThemeJson — shadow presets', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       shadow: {
@@ -192,7 +192,7 @@ describe('generateThemeJson — fluid font sizes', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       fontSize: {
@@ -222,7 +222,7 @@ describe('generateThemeJson — typography flags', () => {
       prefix: 'test',
       tokensPath: 'src/styles/tokens.css',
     
-      outDir: 'dist/wp',
+      wpDir: 'dist/wp',
       wpThemeable: false,
       tokens: {
         fontSize: {
@@ -239,7 +239,7 @@ describe('generateThemeJson — typography flags', () => {
       prefix: 'test',
       tokensPath: 'src/styles/tokens.css',
     
-      outDir: 'dist/wp',
+      wpDir: 'dist/wp',
       wpThemeable: false,
       tokens: {
         fontFamily: {
@@ -257,7 +257,7 @@ describe('generateThemeJson — WordPress default preset flags', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
 
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
   };
 
   it('never sets default preset flags (theme responsibility, not library)', () => {
@@ -296,7 +296,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   const baseConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
   };
 
   it('disables custom color, duotone, and gradient when wpThemeable is false', () => {
@@ -371,7 +371,7 @@ describe('generateThemeJson — fontFace', () => {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
   
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       fontFamily: {
@@ -417,7 +417,7 @@ describe('generateThemeJson — baseStyles', () => {
   const baseStylesConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       fontFamily: {
@@ -490,7 +490,7 @@ describe('generateThemeJson — baseStyles spacing', () => {
   const spacingConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       spacing: {
@@ -564,7 +564,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
   const baseConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       spacing: {
@@ -629,7 +629,7 @@ describe('generateThemeJson — baseStyles color', () => {
   const colorConfig: C2bConfig = {
     prefix: 'test',
     tokensPath: 'src/styles/tokens.css',
-    outDir: 'dist/wp',
+    wpDir: 'dist/wp',
     wpThemeable: false,
     tokens: {
       colorPalette: {

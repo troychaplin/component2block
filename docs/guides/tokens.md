@@ -4,15 +4,32 @@ Every token produces a CSS custom property. The format you choose determines whe
 
 ## Token Syntax
 
-### Object Syntax — Preset Registration (default)
+### String Shorthand — Preset Registration (default for preset categories)
 
-Object entries register as WordPress presets. The `slug` and `name` are auto-derived from the key:
+For preset categories (`color`, `gradient`, `shadow`, `fontFamily`, `fontSize`), a string value registers as a WordPress preset. The `slug` and `name` are auto-derived from the key:
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary Brand Color" },
-    "secondary": { "value": "#23282d" }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "secondary": "#23282d"
+    }
+  }
+}
+```
+
+### Object Syntax — Preset with Overrides
+
+Use object syntax when you need to override `slug`, `name`, or add other properties:
+
+```json
+{
+  "tokens": {
+    "color": {
+      "primary": { "value": "#0073aa", "name": "Primary Brand Color" },
+      "secondary": { "value": "#23282d" }
+    }
   }
 }
 ```
@@ -21,39 +38,47 @@ Object entries register as WordPress presets. The `slug` and `name` are auto-der
 
 Tokens that should produce a CSS variable but **not** appear in the Site Editor:
 
-**Explicit flag** — `cssOnly: true` on an object entry. Best for preset categories where some tokens are implementation details:
+**Explicit flag** — `cssOnly: true` on an object entry. Required for preset categories where some tokens are implementation details:
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "primary-hover": { "value": "#005a87", "cssOnly": true }
+    }
   }
 }
 ```
 
-**String shorthand** — a string value is always CSS-only. Best for categories that are entirely CSS-only:
+**String shorthand in custom categories** — For non-preset categories (`fontWeight`, `lineHeight`, `radius`, `transition`, `zIndex`), string values are always CSS-only (these categories never produce WordPress presets):
 
 ```json
 {
-  "fontWeight": {
-    "normal": "400",
-    "bold": "700"
+  "tokens": {
+    "fontWeight": {
+      "normal": "400",
+      "bold": "700"
+    }
   }
 }
 ```
 
 ### Fluid Font Sizes
 
-Fluid font sizes generate responsive `clamp()` values. The `value` is auto-derived from `fluid.max` if not provided:
+Fluid font sizes generate responsive `clamp()` values. Use the shorthand `{ "min": "...", "max": "..." }` directly:
 
 ```json
 {
-  "fontSize": {
-    "small": { "fluid": { "min": "0.875rem", "max": "1rem" } }
+  "tokens": {
+    "fontSize": {
+      "small": { "min": "0.875rem", "max": "1rem" }
+    }
   }
 }
 ```
+
+The nested `{ "fluid": { "min", "max" } }` syntax is also supported for backward compatibility.
 
 ## Token Properties
 
@@ -77,8 +102,10 @@ Override when needed:
 
 ```json
 {
-  "spacing": {
-    "md": { "value": "1rem", "slug": "40", "name": "Medium" }
+  "tokens": {
+    "spacing": {
+      "md": { "value": "1rem", "slug": "40", "name": "Medium" }
+    }
   }
 }
 ```
@@ -137,7 +164,7 @@ Every token becomes a CSS custom property with static values:
 
 ### tokens.wp.css — WordPress Preset Mapping
 
-Only generated when `wpThemeable: true`. Object entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
+Only generated when `output.wpThemeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
 
 ```css
 :root {
@@ -189,21 +216,23 @@ To add a new token, add it to the appropriate category and run the generator. Th
 
 ## Recommended Patterns
 
-Use `cssOnly` for colors and other preset categories where some tokens are implementation details (hover states, borders). Use string shorthand for categories that are entirely CSS-only (`fontWeight`, `lineHeight`, `radius`, `transition`, `zIndex`):
+Use string shorthand for preset categories — it registers as a preset automatically. Use `cssOnly` for tokens that should be CSS variables only (hover states, borders). Use string shorthand for custom categories (`fontWeight`, `lineHeight`, `radius`, `transition`, `zIndex`) — they are always CSS-only:
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true },
-    "secondary": { "value": "#23282d" },
-    "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
-  },
-  "fontWeight": {
-    "normal": "400",
-    "bold": "700"
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "primary-hover": { "value": "#005a87", "cssOnly": true },
+      "secondary": "#23282d",
+      "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
+    },
+    "fontWeight": {
+      "normal": "400",
+      "bold": "700"
+    }
   }
 }
 ```
 
-Here, `primary` and `secondary` appear in the Site Editor palette. `primary-hover` and `secondary-hover` are CSS variables only — they won't clutter the editor UI.
+Here, `primary` and `secondary` appear in the Site Editor palette (string shorthand = preset for preset categories). `primary-hover` and `secondary-hover` are CSS variables only — they won't clutter the editor UI.

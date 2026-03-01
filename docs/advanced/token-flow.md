@@ -9,8 +9,10 @@ Given this config entry:
 ```json
 {
   "prefix": "mylib",
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa"
+    }
   }
 }
 ```
@@ -123,15 +125,17 @@ The base styles config uses context to determine the preferred category — font
 
 ## CSS-Only Token Flow
 
-CSS-only tokens (string shorthand or `cssOnly: true`) follow a simpler path:
+CSS-only tokens (`cssOnly: true` flag, or string shorthand in custom categories) follow a simpler path:
 
 ```json
 {
-  "color": {
-    "primary-hover": { "value": "#005a87", "cssOnly": true }
-  },
-  "fontWeight": {
-    "bold": "700"
+  "tokens": {
+    "color": {
+      "primary-hover": { "value": "#005a87", "cssOnly": true }
+    },
+    "fontWeight": {
+      "bold": "700"
+    }
   }
 }
 ```
@@ -146,12 +150,14 @@ CSS-only tokens never map to `--wp--preset--*` variables, even in themeable mode
 
 ## Fluid Font Size Flow
 
-Fluid font sizes generate `clamp()` values:
+Fluid font sizes generate `clamp()` values. Use the shorthand `{ "min", "max" }` directly:
 
 ```json
 {
-  "fontSize": {
-    "small": { "fluid": { "min": "0.875rem", "max": "1rem" } }
+  "tokens": {
+    "fontSize": {
+      "small": { "min": "0.875rem", "max": "1rem" }
+    }
   }
 }
 ```
@@ -170,8 +176,10 @@ Categories without native WordPress preset support go under `settings.custom`:
 
 ```json
 {
-  "fontWeight": { "bold": "700" },
-  "radius": { "lg": "8px" }
+  "tokens": {
+    "fontWeight": { "bold": "700" },
+    "radius": { "lg": "8px" }
+  }
 }
 ```
 

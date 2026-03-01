@@ -6,23 +6,27 @@ import { generate } from '../src/index.js';
 const TEST_DIR = resolve(import.meta.dirname ?? '.', '__test-output__');
 const CONFIG_PATH = resolve(TEST_DIR, 'c2b.config.json');
 
-// New simplified config format: no "tokens" wrapper, auto-derived slug/name
+// New config format: tokens wrapper + output wrapper, auto-derived slug/name
 const testConfig = {
   prefix: 'inttest',
-  tokensPath: 'src/tokens.css',
-  outDir: 'out/wp',
-  color: {
-    primary: { value: '#ff0000', name: 'Primary' },
-    muted: '#999999',
+  output: {
+    tokensPath: 'src/tokens.css',
+    wpDir: 'out/wp',
   },
-  spacing: {
-    md: { value: '1rem', slug: '40', name: 'Medium' },
-  },
-  fontWeight: {
-    bold: '700',
-  },
-  zIndex: {
-    modal: '300',
+  tokens: {
+    color: {
+      primary: { value: '#ff0000', name: 'Primary' },
+      muted: '#999999',
+    },
+    spacing: {
+      md: { value: '1rem', slug: '40', name: 'Medium' },
+    },
+    fontWeight: {
+      bold: '700',
+    },
+    zIndex: {
+      modal: '300',
+    },
   },
 };
 
@@ -63,9 +67,10 @@ describe('integration: generate() — default (locked)', () => {
     const parsed = JSON.parse(content);
 
     expect(parsed.version).toBe(3);
-    // Only "primary" (object entry) appears in palette — "muted" is string shorthand
+    // Both "primary" (object entry) and "muted" (string shorthand in preset category) appear in palette
     expect(parsed.settings.color.palette).toEqual([
       { slug: 'primary', color: '#ff0000', name: 'Primary' },
+      { slug: 'muted', color: '#999999', name: 'Muted' },
     ]);
     expect(parsed.settings.custom.fontWeight).toEqual({ bold: '700' });
     expect(parsed.settings.custom).not.toHaveProperty('zIndex');
@@ -89,12 +94,15 @@ describe('integration: generate() — baseStyles', () => {
 
   const baseStylesConfig = {
     ...testConfig,
-    fontFamily: {
-      inter: { value: 'Inter, sans-serif', name: 'Inter' },
-    },
-    fontSize: {
-      medium: { value: '1.125rem', name: 'Medium' },
-      small: { value: '1rem', name: 'Small' },
+    tokens: {
+      ...testConfig.tokens,
+      fontFamily: {
+        inter: { value: 'Inter, sans-serif', name: 'Inter' },
+      },
+      fontSize: {
+        medium: { value: '1.125rem', name: 'Medium' },
+        small: { value: '1rem', name: 'Small' },
+      },
     },
     baseStyles: {
       body: {
@@ -172,6 +180,7 @@ describe('integration: generate() — baseStyles', () => {
     expect(parsed.settings).toBeDefined();
     expect(parsed.settings.color.palette).toEqual([
       { slug: 'primary', color: '#ff0000', name: 'Primary' },
+      { slug: 'muted', color: '#999999', name: 'Muted' },
     ]);
   });
 });
@@ -182,11 +191,14 @@ describe('integration: generate() — baseStyles spacing', () => {
 
   const spacingConfig = {
     ...testConfig,
-    fontFamily: {
-      inter: { value: 'Inter, sans-serif', name: 'Inter' },
-    },
-    fontSize: {
-      medium: { value: '1.125rem', name: 'Medium' },
+    tokens: {
+      ...testConfig.tokens,
+      fontFamily: {
+        inter: { value: 'Inter, sans-serif', name: 'Inter' },
+      },
+      fontSize: {
+        medium: { value: '1.125rem', name: 'Medium' },
+      },
     },
     baseStyles: {
       body: {
@@ -208,9 +220,12 @@ describe('integration: generate() — baseStyles spacing', () => {
   // Update spacing to include the "large" token referenced in padding
   const configWithLarge = {
     ...spacingConfig,
-    spacing: {
-      ...testConfig.spacing,
-      large: { value: 'min(2.25rem, 3vw)', slug: '60', name: 'Large' },
+    tokens: {
+      ...spacingConfig.tokens,
+      spacing: {
+        ...testConfig.tokens.spacing,
+        large: { value: 'min(2.25rem, 3vw)', slug: '60', name: 'Large' },
+      },
     },
   };
 
@@ -253,7 +268,10 @@ describe('integration: generate() — wpThemeable', () => {
 
   const wpTestConfig = {
     ...testConfig,
-    wpThemeable: true,
+    output: {
+      ...testConfig.output,
+      wpThemeable: true,
+    },
   };
 
   beforeAll(() => {
@@ -284,9 +302,10 @@ describe('integration: generate() — wpThemeable', () => {
     expect(content).toContain(
       '--inttest--color-primary: var(--wp--preset--color--primary, #ff0000);',
     );
-    // "muted" is string shorthand — CSS-only, no WP preset mapping
-    expect(content).toContain('--inttest--color-muted: #999999;');
-    expect(content).not.toContain('--wp--preset--color--muted');
+    // "muted" is string shorthand in preset category — also gets WP preset mapping
+    expect(content).toContain(
+      '--inttest--color-muted: var(--wp--preset--color--muted, #999999);',
+    );
     // spacing slug is explicitly set to "40"
     expect(content).toContain(
       '--inttest--spacing-md: var(--wp--preset--spacing--40, 1rem);',

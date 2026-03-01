@@ -4,33 +4,39 @@ This guide covers how to configure colors and gradients in `c2b.config.json`, in
 
 ## Colors
 
-Colors are defined in the `color` category. Each entry produces a CSS custom property and — unless marked CSS-only — registers as a WordPress color preset.
+Colors are defined in the `color` category under `tokens`. Each entry produces a CSS custom property and — unless marked CSS-only — registers as a WordPress color preset.
+
+String shorthand registers as a preset with auto-derived `slug` and `name`:
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary Brand Color" },
-    "secondary": { "value": "#23282d" },
-    "success": { "value": "#00a32a" },
-    "error": { "value": "#d63638" }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "secondary": "#23282d",
+      "success": "#00a32a",
+      "error": "#d63638"
+    }
   }
 }
 ```
 
-Object entries appear in the WordPress Site Editor color picker. The `slug` and `name` are auto-derived from the key when not provided:
+Use the object form when you need to override the auto-derived `name`:
+
+```json
+{
+  "tokens": {
+    "color": {
+      "primary": { "value": "#0073aa", "name": "Primary Brand Color" }
+    }
+  }
+}
+```
+
+Both string and object entries (without `cssOnly`) appear in the WordPress Site Editor color picker. The `slug` and `name` are auto-derived from the key when not provided:
 
 - `"primary"` → slug `primary`, name `Primary`
 - `"primary-hover"` → slug `primary-hover`, name `Primary Hover`
-
-Override either when the auto-derived value isn't right:
-
-```json
-{
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary Brand Color" }
-  }
-}
-```
 
 ### CSS-Only Colors
 
@@ -38,11 +44,13 @@ Use the `cssOnly` flag for implementation-detail colors that shouldn't appear in
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true },
-    "secondary": { "value": "#23282d" },
-    "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "primary-hover": { "value": "#005a87", "cssOnly": true },
+      "secondary": "#23282d",
+      "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
+    }
   }
 }
 ```
@@ -64,11 +72,13 @@ The `value` field accepts any valid CSS color syntax:
 
 ```json
 {
-  "color": {
-    "brand":       { "value": "#0073aa" },
-    "overlay":     { "value": "rgba(0, 0, 0, 0.5)", "cssOnly": true },
-    "accent":      { "value": "hsl(210, 100%, 50%)" },
-    "transparent": { "value": "transparent", "cssOnly": true }
+  "tokens": {
+    "color": {
+      "brand":       "#0073aa",
+      "overlay":     { "value": "rgba(0, 0, 0, 0.5)", "cssOnly": true },
+      "accent":      "hsl(210, 100%, 50%)",
+      "transparent": { "value": "transparent", "cssOnly": true }
+    }
   }
 }
 ```
@@ -79,16 +89,16 @@ The value is passed through as-is to both CSS and theme.json — no transformati
 
 ## Gradients
 
-Gradients are defined in the `gradient` category. Each entry produces a CSS custom property and registers as a WordPress gradient preset.
+Gradients are defined in the `gradient` category under `tokens`. Each entry produces a CSS custom property and registers as a WordPress gradient preset.
+
+String shorthand registers as a preset with auto-derived `slug` and `name`:
 
 ```json
 {
-  "gradient": {
-    "sunset": {
-      "value": "linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)"
-    },
-    "ocean": {
-      "value": "linear-gradient(180deg, #667eea 0%, #764ba2 100%)"
+  "tokens": {
+    "gradient": {
+      "sunset": "linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)",
+      "ocean": "linear-gradient(180deg, #667eea 0%, #764ba2 100%)"
     }
   }
 }
@@ -109,13 +119,13 @@ Same pattern as colors — use `cssOnly` for gradients that shouldn't appear in 
 
 ```json
 {
-  "gradient": {
-    "hero": {
-      "value": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-    },
-    "overlay": {
-      "value": "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%)",
-      "cssOnly": true
+  "tokens": {
+    "gradient": {
+      "hero": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "overlay": {
+        "value": "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%)",
+        "cssOnly": true
+      }
     }
   }
 }
@@ -143,7 +153,7 @@ Every color and gradient becomes a CSS custom property with a static value:
 
 ### tokens.wp.css
 
-Only generated when `wpThemeable: true`. Object entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
+Only generated when `output.wpThemeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
 
 ```css
 :root {
@@ -189,7 +199,7 @@ CSS-only tokens like `primary-hover` are excluded from theme.json entirely.
 
 ## Locked vs Themeable Mode
 
-The `wpThemeable` config field controls whether WordPress admins can create custom colors and gradients beyond your defined presets.
+The `output.wpThemeable` config field controls whether WordPress admins can create custom colors and gradients beyond your defined presets.
 
 ### Locked Mode (`wpThemeable: false` — default)
 
@@ -290,12 +300,14 @@ The variable patterns are:
 
 ```json
 {
-  "color": {
-    "primary": { "value": "#0073aa", "name": "Primary" },
-    "primary-hover": { "value": "#005a87", "cssOnly": true },
-    "primary-light": { "value": "#e5f5fa", "cssOnly": true },
-    "secondary": { "value": "#23282d" },
-    "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
+  "tokens": {
+    "color": {
+      "primary": "#0073aa",
+      "primary-hover": { "value": "#005a87", "cssOnly": true },
+      "primary-light": { "value": "#e5f5fa", "cssOnly": true },
+      "secondary": "#23282d",
+      "secondary-hover": { "value": "#1a1e21", "cssOnly": true }
+    }
   }
 }
 ```
@@ -306,13 +318,13 @@ This gives the Site Editor a clean two-color palette while still providing hover
 
 ```json
 {
-  "gradient": {
-    "hero": {
-      "value": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-    },
-    "card-overlay": {
-      "value": "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 100%)",
-      "cssOnly": true
+  "tokens": {
+    "gradient": {
+      "hero": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "card-overlay": {
+        "value": "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 100%)",
+        "cssOnly": true
+      }
     }
   }
 }

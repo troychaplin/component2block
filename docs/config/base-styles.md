@@ -4,14 +4,19 @@ This guide covers the `baseStyles` section of `c2b.config.json`. Base styles def
 
 ## Overview
 
-The `baseStyles` section sits alongside your token categories in the config. It references tokens by key — the generator resolves them to the correct CSS variable format for each output target.
+The `baseStyles` section sits at the top level of the config alongside `prefix`, `output`, and `tokens`. It references tokens by key — the generator resolves them to the correct CSS variable format for each output target.
 
 ```json
 {
   "prefix": "mylib",
-  "color": { "...": "..." },
-  "fontFamily": { "...": "..." },
-  "spacing": { "...": "..." },
+
+  "output": { "...": "..." },
+
+  "tokens": {
+    "color": { "...": "..." },
+    "fontFamily": { "...": "..." },
+    "spacing": { "...": "..." }
+  },
 
   "baseStyles": {
     "body": {
@@ -445,7 +450,7 @@ A heading inside a Card component gets the Card's styles, not the base typograph
 
 ### _content-generated.scss
 
-All base styles are written to `_content-generated.scss` in the `tokensPath` directory. This file is auto-generated and should not be edited manually.
+All base styles are written to `_content-generated.scss` in the `output.tokensPath` directory. This file is auto-generated and should not be edited manually.
 
 ### Two-Layer Content Approach
 
