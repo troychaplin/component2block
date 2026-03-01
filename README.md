@@ -1,3 +1,5 @@
+<img src="docs/images/banner.png" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;">
+
 # component2block
 
 A design token generator for Storybook component libraries that target WordPress block themes. Define your tokens once in a single JSON config, and component2block generates everything both platforms need — CSS variables, `@font-face` declarations, base typography, WordPress `theme.json`, and PHP integration hooks.
