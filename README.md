@@ -150,6 +150,11 @@ npm run build    # Compile TypeScript
 npm test         # Run 191 tests
 ```
 
-## License
+## Screenshots
 
-MIT
+| Before | After |
+|-------|-------------|
+| <img src="docs/images/before-01-styles.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-01-styles.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-02-typography.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-02-typography.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-03-colors.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-03-colors.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-04-template.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-04-template.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
