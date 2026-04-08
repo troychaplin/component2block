@@ -1,0 +1,11 @@
+src/
+tests/
+docs/
+.git/
+.gitignore
+.DS_Store
+CLAUDE.md
+tsconfig.json
+vitest.config.*
+*.tgz
+node_modules/

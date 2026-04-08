@@ -1,5 +1,5 @@
 {
-  "name": "component2block",
+  "name": "@troychaplin79/component2block",
   "version": "0.1.0",
   "description": "Generate WordPress theme.json and CSS token files from a single config for component libraries",
   "type": "module",
@@ -40,7 +40,16 @@
     "theme-json",
     "css-variables"
   ],
+  "author": "Troy Chaplin",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/troychaplin/component2block.git"
+  },
+  "homepage": "https://github.com/troychaplin/component2block",
+  "bugs": {
+    "url": "https://github.com/troychaplin/component2block/issues"
+  },
   "devDependencies": {
     "@types/node": "^25.1.0",
     "typescript": "^5.9.3",
