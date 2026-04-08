@@ -1,5 +1,5 @@
 {
-  "name": "@troychaplin79/component2block",
+  "name": "@troychaplin/component2block",
   "version": "0.1.0",
   "description": "Generate WordPress theme.json and CSS token files from a single config for component libraries",
   "type": "module",
