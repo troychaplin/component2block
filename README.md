@@ -38,6 +38,17 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 - **Storybook preset** — Auto-injects all generated styles into Storybook. No manual imports.
 - **WordPress default layer** — The generated `theme.json` injects at the lowest priority layer, so any theme can override it.
 
+## Getting Started
+
+Scaffold a config file, then generate:
+
+```bash
+npx c2b init       # creates c2b.config.json from the example template
+npx c2b generate   # reads config and generates all output files
+```
+
+Edit `c2b.config.json` to match your project before generating.
+
 ## Quick Example
 
 ```json
@@ -71,9 +82,14 @@ Then in your components:
 ## CLI
 
 ```
-npx c2b generate [options]
+npx c2b <command> [options]
 
-Options:
+Commands:
+  init              Create a c2b.config.json from the example template
+  generate          Read config and generate all output files
+  help              Show this help message
+
+Options (generate):
   --config <path>   Path to config file (default: ./c2b.config.json)
   --dry-run         Output to stdout instead of writing files
 ```
@@ -147,7 +163,7 @@ import {
 ```bash
 npm install
 npm run build    # Compile TypeScript
-npm test         # Run 191 tests
+npm test         # Run 215 tests
 ```
 
 ## Screenshots
