@@ -1,6 +1,6 @@
 {
   "name": "@troychaplin/component2block",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Generate WordPress theme.json and CSS token files from a single config for component libraries",
   "type": "module",
   "bin": {
