@@ -1,0 +1,119 @@
+{
+    "prefix": "design-system",
+
+    "output": {
+        "tokensPath": "src/styles/tokens.css",
+        "wpDir": "dist/c2b",
+        "wpThemeable": false
+    },
+
+    "tokens": {
+        "layout": {
+            "contentSize": "768px",
+            "wideSize": "1280px"
+        },
+
+        "color": {
+            "primary": "#0073aa",
+            "primary-hover": { "value": "#005a87", "cssOnly": true },
+            "secondary": "#23282d",
+            "secondary-hover": { "value": "#1a1e21", "cssOnly": true },
+            "success": "#00a32a",
+            "warning": "#dba617",
+            "error": "#d63638",
+            "info": "#72aee6",
+            "off-white": "#f8f8f8",
+            "text-black": "#191919"
+        },
+
+        "gradient": {
+            "fade-out": {
+                "value": "linear-gradient(135deg,rgb(134,255,223) 0%,rgb(143,51,228) 100%)",
+                "slug": "custom-fade-out"
+            },
+            "fade-in": {
+                "value": "linear-gradient(0deg,rgb(227,7,97) 0%,rgb(0,195,255) 100%)",
+                "slug": "custom-fade-in"
+            }
+        },
+
+        "fontFamily": {
+            "inter": {
+                "value": "Inter, sans-serif",
+                "fontFace": [
+                    { "weight": "400", "style": "normal", "src": "inter-400-normal.woff2" }
+                ]
+            },
+            "system": "-apple-system, BlinkMacSystemFont, sans-serif"
+        },
+
+        "fontSize": {
+            "small":   { "min": "0.875rem", "max": "1rem" },
+            "medium":  { "min": "1rem", "max": "1.125rem" },
+            "large":   { "min": "1.125rem", "max": "1.25rem" },
+            "x-large": { "min": "1.25rem", "max": "1.5rem" }
+        },
+
+        "spacing": {
+            "2x-small": { "value": "0.25rem", "slug": "20" },
+            "x-small":  { "value": "0.5rem",  "slug": "30" },
+            "small":    { "value": "min(0.75rem, 1vw)",  "slug": "40" },
+            "medium":   { "value": "min(1.5rem, 2vw)",   "slug": "50" },
+            "large":    { "value": "min(2.25rem, 3vw)",   "slug": "60" },
+            "x-large":  { "value": "min(3rem, 4vw)",      "slug": "70" },
+            "2x-large": { "value": "min(4.5rem, 6vw)",    "slug": "80" }
+        },
+
+        "shadow": {
+            "natural":  "6px 6px 9px rgba(0, 0, 0, 0.2)",
+            "deep":     "12px 12px 50px rgba(0, 0, 0, 0.4)",
+            "sharp":    "6px 6px 0px rgba(0, 0, 0, 0.2)",
+            "outlined": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)",
+            "crisp":    "6px 6px 0px rgb(0, 0, 0)"
+        },
+
+        "fontWeight": {
+            "normal": "400",
+            "bold": "700"
+        },
+
+        "radius": {
+            "sm": "2px",
+            "md": "4px",
+            "lg": "8px"
+        }
+    },
+
+    "baseStyles": {
+        "body": {
+            "fontFamily": "inter",
+            "fontSize": "medium",
+            "fontWeight": "400",
+            "lineHeight": "1.6",
+            "color": "text-black",
+            "background": "off-white"
+        },
+        "heading": {
+            "fontFamily": "inter",
+            "color": "primary"
+        },
+        "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
+        "h2": { "fontSize": "3rem", "fontWeight": "500" },
+        "h3": { "fontSize": "2.5rem", "fontWeight": "500" },
+        "h4": { "fontSize": "2rem", "fontWeight": "500" },
+        "h5": { "fontSize": "1.5rem", "fontWeight": "500" },
+        "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" },
+        "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "300", "color": "warning" },
+        "button": { "color": "off-white", "background": "primary" },
+        "link": { "color": "primary", "hoverColor": "error" },
+        "spacing": {
+            "blockGap": "medium",
+            "padding": {
+                "top": "0",
+                "right": "large",
+                "bottom": "0",
+                "left": "large"
+            }
+        }
+    }
+}
