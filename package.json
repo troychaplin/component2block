@@ -20,7 +20,8 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "c2b.config.example.json"
   ],
   "scripts": {
     "build": "tsc",

@@ -1,12 +1,23 @@
 #!/usr/bin/env node
 
 import { generate } from './index.js';
+import { init } from './init.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
 
 if (!command || command === 'help' || command === '--help') {
   printUsage();
+  process.exit(0);
+}
+
+if (command === 'init') {
+  try {
+    init();
+  } catch (error) {
+    console.error(`c2b: ${error instanceof Error ? error.message : 'An unexpected error occurred.'}`);
+    process.exit(1);
+  }
   process.exit(0);
 }
 
@@ -81,14 +92,15 @@ function printUsage(): void {
 c2b — Generate WordPress assets from design token config
 
 Usage:
-  c2b generate [options]
-
-Options:
-  --config <path>   Path to config file (default: ./c2b.config.json)
-  --dry-run         Output to stdout instead of writing files
+  c2b <command> [options]
 
 Commands:
+  init              Create a c2b.config.json from the example template
   generate          Read config and generate all output files
   help              Show this help message
+
+Options (generate):
+  --config <path>   Path to config file (default: ./c2b.config.json)
+  --dry-run         Output to stdout instead of writing files
 `.trim());
 }
