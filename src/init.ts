@@ -39,6 +39,12 @@ export function init(options?: InitOptions): void {
   }
 
   writeFileSync(targetPath, content, 'utf-8');
-  console.log(`c2b: Created ${CONFIG_FILENAME}`);
-  console.log(`  Edit it to match your project, then run: c2b generate`);
+  console.log(`c2b: Created ${CONFIG_FILENAME}\n`);
+  console.log(`Next steps:`);
+  console.log(`  1. Edit ${CONFIG_FILENAME} to match your project`);
+  console.log(`  2. Add a script to your package.json:\n`);
+  console.log(`     "scripts": {`);
+  console.log(`       "c2b": "c2b generate"`);
+  console.log(`     }\n`);
+  console.log(`  3. Run: npm run c2b`);
 }
