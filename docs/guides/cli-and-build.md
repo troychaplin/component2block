@@ -5,6 +5,9 @@ This page covers the command-line interface, build pipeline integration, and pub
 ## CLI Reference
 
 ```bash
+# Scaffold a starter config file
+npx c2b init
+
 # Generate from default config (./c2b.config.json)
 npx c2b generate
 
@@ -14,6 +17,21 @@ npx c2b generate --config path/to/config.json
 # Preview output without writing files
 npx c2b generate --dry-run
 ```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `init` | Create a `c2b.config.json` from the example template |
+| `generate` | Read config and generate all output files |
+| `help` | Show usage information |
+
+### Options (generate)
+
+| Option | Description |
+|--------|-------------|
+| `--config <path>` | Path to config file (default: `./c2b.config.json`) |
+| `--dry-run` | Output to stdout instead of writing files |
 
 ## Build Scripts
 

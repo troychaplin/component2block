@@ -20,9 +20,10 @@ Design decisions, project structure, and internals of the `component2block` pack
 component2block/
 ├── package.json
 ├── tsconfig.json
-├── c2b.config.json              Example config / project config
+├── c2b.config.example.json      Example config (copied by c2b init)
 ├── src/
-│   ├── cli.ts                   CLI entry point (npx c2b generate)
+│   ├── cli.ts                   CLI entry point (c2b init / c2b generate)
+│   ├── init.ts                  Init command — scaffolds c2b.config.json
 │   ├── index.ts                 Programmatic API, generate() function
 │   ├── config.ts                Config loading, validation, token resolution
 │   ├── types.ts                 Type system, category registry, utility functions

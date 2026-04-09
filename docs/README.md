@@ -10,7 +10,13 @@ npm install component2block --save-dev
 
 ## Create the Config
 
-Create `c2b.config.json` in your project root. The `prefix` field is the only required value — it determines your CSS variable namespace:
+Scaffold a starter config with the `init` command:
+
+```bash
+npx c2b init
+```
+
+This creates `c2b.config.json` in your project root with sensible defaults. Edit it to match your project — the `prefix` field is the only required value and determines your CSS variable namespace:
 
 ```json
 {

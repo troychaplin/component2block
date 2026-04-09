@@ -40,14 +40,39 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 
 ## Getting Started
 
-Scaffold a config file, then generate:
+### 1. Install
 
 ```bash
-npx c2b init       # creates c2b.config.json from the example template
-npx c2b generate   # reads config and generates all output files
+npm install @troychaplin/component2block --save-dev
 ```
 
-Edit `c2b.config.json` to match your project before generating.
+### 2. Create the config
+
+```bash
+npx c2b init
+```
+
+This creates `c2b.config.json` with sensible defaults. Edit it to match your project — at minimum, set the `prefix` to your library's namespace.
+
+### 3. Generate
+
+```bash
+npx c2b generate
+```
+
+### 4. Add to your build
+
+Add a script so tokens regenerate as part of your dev and build pipeline:
+
+```json
+{
+  "scripts": {
+    "c2b": "c2b generate",
+    "dev": "npm run c2b && storybook dev -p 6006",
+    "build": "npm run c2b && npm run build:lib && npm run build:css"
+  }
+}
+```
 
 ## Quick Example
 
