@@ -20,12 +20,42 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
 
 ### Token Resolution
 
-Two resolution functions in `src/config.ts` convert token key references to CSS variables:
+Two kinds of resolver live in `src/config.ts`:
+
+**Generic resolvers** (legacy, used outside `baseStyles`):
 
 - `resolveForScss(value, prefix, tokens, preferCategory?)` → `var(--{prefix}--{cssSegment}-{key})`
 - `resolveForThemeJson(value, tokens, preferCategory?)` → `var(--wp--preset--{category}--{slug})`
 
-Both use `resolveTokenRef()` internally. When a value matches a token key, it resolves; otherwise it passes through as a raw value. The `preferCategory` parameter disambiguates keys that exist in multiple categories (e.g. "large" in both spacing and fontSize).
+These fall through to a raw value when the input doesn't match a token key, and use `preferCategory` to disambiguate keys that exist in multiple categories.
+
+**Strict baseStyles resolvers** (used by `content-scss.ts` and `theme-json.ts` for every `baseStyles` value):
+
+- `resolveBaseStyleValueForScss(value, property, prefix, tokens)`
+- `resolveBaseStyleValueForThemeJson(value, property, tokens)`
+
+Both delegate to `classifyBaseStyleValue(value, property, tokens)`, which is the single source of truth for how a `baseStyles` string is interpreted. Classification returns one of:
+
+1. **token** — value matches a key in the property's expected token category. Looked up strictly in that category only (no cross-category fallback). Emits a CSS var in SCSS; emits a `--wp--preset--*` var in theme.json, or the underlying raw value for custom-only categories or `cssOnly` tokens.
+2. **raw** — value is obviously a raw CSS value (numeric, hex, `var()`/`rgb()`/`calc()` function, multi-value stack, quoted string) **or** a known CSS keyword allowed for the property. Passes through unchanged.
+3. **invalid** — anything else. Caught at config load time by `validateBaseStyles()` with a helpful error.
+
+`PROPERTY_CATEGORY` maps baseStyles property names (`fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `color`, `background`, `hoverColor`, `padding`, `blockGap`) to their strict category. `fontStyle` has no token category and accepts only keywords or raw values.
+
+`CSS_KEYWORDS` is a per-property whitelist of CSS keywords (`normal`, `italic`, `bold`, `inherit`, `sans-serif`, `transparent`, etc.). A token with the same key always wins over the keyword — so a `fontWeight.bold` token resolves to `var(--prefix--font-weight-bold)`, not the bare `bold` keyword.
+
+### baseStyles Strict Validation
+
+`validateBaseStyles(baseStyles, tokens)` walks every string value in `baseStyles` and calls the classifier. Any `invalid` result throws with the context path (`baseStyles.body.color`), the property, the expected token category, the list of available keys in that category, and the allowed CSS keywords. Called from `validateConfig()`, so dangling token refs and typos are caught before any files are written.
+
+Example error:
+
+```
+Config error: baseStyles.body.color = "text-black" is not a valid token or CSS keyword for "color".
+  Expected a token key from tokens.color (available: primary, black, white, grey-dark, ...).
+  Or use one of these CSS keywords: inherit, transparent, currentColor, initial, unset.
+  Or provide a raw CSS value (numeric, hex, rgb(), var(), calc(), multi-value, or quoted string).
+```
 
 ### Category Registry
 
@@ -35,10 +65,26 @@ User-facing category names map to internal names via `INPUT_CATEGORY_MAP` (e.g. 
 
 ### Token Entry Types
 
-- **Object with name/slug**: Registers as a WordPress preset (visible in Site Editor)
-- **String shorthand** (`"bold": "700"`): CSS variable only, no preset
-- **Object with `cssOnly: true`**: CSS variable only, keeps object format
-- **Fluid**: `{ fluid: { min, max } }` generates `clamp()` values
+- **String shorthand in a preset category** (`"primary": "#0073aa"`): registers as a WordPress preset with auto-derived `name`/`slug`.
+- **String shorthand in a custom-only category** (`"bold": "700"`): CSS variable only, auto-flagged CSS-only because the category has no preset.
+- **Object with `name`/`slug`**: registers as a WordPress preset with explicit overrides.
+- **Object with `cssOnly: true`**: CSS variable only, regardless of category. See below.
+- **Fluid**: `{ fluid: { min, max } }` or the shorthand `{ "min": "...", "max": "..." }` (fontSize only) generates `clamp()` values.
+
+### Unified `cssOnly` Semantics
+
+`cssOnly: true` means "emit this token as a CSS variable only, and never expose it to WordPress." That contract is honored identically across every category by every generator:
+
+| Output | Effect of `cssOnly: true` |
+|---|---|
+| `tokens.css` | CSS var is emitted normally |
+| `tokens.wp.css` (themeable mode) | CSS var is emitted with the hardcoded value, never with a `var(--wp--preset--*, fallback)` mapping |
+| `theme.json` preset arrays (`settings.color.palette`, `settings.spacing.spacingSizes`, `settings.typography.fontSizes`, `settings.shadow.presets`, …) | Excluded |
+| `theme.json` `settings.custom.*` | Excluded (including custom-only categories like `fontWeight`, `lineHeight`, `radius`, `transition`) |
+| `baseStyles` reference → SCSS | Still resolves: emits `var(--{prefix}--{segment}-{key})` |
+| `baseStyles` reference → theme.json `styles` | Falls back to the underlying raw value, because no `--wp--preset--*` var will exist in WordPress |
+
+The exclusion logic for `settings.custom.*` lives in `theme-json.ts` (one `if (entry.cssOnly) continue;` guard in the custom loop). The fallback for baseStyles references lives in `resolveBaseStyleValueForThemeJson`, which only emits a preset var when `ref.wpPreset && ref.slug` are both truthy.
 
 ### Base Styles
 
@@ -50,7 +96,7 @@ Supported elements: `body`, `heading`, `h1`-`h6`, `caption`, `button`, `link`
 
 Properties per element: `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `fontStyle`, `color`, `background`, `hoverColor` (link only)
 
-Individual headings (h1-h6) get `fontStyle: 'normal'` default via `ensureFontStyle()` if not specified.
+Individual headings (h1-h6) get `fontStyle: 'normal'` default via `ensureFontStyle()` if not specified. Because strict resolution routes `fontStyle` through the (empty) `fontStyle` category and the `CSS_KEYWORDS` fallback, this default correctly emits bare `font-style: normal;` instead of cross-resolving to a `fontWeight.normal` token.
 
 Link's `hoverColor` generates `:hover` pseudo-class in both theme.json (nested `":hover"` key) and SCSS (`:where(a:hover)` rule).
 
@@ -85,14 +131,14 @@ src/
 templates/
   integrate.php.tpl   PHP template for WordPress integration
 tests/
-  config.test.ts      Config loading and validation (28 tests)
-  tokens-css.test.ts  CSS token generation (14 tests)
-  tokens-wp-css.test.ts  WP CSS generation (14 tests)
-  theme-json.test.ts  theme.json generation (63 tests)
-  fonts-css.test.ts   Font CSS generation (7 tests)
-  content-scss.test.ts  SCSS generation (46 tests)
-  preset.test.ts      Storybook preset (7 tests)
-  integration.test.ts Full pipeline integration (12 tests)
+  config.test.ts        Config loading, validation, baseStyles strict checks
+  tokens-css.test.ts    CSS token generation
+  tokens-wp-css.test.ts WP CSS generation
+  theme-json.test.ts    theme.json generation, cssOnly exclusions
+  fonts-css.test.ts     Font CSS generation
+  content-scss.test.ts  SCSS generation, per-property resolution
+  preset.test.ts        Storybook preset
+  integration.test.ts   Full pipeline integration
 ```
 
 ## Conventions
@@ -114,7 +160,7 @@ tests/
 - SCSS uses `:where()` for zero-specificity element selectors
 
 ### Testing
-- Vitest with 191 tests across 8 files
+- Vitest with 233+ tests across 9 files
 - Unit tests per generator — each test creates its own `C2bConfig` inline
 - Integration tests use temp directories with `beforeAll`/`afterAll` for setup/cleanup
 - Test fixtures create `c2b.config.json` files in temp dirs
@@ -130,5 +176,7 @@ tests/
 - **Zero-specificity content styles**: `:where()` selectors ensure component BEM classes always win over base typography without specificity battles
 - **Two-layer content approach**: Generated `_content-generated.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
 - **Token key resolution**: Same config value resolves differently per output — SCSS uses `--prefix--segment-key`, theme.json uses `--wp--preset--category--slug`
+- **Strict `baseStyles` validation**: Every string in `baseStyles` is classified at config load time as a token (strict per-property category lookup), raw CSS, or invalid. Typos and stale token references throw clearly-located errors before any files are written. No cross-category fallback — `fontStyle: "normal"` cannot accidentally resolve to `fontWeight.normal`.
+- **Unified `cssOnly` contract**: `cssOnly: true` means "CSS variable only, never in WordPress" across every category and every generator — including `settings.custom.*` in theme.json.
 - **No default preset flags**: The generator never sets `defaultPalette`, `defaultGradients`, etc. — that's the theme's responsibility
 - **Locked mode enforcement**: When `wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them

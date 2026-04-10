@@ -199,7 +199,7 @@ This produces a simple CSS variable with no `clamp()`:
 | `fluid` | No | `{ min, max }` for responsive sizing (legacy form, shorthand preferred) |
 | `name` | No | Human-readable label (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from WordPress entirely (no preset, no `settings.custom.*`, not overridable in the Site Editor). Useful for "display" heading sizes that shouldn't appear in the Gutenberg size picker. |
 
 Fluid `min` and `max` accept `rem`, `em`, or `px` units. Both values must use the same unit.
 

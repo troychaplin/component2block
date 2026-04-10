@@ -1,5 +1,5 @@
 import { camelToKebab } from '../types.js';
-import { resolveForScss, ensureFontStyle } from '../config.js';
+import { resolveBaseStyleValueForScss, ensureFontStyle } from '../config.js';
 /** Property output order for consistent generated CSS */
 const PROPERTY_ORDER = ['fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight'];
 /** Padding sides in output order */
@@ -96,7 +96,7 @@ export function generateContentScss(config) {
         appendDeclarations(lines, baseStyles.link, prefix, tokens, '  ');
         lines.push('}');
         if (baseStyles.link.hoverColor !== undefined) {
-            const resolvedHoverColor = resolveForScss(baseStyles.link.hoverColor, prefix, tokens, 'colorPalette');
+            const resolvedHoverColor = resolveBaseStyleValueForScss(baseStyles.link.hoverColor, 'hoverColor', prefix, tokens);
             lines.push('');
             lines.push(':where(a:hover) {');
             lines.push(`  color: ${resolvedHoverColor};`);
@@ -110,6 +110,10 @@ export function generateContentScss(config) {
  * Append CSS declarations for a base style element definition.
  * Handles typography properties (camelCase → kebab-case) and
  * color properties (color → color, background → background-color).
+ *
+ * Each property is resolved strictly against its expected token category,
+ * so a `fontStyle: "normal"` value cannot accidentally resolve to a
+ * `fontWeight.normal` token.
  */
 function appendDeclarations(lines, def, prefix, tokens, indent) {
     // Typography declarations
@@ -118,41 +122,40 @@ function appendDeclarations(lines, def, prefix, tokens, indent) {
         if (value === undefined)
             continue;
         const cssProperty = camelToKebab(prop);
-        const resolvedValue = resolveForScss(value, prefix, tokens);
+        const resolvedValue = resolveBaseStyleValueForScss(value, prop, prefix, tokens);
         lines.push(`${indent}${cssProperty}: ${resolvedValue};`);
     }
     // Color declarations
     if (def.color !== undefined) {
-        const resolvedValue = resolveForScss(def.color, prefix, tokens, 'colorPalette');
+        const resolvedValue = resolveBaseStyleValueForScss(def.color, 'color', prefix, tokens);
         lines.push(`${indent}color: ${resolvedValue};`);
     }
     if (def.background !== undefined) {
-        const resolvedValue = resolveForScss(def.background, prefix, tokens, 'colorPalette');
+        const resolvedValue = resolveBaseStyleValueForScss(def.background, 'background', prefix, tokens);
         lines.push(`${indent}background-color: ${resolvedValue};`);
     }
 }
 /**
  * Append root padding CSS custom properties inside the body block.
- * Only defined sides are output. Uses 'spacing' as preferred category
- * to resolve ambiguous keys like "large" that exist in both spacing and fontSize.
+ * Only defined sides are output. Resolved strictly against tokens.spacing.
  */
 function appendRootPaddingVars(lines, padding, prefix, tokens) {
     for (const side of PADDING_SIDES) {
         const value = padding[side];
         if (value === undefined)
             continue;
-        const resolvedValue = resolveForScss(value, prefix, tokens, 'spacing');
+        const resolvedValue = resolveBaseStyleValueForScss(value, 'padding', prefix, tokens);
         lines.push(`  --${prefix}--root-padding-${side}: ${resolvedValue};`);
     }
 }
 /**
  * Append block gap CSS custom property inside the body block.
- * Resolves token references using 'spacing' as preferred category.
+ * Resolved strictly against tokens.spacing.
  */
 function appendBlockGapVar(lines, spacing, prefix, tokens) {
     if (!spacing.blockGap)
         return;
-    const resolvedValue = resolveForScss(spacing.blockGap, prefix, tokens, 'spacing');
+    const resolvedValue = resolveBaseStyleValueForScss(spacing.blockGap, 'blockGap', prefix, tokens);
     lines.push(`  --${prefix}--root-block-gap: ${resolvedValue};`);
 }
 /**

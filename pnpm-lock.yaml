@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@rolldown/binding-darwin-arm64':
+        specifier: 1.0.0-rc.13
+        version: 1.0.0-rc.13
       '@types/node':
         specifier: ^25.1.0
         version: 25.5.2
@@ -489,8 +492,7 @@ snapshots:
   '@rolldown/binding-android-arm64@1.0.0-rc.13':
     optional: true
 
-  '@rolldown/binding-darwin-arm64@1.0.0-rc.13':
-    optional: true
+  '@rolldown/binding-darwin-arm64@1.0.0-rc.13': {}
 
   '@rolldown/binding-darwin-x64@1.0.0-rc.13':
     optional: true

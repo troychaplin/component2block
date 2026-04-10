@@ -36,9 +36,15 @@ Use object syntax when you need to override `slug`, `name`, or add other propert
 
 ### CSS-Only Tokens
 
-Tokens that should produce a CSS variable but **not** appear in the Site Editor:
+`cssOnly: true` means "emit as a CSS variable only, and never expose this token to WordPress." The contract is the same across every category:
 
-**Explicit flag** — `cssOnly: true` on an object entry. Required for preset categories where some tokens are implementation details:
+- Excluded from every theme.json preset array (`settings.color.palette`, `settings.spacing.spacingSizes`, `settings.typography.fontFamilies`, `settings.typography.fontSizes`, `settings.shadow.presets`)
+- Excluded from `settings.custom.*` (including custom-only categories like `fontWeight`, `lineHeight`, `radius`, `transition` and the custom portion of `shadow`)
+- Excluded from the `--wp--preset--*` / `--wp--custom--*` fallback mapping in `tokens.wp.css` when `wpThemeable: true`
+- Still emitted as a `--{prefix}--{segment}-{key}` variable in `tokens.css`
+- Still resolvable from `baseStyles` in the SCSS output (it emits the CSS variable reference); in theme.json `styles` the generator falls back to the underlying raw value
+
+**Explicit flag** — `cssOnly: true` on an object entry. Works in any category, preset-capable or custom-only:
 
 ```json
 {
@@ -46,23 +52,40 @@ Tokens that should produce a CSS variable but **not** appear in the Site Editor:
     "color": {
       "primary": "#0073aa",
       "primary-hover": { "value": "#005a87", "cssOnly": true }
+    },
+    "fontWeight": {
+      "normal": "400",
+      "black": { "value": "900", "cssOnly": true }
+    },
+    "shadow": {
+      "card": "0 1px 3px rgba(0,0,0,0.1)",
+      "focus-ring": { "value": "0 0 0 3px rgba(0,115,170,0.4)", "cssOnly": true }
     }
   }
 }
 ```
 
-**String shorthand in custom categories** — For non-preset categories (`fontWeight`, `lineHeight`, `radius`, `transition`, `zIndex`), string values are always CSS-only (these categories never produce WordPress presets):
+After running the generator:
+
+- `primary-hover`, `black`, and `focus-ring` all exist as CSS variables (`--mylib--color-primary-hover`, `--mylib--font-weight-black`, `--mylib--shadow-focus-ring`).
+- None of them appear anywhere in `theme.json` — not in the preset arrays, not in `settings.custom`.
+- The Site Editor cannot see or override them.
+
+**String shorthand in custom-only categories** — For `fontWeight`, `lineHeight`, `radius`, `transition`, `zIndex`, a string value registers a normal token that still appears in `settings.custom.*`. Those categories have no WordPress preset mapping, but they do emit `--wp--custom--*` variables by default. Add `cssOnly: true` if you want to keep a specific token out of `settings.custom` as well:
 
 ```json
 {
   "tokens": {
     "fontWeight": {
       "normal": "400",
-      "bold": "700"
+      "bold": "700",
+      "black": { "value": "900", "cssOnly": true }
     }
   }
 }
 ```
+
+Here `normal` and `bold` land in `settings.custom.fontWeight`, but `black` is emitted only as `--mylib--font-weight-black` in `tokens.css`.
 
 ### Fluid Font Sizes
 
@@ -87,7 +110,7 @@ The nested `{ "fluid": { "min", "max" } }` syntax is also supported for backward
 | `value` | Yes* | The CSS value. *Auto-derived from `fluid.max` for fluid font sizes |
 | `name` | No | Human-readable label (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from every WordPress output — not a preset, not a `settings.custom.*` entry, not overridable in the Site Editor |
 | `fluid` | No | `{ min, max }` for fluid fontSize tokens |
 | `fontFace` | No | Font file definitions for fontFamily tokens |
 

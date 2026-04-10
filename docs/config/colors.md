@@ -64,7 +64,7 @@ Use the `cssOnly` flag for implementation-detail colors that shouldn't appear in
 | `value` | Yes | Any valid CSS color — hex, rgb, rgba, hsl, etc. |
 | `name` | No | Human-readable label for the Site Editor (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from WordPress entirely (no preset, no `settings.custom.*`, not overridable in the Site Editor) |
 
 ### Color Values
 
@@ -111,7 +111,7 @@ String shorthand registers as a preset with auto-derived `slug` and `name`:
 | `value` | Yes | Any valid CSS gradient — `linear-gradient()`, `radial-gradient()`, etc. |
 | `name` | No | Human-readable label for the Site Editor (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from WordPress entirely (no preset, no `settings.custom.*`, not overridable in the Site Editor) |
 
 ### CSS-Only Gradients
 

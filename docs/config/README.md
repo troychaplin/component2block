@@ -52,7 +52,7 @@ Every token entry supports these common properties. Categories may have addition
 | `value` | Yes* | The CSS value. *Auto-derived from `fluid.max` for fluid font sizes |
 | `name` | No | Human-readable label for the WordPress Site Editor (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, produces a CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from every WordPress output — not a preset, not a `settings.custom.*` entry, not overridable in the Site Editor |
 | `fluid` | No | `{ min, max }` for responsive sizing (fontSize only) |
 | `fontFace` | No | Array of `{ weight, style, src }` entries (fontFamily only) |
 
@@ -151,9 +151,9 @@ When `name` and `slug` are omitted, they're derived from the token key:
 
 ---
 
-## CSS-Only Categories
+## Custom-Only Categories
 
-Some categories don't have native WordPress preset mappings. Their tokens go into `settings.custom` in theme.json, producing `--wp--custom--*` variables:
+Some categories don't have native WordPress preset mappings. By default their tokens go into `settings.custom` in theme.json, producing `--wp--custom--*` variables:
 
 | Category | theme.json path | WordPress variable |
 |----------|----------------|-------------------|
@@ -163,6 +163,23 @@ Some categories don't have native WordPress preset mappings. Their tokens go int
 | `transition` | `settings.custom.transition` | `--wp--custom--transition--{key}` |
 
 `zIndex` is excluded from theme.json entirely — it only produces CSS variables.
+
+Individual tokens in any of these categories can be marked `cssOnly: true` to exclude them from `settings.custom.*` as well, keeping them scoped to the CSS variable output only. See [Unified `cssOnly` Semantics](#unified-cssonly-semantics) below.
+
+## Unified `cssOnly` Semantics
+
+`cssOnly: true` means the same thing across every category: "emit as a CSS variable only, and never expose to WordPress." The same contract applies whether the category is preset-capable, custom-only, or dual-mode (shadow).
+
+| Output | With `cssOnly: true` |
+|--------|---------------------|
+| `tokens.css` | CSS variable emitted normally |
+| `tokens.wp.css` (themeable mode) | CSS variable emitted with the hardcoded value — no `var(--wp--preset--*, fallback)` mapping |
+| `theme.json` preset arrays (`settings.color.palette`, `settings.spacing.spacingSizes`, `settings.typography.fontFamilies`, `settings.typography.fontSizes`, `settings.shadow.presets`, …) | Excluded |
+| `theme.json` `settings.custom.*` (including `settings.custom.fontWeight`, `settings.custom.lineHeight`, `settings.custom.radius`, `settings.custom.transition`, `settings.custom.shadow`) | Excluded |
+| `baseStyles` reference → SCSS output | Still resolves to `var(--prefix--{segment}-{key})` — the CSS variable exists |
+| `baseStyles` reference → theme.json `styles` output | Falls back to the underlying raw value (no dangling `--wp--preset--*` reference) |
+
+Use `cssOnly` for tokens that are purely internal to your component library and should never be visible, editable, or referenceable from WordPress — things like hover states, focus rings, internal spacing, heading display sizes (when you don't want them in the size picker), or any structural value that isn't meant to be themeable.
 
 ### layout
 
@@ -241,7 +258,9 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
       "primary-hover": { "value": "#005a87", "cssOnly": true },
       "secondary": "#23282d",
       "secondary-hover": { "value": "#1a1e21", "cssOnly": true },
+      "base": "#ffffff",
       "success": "#00a32a",
+      "warning": "#dba617",
       "error": "#d63638"
     },
 
@@ -252,8 +271,8 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
     "spacing": {
       "xs": { "value": "0.25rem", "slug": "20" },
       "sm": { "value": "0.5rem", "slug": "30" },
-      "md": { "value": "1rem", "slug": "40" },
-      "lg": { "value": "1.5rem", "slug": "50" },
+      "md": { "value": "1rem", "slug": "40", "name": "Medium" },
+      "lg": { "value": "1.5rem", "slug": "50", "name": "Large" },
       "xl": { "value": "2.25rem", "slug": "60" }
     },
 
@@ -269,10 +288,13 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
     },
 
     "fontSize": {
-      "small": { "min": "0.875rem", "max": "1rem" },
-      "medium": { "min": "1rem", "max": "1.125rem" },
-      "large": { "min": "1.125rem", "max": "1.25rem" },
-      "x-large": { "min": "1.25rem", "max": "1.5rem" }
+      "small":    { "min": "0.875rem", "max": "1rem" },
+      "medium":   { "min": "1rem", "max": "1.125rem" },
+      "large":    { "min": "1.125rem", "max": "1.25rem" },
+      "x-large":  { "min": "1.25rem", "max": "1.5rem" },
+      "2x-large": { "value": "2rem", "fluid": { "min": "1.5rem", "max": "2rem" }, "cssOnly": true },
+      "3x-large": { "value": "3rem", "fluid": { "min": "2rem", "max": "3rem" }, "cssOnly": true },
+      "4x-large": { "value": "4.5rem", "fluid": { "min": "3rem", "max": "4.5rem" }, "cssOnly": true }
     },
 
     "shadow": {
@@ -281,13 +303,16 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
     },
 
     "fontWeight": {
+      "light":  "300",
       "normal": "400",
-      "bold": "700"
+      "medium": "500",
+      "bold":   "700"
     },
 
     "lineHeight": {
-      "tight": "1.25",
-      "normal": "1.5"
+      "tight":  "1.25",
+      "normal": "1.5",
+      "loose":  "1.8"
     },
 
     "radius": {
@@ -311,8 +336,8 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
     "body": {
       "fontFamily": "inter",
       "fontSize": "medium",
-      "fontWeight": "400",
-      "lineHeight": "1.6",
+      "fontWeight": "normal",
+      "lineHeight": "normal",
       "color": "secondary",
       "background": "base"
     },
@@ -320,24 +345,26 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
       "fontFamily": "inter",
       "color": "primary"
     },
-    "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
-    "h2": { "fontSize": "3rem", "fontWeight": "500" },
-    "h3": { "fontSize": "2.5rem", "fontWeight": "500" },
-    "h4": { "fontSize": "2rem", "fontWeight": "500" },
-    "h5": { "fontSize": "1.5rem", "fontWeight": "500" },
-    "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" },
-    "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "300" },
-    "button": { "color": "off-white", "background": "primary" },
+    "h1": { "fontSize": "4x-large", "fontWeight": "medium" },
+    "h2": { "fontSize": "3x-large", "fontWeight": "medium" },
+    "h3": { "fontSize": "2x-large", "fontWeight": "medium" },
+    "h4": { "fontSize": "x-large", "fontWeight": "medium" },
+    "h5": { "fontSize": "large", "fontWeight": "medium" },
+    "h6": { "fontSize": "medium", "fontWeight": "medium", "fontStyle": "italic" },
+    "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "light" },
+    "button": { "color": "base", "background": "primary" },
     "link": { "color": "primary", "hoverColor": "primary-hover" },
     "spacing": {
-      "blockGap": "medium",
+      "blockGap": "md",
       "padding": {
         "top": "0",
-        "right": "large",
+        "right": "lg",
         "bottom": "0",
-        "left": "large"
+        "left": "lg"
       }
     }
   }
 }
 ```
+
+Every `baseStyles` string in this example is either a real token key in the expected category (e.g. `fontWeight: "medium"` → `tokens.fontWeight.medium`) or a raw CSS value (`"0"`). Running `c2b generate` validates each one strictly and fails with a clear error if any reference is stale or misspelled.

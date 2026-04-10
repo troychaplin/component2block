@@ -85,68 +85,96 @@ Same config value, different variable references per output.
 
 ## Resolution Functions
 
-### resolveForScss()
+Two kinds of resolver live in `src/config.ts`.
 
-Used by the SCSS generator. Maps token key references to `--prefix--*` variables:
+### Generic resolvers (used outside `baseStyles`)
 
-```
-"inter"   → var(--mylib--font-family-inter)
-"medium"  → var(--mylib--font-size-medium)
-"primary" → var(--mylib--color-primary)
-"3rem"    → 3rem  (not a token key, passes through)
-"500"     → 500   (not a token key, passes through)
-```
+- `resolveForScss(value, prefix, tokens, preferCategory?)`
+- `resolveForThemeJson(value, tokens, preferCategory?)`
 
-### resolveForThemeJson()
-
-Used by the theme.json generator. Maps token key references to `--wp--preset--*` variables:
+These look up the value against the full token table. When `preferCategory` is provided it checks that category first; otherwise it walks all categories in registry order. A matching key becomes a CSS variable reference; anything else passes through as-is.
 
 ```
-"inter"   → var(--wp--preset--font-family--inter)
-"medium"  → var(--wp--preset--font-size--medium)
-"primary" → var(--wp--preset--color--primary)
-"3rem"    → 3rem  (passes through)
-"500"     → 500   (passes through)
+resolveForScss("primary", "mylib", tokens, "colorPalette")
+  → var(--mylib--color-primary)
+
+resolveForScss("3rem", "mylib", tokens)
+  → 3rem
 ```
 
-### Disambiguation with preferCategory
+### Strict baseStyles resolvers
 
-When a key exists in multiple categories (e.g. `"large"` in both `spacing` and `fontSize`), the `preferCategory` parameter selects which one to resolve:
+Everything written under `baseStyles` goes through a different code path designed to catch typos and dangling references:
 
-```
-resolveForScss("large", prefix, tokens, "spacing")
-  → var(--mylib--spacing-large)
+- `resolveBaseStyleValueForScss(value, property, prefix, tokens)`
+- `resolveBaseStyleValueForThemeJson(value, property, tokens)`
 
-resolveForScss("large", prefix, tokens, "fontSize")
-  → var(--mylib--font-size-large)
-```
+Both delegate to `classifyBaseStyleValue(value, property, tokens)`, which is the single source of truth for how a `baseStyles` string is interpreted. Classification returns exactly one of:
 
-The base styles config uses context to determine the preferred category — font properties prefer `fontSize`/`fontFamily`, spacing properties prefer `spacing`, etc.
+1. **token** — value is a key in the property's expected token category. Strict lookup only — there is no cross-category fallback, so `fontSize: "large"` will never resolve to a `spacing.large` token even if no `fontSize.large` exists.
+2. **raw** — value is obviously raw CSS (numeric, hex, function call, multi-value, quoted) **or** a known CSS keyword for the property (e.g. `italic` for `fontStyle`, `sans-serif` for `fontFamily`).
+3. **invalid** — typo, stale reference, or unknown keyword. Caught at config load time by `validateBaseStyles()` with a clear error.
+
+The property → category mapping lives in `PROPERTY_CATEGORY`:
+
+| Property | Category |
+|----------|----------|
+| `fontFamily` | `fontFamily` |
+| `fontSize` | `fontSize` |
+| `fontWeight` | `fontWeight` |
+| `lineHeight` | `lineHeight` |
+| `fontStyle` | — (no category) |
+| `color`, `background`, `hoverColor` | `colorPalette` |
+| `spacing.padding.*`, `spacing.blockGap` | `spacing` |
+
+CSS keyword fallbacks per property live in `CSS_KEYWORDS`. When a token and a keyword have the same name (e.g. `fontWeight.bold` token vs. the CSS keyword `bold`), the token always wins.
+
+### SCSS vs theme.json output for strict resolution
+
+Same token key, different outputs:
+
+| Classification | SCSS output | theme.json output |
+|---|---|---|
+| token in a preset category with a slug | `var(--mylib--{segment}-{key})` | `var(--wp--preset--{category}--{slug})` |
+| token in a preset category that is `cssOnly` (no slug) | `var(--mylib--{segment}-{key})` | raw underlying value |
+| token in a custom-only category (`fontWeight`, `lineHeight`, `radius`, `transition`) | `var(--mylib--{segment}-{key})` | raw underlying value |
+| raw CSS value or keyword | value passes through | value passes through |
+
+The theme.json fallback for custom-only and `cssOnly` tokens is deliberate: WordPress would not define a `--wp--preset--*` variable for those tokens, so emitting a semantic reference like `var(--wp--preset--font-weight--medium)` would give broken CSS. The generator emits the underlying value (e.g. `"500"`) instead.
 
 ## CSS-Only Token Flow
 
-CSS-only tokens (`cssOnly: true` flag, or string shorthand in custom categories) follow a simpler path:
+`cssOnly: true` means "emit as a CSS variable only, never expose to WordPress." The contract is honored identically across every category by every generator.
 
 ```json
 {
   "tokens": {
     "color": {
+      "primary": "#0073aa",
       "primary-hover": { "value": "#005a87", "cssOnly": true }
     },
     "fontWeight": {
-      "bold": "700"
+      "normal": "400",
+      "black": { "value": "900", "cssOnly": true }
+    },
+    "shadow": {
+      "card": "0 1px 3px rgba(0,0,0,0.1)",
+      "focus-ring": { "value": "0 0 0 3px rgba(0,115,170,0.4)", "cssOnly": true }
     }
   }
 }
 ```
 
-| Output | primary-hover | bold |
-|--------|--------------|------|
-| tokens.css | `--mylib--color-primary-hover: #005a87;` | `--mylib--font-weight-bold: 700;` |
-| tokens.wp.css | `--mylib--color-primary-hover: #005a87;` (hardcoded) | `--mylib--font-weight-bold: 700;` (hardcoded) |
-| theme.json | Omitted from `settings.color.palette` | Goes under `settings.custom.fontWeight` |
+| Output | `primary-hover` (cssOnly) | `black` (cssOnly in custom-only category) | `focus-ring` (cssOnly in dual-mode category) |
+|--------|--------------------------|-------------------------------------------|----------------------------------------------|
+| `tokens.css` | `--mylib--color-primary-hover: #005a87;` | `--mylib--font-weight-black: 900;` | `--mylib--shadow-focus-ring: 0 0 0 3px rgba(...);` |
+| `tokens.wp.css` (themeable mode) | Hardcoded — no `var(--wp--preset--*, fallback)` mapping | Hardcoded | Hardcoded |
+| `theme.json` preset array | Excluded from `settings.color.palette` | N/A (category has no preset array) | Excluded from `settings.shadow.presets` |
+| `theme.json` `settings.custom.*` | N/A | **Excluded** from `settings.custom.fontWeight` | **Excluded** from `settings.custom.shadow` |
+| `baseStyles` ref → SCSS | `var(--mylib--color-primary-hover)` | `var(--mylib--font-weight-black)` | `var(--mylib--shadow-focus-ring)` |
+| `baseStyles` ref → theme.json `styles` | Falls back to `"#005a87"` | Falls back to `"900"` | Falls back to the raw shadow value |
 
-CSS-only tokens never map to `--wp--preset--*` variables, even in themeable mode.
+`cssOnly` tokens never map to `--wp--preset--*` or `--wp--custom--*` variables, in any mode, across any category. If you need a token to be consumable from inside WordPress (in theme.json `styles` or block markup), don't mark it `cssOnly`.
 
 ## Fluid Font Size Flow
 
