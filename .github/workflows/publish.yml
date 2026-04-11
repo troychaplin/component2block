@@ -15,16 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: rm -rf node_modules package-lock.json
-      - run: npm install
+      - run: pnpm install --frozen-lockfile
 
-      - run: npm test -- --run
+      - run: pnpm test --run
 
-      - run: npm publish --access public --provenance
+      - run: pnpm publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
