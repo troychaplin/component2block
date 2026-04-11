@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-04-11
+
 ### Added
 
 - `pnpm run release <version>` command (`scripts/release.mjs`) that moves `CHANGELOG.md` `[Unreleased]` entries into a dated section, bumps `package.json`, refreshes `pnpm-lock.yaml`, runs tests and build, and creates a `release: <version>` commit and tag. Verifies the active Node version matches `.nvmrc` up front so a stale Node version can't produce a half-finished release.
