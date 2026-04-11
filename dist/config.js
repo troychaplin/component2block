@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { CATEGORY_REGISTRY, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
+import { CATEGORY_REGISTRY, DEFAULT_FLUID, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
 const DEFAULTS = {
     tokensPath: 'src/styles/tokens.css',
     wpDir: 'dist/wp',
 };
 /** Reserved config keys that are not token categories (legacy flat format) */
-const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'output', 'tokens', 'baseStyles'];
+const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'output', 'tokens', 'baseStyles', 'fluid'];
 export function loadConfig(configPath) {
     const resolvedPath = resolve(configPath ?? 'c2b.config.json');
     let raw;
@@ -155,6 +155,7 @@ export function validateConfig(input) {
     const tokensPath = output.tokensPath ?? input.tokensPath ?? DEFAULTS.tokensPath;
     const wpDir = output.wpDir ?? input.outDir ?? DEFAULTS.wpDir;
     const wpThemeable = output.wpThemeable ?? input.wpThemeable ?? false;
+    const fluid = resolveFluidConfig(input.fluid);
     return {
         prefix: input.prefix,
         tokensPath,
@@ -162,7 +163,38 @@ export function validateConfig(input) {
         wpThemeable: wpThemeable === true,
         tokens,
         baseStyles: input.baseStyles,
+        fluid,
     };
+}
+/**
+ * Resolve and validate the fluid typography viewport anchors.
+ *
+ * Defaults to 320px / 1600px when omitted. Both values must be CSS lengths
+ * with a `px` unit (other units would produce a non-length denominator in
+ * the clamp formula), and min must be strictly less than max.
+ */
+function resolveFluidConfig(input) {
+    const merged = {
+        minViewport: input?.minViewport ?? DEFAULT_FLUID.minViewport,
+        maxViewport: input?.maxViewport ?? DEFAULT_FLUID.maxViewport,
+    };
+    const minPx = parsePxLength(merged.minViewport, 'fluid.minViewport');
+    const maxPx = parsePxLength(merged.maxViewport, 'fluid.maxViewport');
+    if (minPx >= maxPx) {
+        throw new Error(`Config error: fluid.minViewport (${merged.minViewport}) must be less than fluid.maxViewport (${merged.maxViewport}).`);
+    }
+    return merged;
+}
+/**
+ * Parse a px length (e.g. "320px") and return its numeric value. Throws with
+ * the config path when the value is missing or uses an unsupported unit.
+ */
+function parsePxLength(value, path) {
+    const match = /^(-?\d*\.?\d+)px$/.exec(value);
+    if (!match) {
+        throw new Error(`Config error: ${path} = "${value}" must be a CSS length with a px unit (e.g. "320px").`);
+    }
+    return parseFloat(match[1]);
 }
 /**
  * Check if a value matches a token key in any category.

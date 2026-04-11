@@ -161,7 +161,7 @@ describe('generateTokensWpCss — fluid font size fallbacks', () => {
 
   it('uses clamp() as fallback for fluid font sizes', () => {
     expect(output).toContain(
-      '--test--font-size-medium: var(--wp--preset--font-size--medium, clamp(0.875rem, 0.875rem + ((0.25) * ((100vw - 320px) / 1280)), 1.125rem));'
+      '--test--font-size-medium: var(--wp--preset--font-size--medium, clamp(0.875rem, 0.875rem + (0.25rem * ((100vw - 320px) / 1280px)), 1.125rem));'
     );
   });
 

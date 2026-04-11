@@ -1,4 +1,4 @@
-import { CATEGORY_REGISTRY, CATEGORY_ORDER, camelToKebab } from '../types.js';
+import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
 export function generateTokensCss(config) {
     const lines = [
@@ -21,7 +21,7 @@ export function generateTokensCss(config) {
             // Layout keys are camelCase in config but kebab-case in CSS variables
             const cssKey = def.directMap ? camelToKebab(key) : key;
             const varName = `--${config.prefix}--${def.cssSegment}-${cssKey}`;
-            const clampValue = entry.fluid ? buildFluidClamp(entry) : null;
+            const clampValue = entry.fluid ? buildFluidClamp(entry, config.fluid ?? DEFAULT_FLUID) : null;
             lines.push(`  ${varName}: ${clampValue ?? entry.value};`);
         }
     }

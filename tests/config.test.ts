@@ -447,6 +447,54 @@ describe('validateConfig — baseStyles', () => {
   });
 });
 
+describe('validateConfig — fluid typography config', () => {
+  it('defaults to 320px / 1600px when fluid is omitted', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: { color: { primary: '#000' } },
+    });
+    expect(result.fluid).toEqual({ minViewport: '320px', maxViewport: '1600px' });
+  });
+
+  it('accepts custom viewport anchors', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: { color: { primary: '#000' } },
+      fluid: { minViewport: '400px', maxViewport: '1440px' },
+    });
+    expect(result.fluid).toEqual({ minViewport: '400px', maxViewport: '1440px' });
+  });
+
+  it('partial fluid input is merged with defaults', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: { color: { primary: '#000' } },
+      fluid: { minViewport: '480px' },
+    });
+    expect(result.fluid).toEqual({ minViewport: '480px', maxViewport: '1600px' });
+  });
+
+  it('throws when a viewport anchor does not use px', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: { color: { primary: '#000' } },
+        fluid: { minViewport: '20rem', maxViewport: '1600px' },
+      }),
+    ).toThrow(/fluid\.minViewport = "20rem".*px unit/);
+  });
+
+  it('throws when minViewport is >= maxViewport', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: { color: { primary: '#000' } },
+        fluid: { minViewport: '1600px', maxViewport: '1200px' },
+      }),
+    ).toThrow(/fluid\.minViewport .*must be less than fluid\.maxViewport/);
+  });
+});
+
 describe('validateConfig — output wrapper format', () => {
   it('reads wpThemeable from output wrapper', () => {
     const result = validateConfig({

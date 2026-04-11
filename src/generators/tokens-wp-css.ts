@@ -1,5 +1,5 @@
 import type { C2bConfig } from '../types.js';
-import { CATEGORY_REGISTRY, CATEGORY_ORDER, camelToKebab } from '../types.js';
+import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
 
 export function generateTokensWpCss(config: C2bConfig): string {
@@ -28,7 +28,7 @@ export function generateTokensWpCss(config: C2bConfig): string {
       // Layout keys are camelCase in config but kebab-case in CSS variables
       const cssKey = def.directMap ? camelToKebab(key) : key;
       const varName = `--${config.prefix}--${def.cssSegment}-${cssKey}`;
-      const fallback = entry.fluid ? buildFluidClamp(entry) ?? entry.value : entry.value;
+      const fallback = entry.fluid ? buildFluidClamp(entry, config.fluid ?? DEFAULT_FLUID) ?? entry.value : entry.value;
 
       if (def.wpPreset && entry.slug) {
         lines.push(`  ${varName}: var(${def.wpPreset}--${entry.slug}, ${fallback});`);

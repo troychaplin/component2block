@@ -130,17 +130,87 @@ describe('generateTokensCss — fluid font sizes', () => {
 
   it('generates clamp() for fluid font sizes', () => {
     expect(output).toContain(
-      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((0.25) * ((100vw - 320px) / 1280)), 1.125rem);'
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + (0.25rem * ((100vw - 320px) / 1280px)), 1.125rem);'
     );
   });
 
   it('uses correct range for larger fluid sizes', () => {
     expect(output).toContain(
-      '--test--font-size-large: clamp(1.25rem, 1.25rem + ((0.5) * ((100vw - 320px) / 1280)), 1.75rem);'
+      '--test--font-size-large: clamp(1.25rem, 1.25rem + (0.5rem * ((100vw - 320px) / 1280px)), 1.75rem);'
     );
   });
 
   it('uses static value when no fluid is defined', () => {
     expect(output).toContain('--test--font-size-static: 0.75rem;');
+  });
+
+  /**
+   * Regression for the fluid-clamp math bug: earlier output used a unitless
+   * denominator (`/ 1280`) and a unitless scaling constant, which made
+   * `(100vw - 320px) / 1280` evaluate to a length and collapsed the fluid
+   * adjustment to a fraction of a pixel — tokens never actually scaled.
+   *
+   * This test extracts the emitted clamp formula, plugs in several viewport
+   * widths, and asserts the result actually interpolates between min and max.
+   */
+  it('emitted clamp() formula scales between min and max across viewport widths', () => {
+    const clampRegex = /--test--font-size-medium: (clamp\([^;]+\));/;
+    const match = output.match(clampRegex);
+    expect(match).not.toBeNull();
+    const expr = match![1];
+
+    // Parse: clamp(<min>rem, <min>rem + (<delta>rem * ((100vw - <vwMin>px) / <vwRange>px)), <max>rem)
+    const parts = expr.match(
+      /^clamp\(([\d.]+)rem, \1rem \+ \(([\d.]+)rem \* \(\(100vw - (\d+)px\) \/ (\d+)px\)\), ([\d.]+)rem\)$/,
+    );
+    expect(parts).not.toBeNull();
+    const [, minRem, deltaRem, vwMin, vwRange, maxRem] = parts!.map(Number);
+
+    // The delta must equal (max - min) and the denominator must be a length (px).
+    expect(deltaRem).toBeCloseTo(maxRem - minRem, 4);
+    expect(vwRange).toBeGreaterThan(0);
+
+    // Evaluate the clamp formula at a given viewport width (in px).
+    // The division (100vw - vwMin) / vwRange is unit-free because the
+    // denominator is a length, so `delta * ratio` stays in rem.
+    const evalClamp = (vwPx: number): number => {
+      const ratio = (vwPx - vwMin) / vwRange;
+      const middle = minRem + deltaRem * ratio;
+      return Math.max(minRem, Math.min(maxRem, middle));
+    };
+
+    // At or below minViewport → pinned to min
+    expect(evalClamp(320)).toBeCloseTo(minRem, 4);
+    expect(evalClamp(0)).toBeCloseTo(minRem, 4);
+
+    // At or above maxViewport → pinned to max
+    expect(evalClamp(1600)).toBeCloseTo(maxRem, 4);
+    expect(evalClamp(2400)).toBeCloseTo(maxRem, 4);
+
+    // Between anchors → strictly interpolates (strict monotonic growth)
+    const at768 = evalClamp(768);
+    const at1200 = evalClamp(1200);
+    expect(at768).toBeGreaterThan(minRem);
+    expect(at768).toBeLessThan(maxRem);
+    expect(at1200).toBeGreaterThan(at768);
+    expect(at1200).toBeLessThan(maxRem);
+
+    // Midpoint check: at the halfway viewport, the value should be halfway.
+    const midVw = (320 + 1600) / 2; // 960px
+    expect(evalClamp(midVw)).toBeCloseTo(minRem + (maxRem - minRem) / 2, 4);
+  });
+
+  /**
+   * Verify custom viewport anchors from config propagate to the emitted formula.
+   */
+  it('honors custom fluid viewport anchors from config', () => {
+    const customConfig: C2bConfig = {
+      ...fluidConfig,
+      fluid: { minViewport: '400px', maxViewport: '1440px' },
+    };
+    const customOutput = generateTokensCss(customConfig);
+    expect(customOutput).toContain(
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + (0.25rem * ((100vw - 400px) / 1040px)), 1.125rem);',
+    );
   });
 });
