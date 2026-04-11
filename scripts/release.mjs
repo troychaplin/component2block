@@ -37,7 +37,28 @@ function fail(msg) {
   process.exit(1);
 }
 
-// --- 1. Validate args --------------------------------------------------------
+// --- 1. Node version must match .nvmrc --------------------------------------
+// A mismatched Node version is the single biggest source of half-finished
+// releases: pnpm install rewrites the lockfile differently on Node 18 vs 22,
+// tests may fail to start, and native bindings (rolldown) can break outright.
+// Fail fast before touching anything on disk.
+try {
+  const required = readFileSync(resolve(ROOT, '.nvmrc'), 'utf-8').trim().replace(/^v/, '');
+  const requiredMajor = required.split('.')[0];
+  const currentMajor = process.versions.node.split('.')[0];
+  if (requiredMajor && currentMajor !== requiredMajor) {
+    fail(
+      `Node ${process.versions.node} is in use, but .nvmrc requires Node ${required}.\n` +
+      `  Run: nvm use  (or: nvm install ${requiredMajor} && nvm use ${requiredMajor})\n` +
+      `  Then re-run this script.`,
+    );
+  }
+} catch (err) {
+  // ENOENT (missing .nvmrc) is not fatal — skip the check. Anything else rethrows.
+  if (err && err.code !== 'ENOENT') throw err;
+}
+
+// --- 2. Validate args --------------------------------------------------------
 const version = process.argv[2];
 if (!version) fail('Usage: pnpm run release <version>');
 if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) {
