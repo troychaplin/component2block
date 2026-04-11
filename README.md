@@ -19,7 +19,7 @@ c2b.config.json                                single source of truth
     │
     ├──► src/styles/tokens.css                 CSS custom properties
     ├──► src/styles/fonts.css                  @font-face declarations
-    ├──► src/styles/_content-generated.scss    Base typography (zero-specificity)
+    ├──► src/styles/base-styles.scss           Base typography (zero-specificity)
     │
     ├──► dist/wp/theme.json                    WordPress settings + styles
     ├──► dist/wp/tokens.wp.css                 CSS vars mapped to --wp--preset--*

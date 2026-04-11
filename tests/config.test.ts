@@ -410,6 +410,41 @@ describe('validateConfig — baseStyles', () => {
       } as C2bConfigInput),
     ).toThrow(/baseStyles\.spacing\.blockGap = "nope"/);
   });
+
+  it('resolves h1.fontSize when it references an existing token', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: {
+        fontSize: {
+          '2x-large': { value: '3rem' },
+        },
+      },
+      baseStyles: {
+        h1: { fontSize: '2x-large' },
+      },
+    } as C2bConfigInput);
+    expect(result.baseStyles!.h1!.fontSize).toBe('2x-large');
+  });
+
+  it('throws when h1.fontSize references an identifier that is not a defined token', () => {
+    // Regression: "6x-large" used to be classified as raw because it started
+    // with a digit, producing invalid CSS (font-size: 6x-large;). It must now
+    // be rejected as an invalid token reference.
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: {
+          fontSize: {
+            'x-large': { value: '1.5rem' },
+            '2x-large': { value: '2rem' },
+          },
+        },
+        baseStyles: {
+          h1: { fontSize: '6x-large' },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.h1\.fontSize = "6x-large".*tokens\.fontSize/s);
+  });
 });
 
 describe('validateConfig — output wrapper format', () => {

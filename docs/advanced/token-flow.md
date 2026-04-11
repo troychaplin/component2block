@@ -51,7 +51,7 @@ Maps to the WordPress preset variable with the original value as fallback. If a 
 
 Registers the token as a WordPress preset, making it available in the Site Editor color picker.
 
-### _content-generated.scss (base styles)
+### base-styles.scss (base styles)
 
 When `"primary"` is referenced in `baseStyles`:
 

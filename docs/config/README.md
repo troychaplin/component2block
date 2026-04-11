@@ -143,7 +143,7 @@ When `name` and `slug` are omitted, they're derived from the token key:
 |------|----------|----------------|---------|
 | `tokens.css` | `{output.tokensPath}` | Always | CSS custom properties with hardcoded values |
 | `fonts.css` | `{output.tokensPath dir}/fonts.css` | When `fontFace` defined | `@font-face` declarations |
-| `_content-generated.scss` | `{output.tokensPath dir}/_content-generated.scss` | When `baseStyles` defined | Base typography with `:where()` selectors |
+| `base-styles.scss` | `{output.tokensPath dir}/base-styles.scss` | When `baseStyles` defined | Base typography with `:where()` selectors |
 | `tokens.css` | `{output.wpDir}/tokens.css` | Always | CSS variables for WordPress (hardcoded) |
 | `tokens.wp.css` | `{output.wpDir}/tokens.wp.css` | When `wpThemeable: true` | CSS variables mapped to `--wp--preset--*` |
 | `theme.json` | `{output.wpDir}/theme.json` | Always | WordPress settings and styles |

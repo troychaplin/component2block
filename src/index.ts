@@ -43,10 +43,10 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
     write(fontsPath, fontsCss);
   }
 
-  // Generate _content-generated.scss if baseStyles are defined
+  // Generate base-styles.scss if baseStyles are defined
   const contentScss = generateContentScss(config);
   if (contentScss) {
-    const contentScssPath = join(dirname(config.tokensPath), '_content-generated.scss');
+    const contentScssPath = join(dirname(config.tokensPath), 'base-styles.scss');
     write(contentScssPath, contentScss);
   }
 

@@ -12,7 +12,7 @@ A design token generator that reads a single `c2b.config.json` and produces CSS 
 c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateTokensCss()      → tokens.css (CSS custom properties)
   → generateFontsCss()       → fonts.css (@font-face declarations)
-  → generateContentScss()    → _content-generated.scss (base styles)
+  → generateContentScss()    → base-styles.scss (base styles)
   → generateTokensWpCss()    → tokens.wp.css (WP preset mappings, only when wpThemeable: true)
   → generateThemeJson()      → theme.json (WordPress settings + styles)
   → generateIntegratePhp()   → integrate.php (PHP hooks, from template)
@@ -89,7 +89,7 @@ The exclusion logic for `settings.custom.*` lives in `theme-json.ts` (one `if (e
 ### Base Styles
 
 `baseStyles` in config generates two outputs from the same data:
-- **SCSS**: `_content-generated.scss` with `body {}`, `:where()` rules (zero specificity)
+- **SCSS**: `base-styles.scss` with `body {}`, `:where()` rules (zero specificity)
 - **theme.json**: `styles.typography`, `styles.color`, `styles.elements`, `styles.spacing`
 
 Supported elements: `body`, `heading`, `h1`-`h6`, `caption`, `button`, `link`
@@ -174,7 +174,7 @@ tests/
 ## Key Design Decisions
 
 - **Zero-specificity content styles**: `:where()` selectors ensure component BEM classes always win over base typography without specificity battles
-- **Two-layer content approach**: Generated `_content-generated.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
+- **Two-layer content approach**: Generated `base-styles.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
 - **Token key resolution**: Same config value resolves differently per output — SCSS uses `--prefix--segment-key`, theme.json uses `--wp--preset--category--slug`
 - **Strict `baseStyles` validation**: Every string in `baseStyles` is classified at config load time as a token (strict per-property category lookup), raw CSS, or invalid. Typos and stale token references throw clearly-located errors before any files are written. No cross-category fallback — `fontStyle: "normal"` cannot accidentally resolve to `fontWeight.normal`.
 - **Unified `cssOnly` contract**: `cssOnly: true` means "CSS variable only, never in WordPress" across every category and every generator — including `settings.custom.*` in theme.json.

@@ -10,7 +10,7 @@ Design decisions, project structure, and internals of the `component2block` pack
 - **TypeScript with ESM** — Strict mode, ES modules, compiled to `dist/` for consumption
 - **Template for PHP** — `integrate.php` is generated from a template (`templates/integrate.php.tpl`). The PHP reads `theme.json` at runtime — no hardcoded values baked in.
 - **Zero-specificity content styles** — `:where()` selectors ensure component BEM classes always win over base typography
-- **Two-layer content approach** — Generated `_content-generated.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
+- **Two-layer content approach** — Generated `base-styles.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
 - **No default preset flags** — The generator never sets `defaultPalette`, `defaultGradients`, etc. — that's the theme's responsibility
 - **Locked mode enforcement** — When `output.wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
 
@@ -83,7 +83,7 @@ component2block/
 c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateTokensCss()      → tokens.css
   → generateFontsCss()       → fonts.css (if fontFace present)
-  → generateContentScss()    → _content-generated.scss (if baseStyles present)
+  → generateContentScss()    → base-styles.scss (if baseStyles present)
   → generateTokensWpCss()    → tokens.wp.css (if wpThemeable: true)
   → generateThemeJson()      → theme.json
   → generateIntegratePhp()   → integrate.php

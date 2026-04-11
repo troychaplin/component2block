@@ -32,10 +32,10 @@ export function generate(configPath, cwd) {
         const fontsPath = join(dirname(config.tokensPath), 'fonts.css');
         write(fontsPath, fontsCss);
     }
-    // Generate _content-generated.scss if baseStyles are defined
+    // Generate base-styles.scss if baseStyles are defined
     const contentScss = generateContentScss(config);
     if (contentScss) {
-        const contentScssPath = join(dirname(config.tokensPath), '_content-generated.scss');
+        const contentScssPath = join(dirname(config.tokensPath), 'base-styles.scss');
         write(contentScssPath, contentScss);
     }
     // Generate WordPress assets
