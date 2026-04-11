@@ -90,6 +90,47 @@ describe('generateContentScss', () => {
     expect(h6Block).not.toContain('font-style: normal;');
   });
 
+  it('heading fontStyle default does not cross-resolve to a fontWeight token', () => {
+    // Regression: ensureFontStyle() defaults headings to fontStyle: 'normal'.
+    // Without strict per-property category resolution, "normal" would match
+    // fontWeight.normal and incorrectly emit var(--prefix--font-weight-normal).
+    const cfg: C2bConfig = {
+      ...config,
+      tokens: {
+        ...config.tokens,
+        fontWeight: {
+          normal: { value: '400' },
+          bold: { value: '700' },
+        },
+      },
+    };
+    const result = generateContentScss(cfg)!;
+    const h1Block = result.split(':where(h1) {')[1].split('}')[0];
+    expect(h1Block).toContain('font-style: normal;');
+    expect(h1Block).not.toContain('font-style: var(--design-system--font-weight-normal)');
+  });
+
+  it('fontWeight token ref resolves to a font-weight CSS variable', () => {
+    const cfg: C2bConfig = {
+      ...config,
+      tokens: {
+        ...config.tokens,
+        fontWeight: {
+          normal: { value: '400' },
+          medium: { value: '500' },
+        },
+      },
+      baseStyles: {
+        body: { fontWeight: 'normal' },
+        h1: { fontSize: '4.5rem', fontWeight: 'medium' },
+      },
+    };
+    const result = generateContentScss(cfg)!;
+    expect(result).toContain('font-weight: var(--design-system--font-weight-normal);');
+    const h1Block = result.split(':where(h1) {')[1].split('}')[0];
+    expect(h1Block).toContain('font-weight: var(--design-system--font-weight-medium);');
+  });
+
   it('caption maps to :where(figcaption) selector', () => {
     const result = generateContentScss(config)!;
     expect(result).toContain(':where(figcaption) {');

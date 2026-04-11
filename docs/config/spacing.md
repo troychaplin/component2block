@@ -98,7 +98,7 @@ Use `cssOnly` for spacing tokens that are only needed in component styles and sh
 | `value` | Yes | Any valid CSS length — `rem`, `px`, `min()`, `clamp()`, etc. |
 | `slug` | No | WordPress preset slug — use numeric slugs like `"40"` (auto-derived from key) |
 | `name` | No | Human-readable label for the Site Editor (auto-derived from key — rarely needed) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from WordPress entirely (no preset, no `settings.custom.*`, not overridable in the Site Editor) |
 
 ---
 

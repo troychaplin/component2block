@@ -52,7 +52,7 @@ Here, `natural` and `deep` appear in the Site Editor shadow picker. `inner` prod
 | `value` | Yes | Any valid CSS `box-shadow` value — single or comma-separated multiple shadows |
 | `name` | No | Human-readable label for the Site Editor (auto-derived from key) |
 | `slug` | No | WordPress preset slug (auto-derived from key) |
-| `cssOnly` | No | When `true`, CSS variable only — no WordPress preset |
+| `cssOnly` | No | When `true`, emit as a CSS variable only and exclude from WordPress entirely — not in `settings.shadow.presets`, not in `settings.custom.shadow`, not overridable in the Site Editor |
 
 ### Shadow Values
 
@@ -128,12 +128,31 @@ Named shadow tokens register as presets under `settings.shadow.presets`. CSS-onl
 }
 ```
 
-When a shadow has both `themeJson` and `custom` mappings (the default for this category), the generator routes each token to the right place:
+`shadow` is a dual-mode category: it can populate both `settings.shadow.presets` (the Site Editor shadow picker) and `settings.custom.shadow` (CSS custom property fallbacks). Each shadow token is routed based on its flags:
 
-- Tokens with `name` + `slug` → `settings.shadow.presets` (Site Editor picker)
-- Tokens without `name`/`slug` → `settings.custom.shadow` (CSS variable only)
+| Token form | `settings.shadow.presets` | `settings.custom.shadow` | `--{prefix}--shadow-{key}` |
+|---|---|---|---|
+| String shorthand (`"natural": "..."`) | Yes (auto-derived name/slug) | No | Yes |
+| Object with `name`/`slug` | Yes | No | Yes |
+| Object without `name`/`slug` | No | Yes | Yes |
+| Object with `cssOnly: true` | No | **No** | Yes |
 
-In practice, since `name` and `slug` are auto-derived, you'll use `cssOnly` to control which shadows stay out of the picker.
+`cssOnly: true` is the only way to emit a shadow as a CSS variable without also exposing it to WordPress (either as a preset or as a custom variable). Before the unified `cssOnly` semantics were in place, a `cssOnly` shadow was silently leaking into `settings.custom.shadow` — that's now fixed and tested.
+
+In practice, use `cssOnly` for structural shadows that should never show up in the editor picker or be overridable from WordPress:
+
+```json
+{
+  "tokens": {
+    "shadow": {
+      "natural":    "6px 6px 9px rgba(0, 0, 0, 0.2)",
+      "focus-ring": { "value": "0 0 0 3px rgba(0, 115, 170, 0.4)", "cssOnly": true }
+    }
+  }
+}
+```
+
+`natural` appears in the Site Editor shadow picker. `focus-ring` exists only as `--mylib--shadow-focus-ring` in `tokens.css` — it's not in `settings.shadow.presets`, not in `settings.custom.shadow`, and not mapped to a `--wp--preset--*` fallback in themeable mode.
 
 ---
 

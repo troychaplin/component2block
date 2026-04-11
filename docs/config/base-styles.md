@@ -22,23 +22,23 @@ The `baseStyles` section sits at the top level of the config alongside `prefix`,
     "body": {
       "fontFamily": "inter",
       "fontSize": "medium",
-      "fontWeight": "400",
-      "lineHeight": "1.6",
-      "color": "text-black",
-      "background": "off-white"
+      "fontWeight": "normal",
+      "lineHeight": "normal",
+      "color": "black",
+      "background": "grey-faint"
     },
     "heading": {
       "fontFamily": "inter",
       "color": "primary"
     },
-    "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
-    "h2": { "fontSize": "3rem", "fontWeight": "500" },
-    "h3": { "fontSize": "2.5rem", "fontWeight": "500" },
-    "h4": { "fontSize": "2rem", "fontWeight": "500" },
-    "h5": { "fontSize": "1.5rem", "fontWeight": "500" },
-    "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" },
-    "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "300", "color": "warning" },
-    "button": { "color": "off-white", "background": "primary" },
+    "h1": { "fontSize": "5x-large", "fontWeight": "medium" },
+    "h2": { "fontSize": "4x-large", "fontWeight": "medium" },
+    "h3": { "fontSize": "3x-large", "fontWeight": "medium" },
+    "h4": { "fontSize": "2x-large", "fontWeight": "medium" },
+    "h5": { "fontSize": "x-large", "fontWeight": "medium" },
+    "h6": { "fontSize": "large", "fontWeight": "medium", "fontStyle": "italic" },
+    "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "light", "color": "warning" },
+    "button": { "color": "white", "background": "primary" },
     "link": { "color": "primary", "hoverColor": "error" },
     "spacing": {
       "blockGap": "medium",
@@ -53,6 +53,8 @@ The `baseStyles` section sits at the top level of the config alongside `prefix`,
 }
 ```
 
+Every string in `baseStyles` is classified at config load time as either a **token reference** (matches a key in the property's expected category), a **raw CSS value** (numeric, hex, function, multi-value, quoted, or a known CSS keyword for the property), or **invalid** (typo or dangling reference — throws a clear error before any files are written). See [Strict Validation](#strict-validation) below for details.
+
 ---
 
 ## Elements
@@ -66,10 +68,10 @@ Sets the root-level typography and color for the page. Maps to `styles.typograph
   "body": {
     "fontFamily": "inter",
     "fontSize": "medium",
-    "fontWeight": "400",
-    "lineHeight": "1.6",
-    "color": "text-black",
-    "background": "off-white"
+    "fontWeight": "normal",
+    "lineHeight": "normal",
+    "color": "black",
+    "background": "grey-faint"
   }
 }
 ```
@@ -80,10 +82,10 @@ Sets the root-level typography and color for the page. Maps to `styles.typograph
 body {
   font-family: var(--mylib--font-family-inter);
   font-size: var(--mylib--font-size-medium);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--mylib--color-text-black);
-  background-color: var(--mylib--color-off-white);
+  font-weight: var(--mylib--font-weight-normal);
+  line-height: var(--mylib--line-height-normal);
+  color: var(--mylib--color-black);
+  background-color: var(--mylib--color-grey-faint);
 }
 ```
 
@@ -99,12 +101,14 @@ body {
       "lineHeight": "1.6"
     },
     "color": {
-      "text": "var(--wp--preset--color--text-black)",
-      "background": "var(--wp--preset--color--off-white)"
+      "text": "var(--wp--preset--color--black)",
+      "background": "var(--wp--preset--color--grey-faint)"
     }
   }
 }
 ```
+
+> **Note:** `fontWeight` and `lineHeight` belong to custom-only categories that don't produce `--wp--preset--*` variables. In theme.json `styles`, the generator emits the token's **underlying value** (e.g. `"400"`, `"1.6"`) so WordPress receives valid CSS. In SCSS, the same token resolves to a `var(--mylib--font-weight-normal)` reference.
 
 ### heading
 
@@ -132,11 +136,13 @@ Applies shared styles to all heading levels (h1–h6). In SCSS, this generates a
 
 Individual heading levels override or extend the shared `heading` styles. Each generates a `:where(hN)` rule in SCSS and an `styles.elements.hN` entry in theme.json.
 
+You can reference size tokens (recommended — so headings participate in your fluid type scale) or use raw values:
+
 ```json
 {
-  "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
-  "h2": { "fontSize": "3rem", "fontWeight": "500" },
-  "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" }
+  "h1": { "fontSize": "5x-large", "fontWeight": "medium" },
+  "h2": { "fontSize": "4x-large", "fontWeight": "medium" },
+  "h6": { "fontSize": "large", "fontWeight": "medium", "fontStyle": "italic" }
 }
 ```
 
@@ -144,19 +150,23 @@ Individual heading levels override or extend the shared `heading` styles. Each g
 
 ```scss
 :where(h1) {
-  font-size: 4.5rem;
+  font-size: var(--mylib--font-size-5x-large);
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--mylib--font-weight-medium);
 }
 
 :where(h6) {
-  font-size: 1.45rem;
+  font-size: var(--mylib--font-size-large);
   font-style: italic;
-  font-weight: 500;
+  font-weight: var(--mylib--font-weight-medium);
 }
 ```
 
 > **Note:** Individual headings (h1–h6) automatically default to `fontStyle: normal` when no `fontStyle` is specified. This prevents headings from inheriting an italic style from the shared `heading` element or the browser's defaults. To make a heading italic, set `"fontStyle": "italic"` explicitly (as shown with h6 above).
+>
+> The `fontStyle: "normal"` default correctly emits a bare CSS keyword in the generated SCSS. Strict per-property resolution means it cannot accidentally cross-resolve to a `fontWeight.normal` token even when one exists.
+
+**Tip — keep heading sizes out of the Gutenberg size picker.** If your heading sizes are meant for typography base styles only and shouldn't appear in the block editor's font-size dropdown, mark them `cssOnly: true` in `tokens.fontSize`. They still get emitted as CSS variables and can still be referenced from `baseStyles`, but they won't clutter the picker with "display" sizes content authors don't need.
 
 ### caption
 
@@ -167,7 +177,7 @@ Styles `<figcaption>` elements. Generates a `:where(figcaption)` rule in SCSS an
   "caption": {
     "fontSize": "small",
     "fontStyle": "italic",
-    "fontWeight": "300",
+    "fontWeight": "light",
     "color": "warning"
   }
 }
@@ -179,7 +189,7 @@ Styles `<figcaption>` elements. Generates a `:where(figcaption)` rule in SCSS an
 :where(figcaption) {
   font-size: var(--mylib--font-size-small);
   font-style: italic;
-  font-weight: 300;
+  font-weight: var(--mylib--font-weight-light);
   color: var(--mylib--color-warning);
 }
 ```
@@ -191,7 +201,7 @@ Styles `<button>` elements. Generates a `:where(button)` rule in SCSS and `style
 ```json
 {
   "button": {
-    "color": "off-white",
+    "color": "white",
     "background": "primary"
   }
 }
@@ -201,7 +211,7 @@ Styles `<button>` elements. Generates a `:where(button)` rule in SCSS and `style
 
 ```scss
 :where(button) {
-  color: var(--mylib--color-off-white);
+  color: var(--mylib--color-white);
   background-color: var(--mylib--color-primary);
 }
 ```
@@ -370,38 +380,84 @@ See [Spacing](./spacing.md) for the full spacing token configuration reference.
 
 ## Element Properties
 
-All elements support the following properties. Values can be token keys (resolved to CSS variables) or raw CSS values (passed through as-is).
+All elements support the following properties. Values are classified strictly per property: they either resolve to a token in the property's expected category, pass through as a raw CSS value, or fail validation.
 
 ### Typography Properties
 
-| Property | Description | Token resolution |
-|----------|-------------|-----------------|
-| `fontFamily` | Font family | Resolves key from `fontFamily` tokens |
-| `fontSize` | Font size | Resolves key from `fontSize` tokens |
-| `fontWeight` | Font weight | Passes through as raw value |
-| `lineHeight` | Line height | Passes through as raw value |
-| `fontStyle` | Font style (`normal`, `italic`) | Passes through as raw value |
+| Property | Expected token category | CSS keyword fallbacks |
+|----------|------------------------|----------------------|
+| `fontFamily` | `fontFamily` | `serif`, `sans-serif`, `monospace`, `cursive`, `fantasy`, `system-ui`, `ui-serif`, `ui-sans-serif`, `ui-monospace`, `inherit`, `initial`, `unset` |
+| `fontSize` | `fontSize` | — (use tokens or raw values) |
+| `fontWeight` | `fontWeight` | `normal`, `bold`, `lighter`, `bolder`, `inherit`, `initial`, `unset` |
+| `lineHeight` | `lineHeight` | `normal`, `inherit`, `initial`, `unset` |
+| `fontStyle` | — (no category) | `normal`, `italic`, `oblique`, `inherit`, `initial`, `unset` |
 
 ### Color Properties
 
-| Property | Description | Token resolution |
-|----------|-------------|-----------------|
-| `color` | Text color | Resolves key from `color` tokens |
-| `background` | Background color | Resolves key from `color` tokens |
-| `hoverColor` | Hover text color (link only) | Resolves key from `color` tokens |
+| Property | Expected token category | CSS keyword fallbacks |
+|----------|------------------------|----------------------|
+| `color` | `color` | `inherit`, `transparent`, `currentColor`, `initial`, `unset` |
+| `background` | `color` | `inherit`, `transparent`, `currentColor`, `initial`, `unset` |
+| `hoverColor` | `color` (link only) | `inherit`, `transparent`, `currentColor`, `initial`, `unset` |
 
-### Token Key vs Raw Value
+### Spacing Properties
 
-When a property value matches a token key, it resolves to a CSS variable. Otherwise, it passes through as a raw CSS value:
+| Property | Expected token category | CSS keyword fallbacks |
+|----------|------------------------|----------------------|
+| `spacing.padding.{top,right,bottom,left}` | `spacing` | — |
+| `spacing.blockGap` | `spacing` | — |
 
-| Config value | Type | SCSS output | theme.json output |
-|--------------|------|-------------|-------------------|
-| `"inter"` | Token key | `var(--mylib--font-family-inter)` | `var(--wp--preset--font-family--inter)` |
-| `"medium"` | Token key | `var(--mylib--font-size-medium)` | `var(--wp--preset--font-size--medium)` |
-| `"primary"` | Token key | `var(--mylib--color-primary)` | `var(--wp--preset--color--primary)` |
-| `"4.5rem"` | Raw value | `4.5rem` | `4.5rem` |
-| `"500"` | Raw value | `500` | `500` |
-| `"1.6"` | Raw value | `1.6` | `1.6` |
+### Value Resolution
+
+Each string in `baseStyles` goes through one classification step, in this order:
+
+1. **Token lookup in the property's category.** If the value is a key in the expected category (e.g. `fontSize: "medium"` and `tokens.fontSize.medium` exists), it resolves to a CSS variable. Lookup is strict — there is no cross-category fallback, so `fontSize: "large"` will not match a `spacing.large` token.
+2. **Raw CSS detection.** If the value starts with a digit/dot/minus, starts with `#`, contains a function call (`(`), contains whitespace or a comma, or is quoted, it passes through as-is.
+3. **CSS keyword whitelist.** If the value matches a known CSS keyword for the property (see the tables above), it passes through as-is. A token with the same key always wins over the keyword.
+4. **Invalid.** Anything else is a typo or a stale token reference. See [Strict Validation](#strict-validation).
+
+Examples assuming `tokens.fontFamily.inter`, `tokens.fontSize.medium`, `tokens.color.primary`, `tokens.fontWeight.medium`, and `tokens.lineHeight.normal` all exist:
+
+| Config value | For property | Classification | SCSS output | theme.json output |
+|--------------|--------------|---------------|-------------|-------------------|
+| `"inter"` | `fontFamily` | token | `var(--mylib--font-family-inter)` | `var(--wp--preset--font-family--inter)` |
+| `"medium"` | `fontSize` | token | `var(--mylib--font-size-medium)` | `var(--wp--preset--font-size--medium)` |
+| `"primary"` | `color` | token | `var(--mylib--color-primary)` | `var(--wp--preset--color--primary)` |
+| `"medium"` | `fontWeight` | token (custom-only category) | `var(--mylib--font-weight-medium)` | underlying value (e.g. `"500"`) |
+| `"normal"` | `lineHeight` | token (custom-only category) | `var(--mylib--line-height-normal)` | underlying value (e.g. `"1.6"`) |
+| `"italic"` | `fontStyle` | raw (CSS keyword) | `italic` | `"italic"` |
+| `"normal"` | `fontStyle` | raw (CSS keyword) | `normal` | `"normal"` |
+| `"sans-serif"` | `fontFamily` | raw (CSS keyword) | `sans-serif` | `"sans-serif"` |
+| `"4.5rem"` | `fontSize` | raw (numeric) | `4.5rem` | `"4.5rem"` |
+| `"500"` | `fontWeight` | raw (numeric) | `500` | `"500"` |
+| `"1.6"` | `lineHeight` | raw (numeric) | `1.6` | `"1.6"` |
+| `"#191919"` | `color` | raw (hex) | `#191919` | `"#191919"` |
+| `"var(--accent)"` | `color` | raw (function) | `var(--accent)` | `"var(--accent)"` |
+
+> **Why custom-only tokens resolve to their underlying value in theme.json:** categories like `fontWeight`, `lineHeight`, and `radius` do not have `--wp--preset--*` mappings. Emitting a semantic slug like `"medium"` into theme.json `styles` would give WordPress invalid CSS (`font-weight: medium`). The generator looks up the token and emits its raw value instead (e.g. `"500"`), so WordPress receives valid CSS while SCSS consumers still get a themeable variable reference.
+>
+> **Why `cssOnly` tokens resolve to their underlying value in theme.json:** `cssOnly` preset tokens are excluded from `settings.*.*` in theme.json, which means the corresponding `--wp--preset--*` variable will not exist in WordPress. The generator falls back to the raw value so the resulting CSS still works. SCSS output is unaffected — it still emits `var(--prefix--{segment}-{key})` because `tokens.css` defines that variable.
+
+---
+
+## Strict Validation
+
+`baseStyles` values are validated at config load time, before any files are written. Every string is classified using the rules above. Any value that doesn't fall into **token**, **raw**, or **CSS keyword** throws an error with full context:
+
+```
+Config error: baseStyles.body.color = "text-black" is not a valid token or CSS keyword for "color".
+  Expected a token key from tokens.color (available: primary, primary-dark, black, grey-dark, grey, grey-light, grey-faint, white).
+  Or use one of these CSS keywords: inherit, transparent, currentColor, initial, unset.
+  Or provide a raw CSS value (numeric, hex, rgb(), var(), calc(), multi-value, or quoted string).
+```
+
+Common cases strict validation catches:
+
+- **Stale references.** You remove `tokens.color.text-black` but forget to update `baseStyles.body.color`. Previously the value would pass through as a literal (`color: text-black`) and silently break the page. Strict validation fails the build instead.
+- **Cross-category typos.** You type `fontSize: "large"` intending a font size token, but `fontSize.large` doesn't exist and `spacing.large` does. Lenient resolution would pick the spacing token (wrong segment, wrong value). Strict per-property lookup refuses to cross-resolve and reports the miss.
+- **Unknown CSS keywords.** You type `color: "blak"` instead of `"black"` or `"inherit"`. It's not a token, not raw-looking, not a whitelisted keyword — so it errors.
+
+Valid configurations continue to work unchanged. The validation is additive: it only rejects values that were previously producing silently wrong output.
 
 ---
 
@@ -549,7 +605,7 @@ A Card works identically whether it's inside prose content or not. Base styles a
 
 ## Full Example
 
-Here's a complete `baseStyles` section with all supported elements:
+Here's a complete `baseStyles` section with all supported elements, assuming matching tokens exist for every reference:
 
 ```json
 {
@@ -557,29 +613,29 @@ Here's a complete `baseStyles` section with all supported elements:
     "body": {
       "fontFamily": "inter",
       "fontSize": "medium",
-      "fontWeight": "400",
-      "lineHeight": "1.6",
-      "color": "text-black",
-      "background": "off-white"
+      "fontWeight": "normal",
+      "lineHeight": "normal",
+      "color": "black",
+      "background": "grey-faint"
     },
     "heading": {
       "fontFamily": "inter",
       "color": "primary"
     },
-    "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
-    "h2": { "fontSize": "3rem", "fontWeight": "500" },
-    "h3": { "fontSize": "2.5rem", "fontWeight": "500" },
-    "h4": { "fontSize": "2rem", "fontWeight": "500" },
-    "h5": { "fontSize": "1.5rem", "fontWeight": "500" },
-    "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" },
+    "h1": { "fontSize": "5x-large", "fontWeight": "medium" },
+    "h2": { "fontSize": "4x-large", "fontWeight": "medium" },
+    "h3": { "fontSize": "3x-large", "fontWeight": "medium" },
+    "h4": { "fontSize": "2x-large", "fontWeight": "medium" },
+    "h5": { "fontSize": "x-large", "fontWeight": "medium" },
+    "h6": { "fontSize": "large", "fontWeight": "medium", "fontStyle": "italic" },
     "caption": {
       "fontSize": "small",
       "fontStyle": "italic",
-      "fontWeight": "300",
+      "fontWeight": "light",
       "color": "warning"
     },
     "button": {
-      "color": "off-white",
+      "color": "white",
       "background": "primary"
     },
     "link": {
@@ -598,3 +654,14 @@ Here's a complete `baseStyles` section with all supported elements:
   }
 }
 ```
+
+This config requires the following tokens to exist (typical for a full design system):
+
+- `tokens.color`: `primary`, `black`, `grey-faint`, `white`, `warning`, `error`
+- `tokens.fontFamily`: `inter`
+- `tokens.fontSize`: `small`, `medium`, `large`, `x-large`, `2x-large`, `3x-large`, `4x-large`, `5x-large` (the larger sizes are typically `cssOnly: true` so they stay out of the Gutenberg size picker)
+- `tokens.fontWeight`: `light`, `normal`, `medium`
+- `tokens.lineHeight`: `normal`
+- `tokens.spacing`: `medium`, `large`
+
+If any of these are missing, `c2b generate` will fail with a clear error pointing at the first offending reference.

@@ -110,14 +110,23 @@ User-facing category names map to internal names via `INPUT_CATEGORY_MAP` (e.g. 
 
 ## Token Resolution
 
-Two resolution functions in `src/config.ts` convert token key references to CSS variables:
+`src/config.ts` exports two layers of resolver.
+
+**Generic resolvers** (used outside `baseStyles`):
 
 - **`resolveForScss(value, prefix, tokens, preferCategory?)`** → `var(--{prefix}--{cssSegment}-{key})`
 - **`resolveForThemeJson(value, tokens, preferCategory?)`** → `var(--wp--preset--{category}--{slug})`
 
-Both use `resolveTokenRef()` internally. When a value matches a token key, it resolves to the appropriate variable reference. Otherwise, the raw value passes through unchanged.
+Both use `resolveTokenRef()` internally. When a value matches a token key, it resolves to the appropriate variable reference. Otherwise, the raw value passes through unchanged. The `preferCategory` parameter disambiguates keys that exist in multiple categories (e.g. `"large"` could match both `spacing` and `fontSize`).
 
-The `preferCategory` parameter disambiguates keys that exist in multiple categories (e.g. `"large"` could match both `spacing` and `fontSize`).
+**Strict baseStyles resolvers** (used by `content-scss.ts` and `theme-json.ts` for every `baseStyles` value):
+
+- **`resolveBaseStyleValueForScss(value, property, prefix, tokens)`**
+- **`resolveBaseStyleValueForThemeJson(value, property, tokens)`**
+
+Both delegate to `classifyBaseStyleValue(value, property, tokens)`, which is the single source of truth for how a `baseStyles` string is interpreted. Classification returns one of three variants: **token** (strict per-property category lookup — no cross-category fallback), **raw** (numeric/hex/function/multi-value/quoted, or a known CSS keyword for the property), or **invalid** (typo or dangling reference).
+
+`validateBaseStyles()` runs during `validateConfig()` and throws on any `invalid` classification before files are written. The theme.json resolver emits a `--wp--preset--*` reference only when the token has both a `wpPreset` mapping and a `slug`; otherwise (custom-only categories, `cssOnly` tokens) it emits the underlying value.
 
 See [Token Flow](./token-flow.md) for the full resolution walkthrough.
 
@@ -125,23 +134,23 @@ See [Token Flow](./token-flow.md) for the full resolution walkthrough.
 
 - **String shorthand in preset categories** (`"primary": "#0073aa"`) — Registers as a WordPress preset (visible in Site Editor)
 - **Object with name/slug** — Registers as a WordPress preset with explicit overrides
-- **Object with `cssOnly: true`** — CSS variable only, keeps object format
-- **String shorthand in custom categories** (`"bold": "700"`) — CSS variable only, no preset
+- **Object with `cssOnly: true`** — CSS variable only, excluded from every theme.json output (preset arrays **and** `settings.custom.*`). The same contract applies to every category — see the `cssOnly` section in [Token Flow](./token-flow.md#css-only-token-flow).
+- **String shorthand in custom categories** (`"bold": "700"`) — CSS variable only, no preset (categories like `fontWeight`/`lineHeight`/`radius`/`transition` have no native WordPress preset mapping)
 - **Fluid shorthand** (`{ "min": "...", "max": "..." }`) — Generates `clamp()` values (also supports nested `{ fluid: { min, max } }`)
 
 ## Testing
 
-191 tests across 8 files using Vitest:
+233+ tests across 9 files using Vitest:
 
-| Test file | Tests | Coverage |
-|-----------|-------|----------|
-| `config.test.ts` | 28 | Config loading, validation, token extraction |
-| `tokens-css.test.ts` | 14 | CSS generation, fluid values |
-| `tokens-wp-css.test.ts` | 14 | WordPress CSS variable mapping |
-| `theme-json.test.ts` | 63 | Settings, styles, presets, fluid |
-| `fonts-css.test.ts` | 7 | @font-face output |
-| `content-scss.test.ts` | 46 | Selectors, declarations, padding/blockgap |
-| `preset.test.ts` | 7 | Storybook preset file discovery |
-| `integration.test.ts` | 12 | Full pipeline with temp directories |
+| Test file | Coverage |
+|-----------|----------|
+| `config.test.ts` | Config loading, validation, token extraction, strict `baseStyles` validation |
+| `tokens-css.test.ts` | CSS generation, fluid values |
+| `tokens-wp-css.test.ts` | WordPress CSS variable mapping |
+| `theme-json.test.ts` | Settings, styles, presets, fluid, unified `cssOnly` exclusions |
+| `fonts-css.test.ts` | `@font-face` output |
+| `content-scss.test.ts` | Selectors, declarations, padding/blockGap, strict per-property resolution |
+| `preset.test.ts` | Storybook preset file discovery |
+| `integration.test.ts` | Full pipeline with temp directories |
 
 Run with `npm test` from the component2block directory.

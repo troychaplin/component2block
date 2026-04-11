@@ -185,6 +185,126 @@ describe('generateThemeJson — shadow presets', () => {
     expect(parsed.settings.custom.shadow.sm).toBeUndefined();
     expect(parsed.settings.custom.shadow.md).toBeUndefined();
   });
+
+  it('excludes cssOnly shadows from both settings.shadow.presets and settings.custom.shadow', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        shadow: {
+          sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
+          internal: { value: '0 0 0 1px rgb(0 0 0 / 0.1)', cssOnly: true },
+        },
+      },
+    };
+    const out = JSON.parse(generateThemeJson(cfg));
+    expect(out.settings.shadow.presets).toEqual([
+      { slug: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small' },
+    ]);
+    expect(out.settings.custom?.shadow?.internal).toBeUndefined();
+  });
+});
+
+describe('generateThemeJson — cssOnly in custom-only categories', () => {
+  it('excludes cssOnly fontWeight entries from settings.custom.fontWeight', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontWeight: {
+          normal: { value: '400' },
+          bold: { value: '700' },
+          black: { value: '900', cssOnly: true },
+        },
+      },
+    };
+    const out = JSON.parse(generateThemeJson(cfg));
+    expect(out.settings.custom.fontWeight).toEqual({ normal: '400', bold: '700' });
+    expect(out.settings.custom.fontWeight.black).toBeUndefined();
+  });
+
+  it('excludes cssOnly lineHeight entries from settings.custom.lineHeight', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        lineHeight: {
+          normal: { value: '1.6' },
+          internal: { value: '1.15', cssOnly: true },
+        },
+      },
+    };
+    const out = JSON.parse(generateThemeJson(cfg));
+    expect(out.settings.custom.lineHeight).toEqual({ normal: '1.6' });
+    expect(out.settings.custom.lineHeight.internal).toBeUndefined();
+  });
+
+  it('excludes cssOnly radius entries from settings.custom.radius', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        radius: {
+          md: { value: '4px' },
+          pill: { value: '9999px', cssOnly: true },
+        },
+      },
+    };
+    const out = JSON.parse(generateThemeJson(cfg));
+    expect(out.settings.custom.radius).toEqual({ md: '4px' });
+    expect(out.settings.custom.radius.pill).toBeUndefined();
+  });
+
+  it('drops settings.custom.* entry entirely when all tokens in a custom-only category are cssOnly', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        transition: {
+          internal: { value: '150ms ease', cssOnly: true },
+        },
+      },
+    };
+    const out = JSON.parse(generateThemeJson(cfg));
+    expect(out.settings.custom?.transition).toBeUndefined();
+  });
+
+  it('still emits cssOnly tokens as CSS variables via baseStyles SCSS resolution', () => {
+    // Sanity check: a cssOnly token in a custom category should still be
+    // resolvable as a CSS var in the SCSS output path, even though it does
+    // not appear anywhere in theme.json.
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontWeight: {
+          normal: { value: '400' },
+          black: { value: '900', cssOnly: true },
+        },
+      },
+      baseStyles: {
+        body: { fontWeight: 'black' },
+      },
+    };
+    // Validation should pass (token exists in the fontWeight category)
+    const out = JSON.parse(generateThemeJson(cfg));
+    // In theme.json styles, custom-only category tokens resolve to the raw value
+    expect(out.styles.typography.fontWeight).toBe('900');
+    // And the token is excluded from settings.custom.fontWeight
+    expect(out.settings.custom.fontWeight.black).toBeUndefined();
+  });
 });
 
 describe('generateThemeJson — fluid font sizes', () => {
@@ -447,6 +567,49 @@ describe('generateThemeJson — baseStyles', () => {
   it('does not include styles block when baseStyles absent', () => {
     const noBaseStyles = JSON.parse(generateThemeJson({ ...baseStylesConfig, baseStyles: undefined }));
     expect(noBaseStyles.styles).toBeUndefined();
+  });
+
+  it('resolves cssOnly preset tokens to their raw value in styles, not to a dangling preset var', () => {
+    // A cssOnly fontSize token is not emitted to settings.typography.fontSizes,
+    // so `--wp--preset--font-size--{slug}` will not exist in WordPress.
+    // styles.elements.h1.typography.fontSize must use the underlying value
+    // instead of a dangling preset var reference.
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontSize: {
+          display: { value: '4.5rem', cssOnly: true },
+        },
+      },
+      baseStyles: {
+        h1: { fontSize: 'display' },
+      },
+    };
+    const parsed = JSON.parse(generateThemeJson(cfg));
+    expect(parsed.settings.typography?.fontSizes).toBeUndefined();
+    expect(parsed.styles.elements.h1.typography.fontSize).toBe('4.5rem');
+  });
+
+  it('resolves fontWeight and lineHeight token refs to their underlying value', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontWeight: { medium: { value: '500' } },
+        lineHeight: { normal: { value: '1.6' } },
+      },
+      baseStyles: {
+        body: { fontWeight: 'medium', lineHeight: 'normal' },
+      },
+    };
+    const parsed = JSON.parse(generateThemeJson(cfg));
+    expect(parsed.styles.typography.fontWeight).toBe('500');
+    expect(parsed.styles.typography.lineHeight).toBe('1.6');
   });
 
   it('maps body to styles.typography with resolved token refs', () => {

@@ -276,6 +276,7 @@ describe('validateConfig — baseStyles', () => {
     const result = validateConfig({
       prefix: 'test',
       fontFamily: { inter: { value: 'Inter, sans-serif' } },
+      fontSize: { medium: { value: '1rem' } },
       baseStyles: {
         body: { fontFamily: 'inter', fontSize: 'medium' },
         h1: { fontSize: '3rem' },
@@ -290,6 +291,7 @@ describe('validateConfig — baseStyles', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { primary: { value: '#000' } },
+      fontFamily: { inter: { value: 'Inter, sans-serif' } },
       baseStyles: { body: { fontFamily: 'inter' } },
     } as C2bConfigInput);
     expect(result.tokens).not.toHaveProperty('baseStyles');
@@ -301,6 +303,112 @@ describe('validateConfig — baseStyles', () => {
       color: { primary: { value: '#000' } },
     } as C2bConfigInput);
     expect(result.baseStyles).toBeUndefined();
+  });
+
+  it('throws when a baseStyles value references a missing token', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        color: { primary: { value: '#000' } },
+        baseStyles: {
+          body: { color: 'text-black' },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.body\.color = "text-black".*not a valid token/s);
+  });
+
+  it('throws when a fontSize ref matches a token in a different category', () => {
+    // spacing has "large" but fontSize does not — should not cross-resolve
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        spacing: { large: { value: '2rem' } },
+        baseStyles: {
+          body: { fontSize: 'large' },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.body\.fontSize = "large".*tokens\.fontSize/s);
+  });
+
+  it('allows CSS keywords for properties without a token category', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      baseStyles: {
+        h6: { fontStyle: 'italic' },
+      },
+    } as C2bConfigInput);
+    expect(result.baseStyles!.h6!.fontStyle).toBe('italic');
+  });
+
+  it('allows CSS keywords as fallback when the token does not exist', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      baseStyles: {
+        body: { fontWeight: 'bold' },
+      },
+    } as C2bConfigInput);
+    expect(result.baseStyles!.body!.fontWeight).toBe('bold');
+  });
+
+  it('prefers a token ref over a CSS keyword when both exist', () => {
+    // fontWeight.bold token exists — should be treated as a token ref, not the CSS keyword
+    const result = validateConfig({
+      prefix: 'test',
+      fontWeight: { bold: '700' },
+      baseStyles: {
+        body: { fontWeight: 'bold' },
+      },
+    } as C2bConfigInput);
+    expect(result.baseStyles!.body!.fontWeight).toBe('bold');
+  });
+
+  it('accepts raw numeric values for any property', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      baseStyles: {
+        body: { fontWeight: '400', lineHeight: '1.6' },
+        h1: { fontSize: '4.5rem' },
+      },
+    } as C2bConfigInput);
+    expect(result.baseStyles!.body!.fontWeight).toBe('400');
+    expect(result.baseStyles!.h1!.fontSize).toBe('4.5rem');
+  });
+
+  it('reports the element and property in the error message', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        color: { primary: { value: '#000' } },
+        baseStyles: {
+          h3: { color: 'missing-color' },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.h3\.color/);
+  });
+
+  it('validates spacing.padding and spacing.blockGap', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        spacing: { small: { value: '0.5rem' } },
+        baseStyles: {
+          spacing: { padding: { top: 'small', right: 'huge' } },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.spacing\.padding\.right = "huge"/);
+
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        spacing: { small: { value: '0.5rem' } },
+        baseStyles: {
+          spacing: { blockGap: 'nope' },
+        },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.spacing\.blockGap = "nope"/);
   });
 });
 

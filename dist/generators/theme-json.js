@@ -1,5 +1,5 @@
 import { CATEGORY_REGISTRY, CATEGORY_ORDER } from '../types.js';
-import { resolveForThemeJson, ensureFontStyle } from '../config.js';
+import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js';
 export function generateThemeJson(config) {
     const settings = {};
     const custom = {};
@@ -47,10 +47,15 @@ export function generateThemeJson(config) {
                 setNestedValue(settings, def.themeJson.path, presets);
             }
         }
-        // Custom categories — tokens without name+slug (or all tokens if custom-only)
+        // Custom categories — tokens without name+slug (or all tokens if custom-only).
+        // cssOnly tokens are excluded from settings.custom.* entirely so that the
+        // cssOnly contract ("emit as CSS variable only, never expose to WordPress")
+        // holds consistently across every category.
         if (def.custom) {
             const values = {};
             for (const [tokenKey, entry] of Object.entries(group)) {
+                if (entry.cssOnly)
+                    continue;
                 // If category has both themeJson and custom (like shadow),
                 // only put tokens WITHOUT name+slug into custom
                 if (def.themeJson && entry.name && entry.slug)
@@ -148,17 +153,17 @@ function buildStylesBlock(baseStyles, tokens) {
             styles.color = bodyColor;
         }
     }
-    // Spacing → styles.spacing (prefer spacing category for ambiguous keys)
+    // Spacing → styles.spacing
     if (baseStyles.spacing?.blockGap || baseStyles.spacing?.padding) {
         const spacingBlock = {};
         if (baseStyles.spacing.blockGap) {
-            spacingBlock.blockGap = resolveForThemeJson(baseStyles.spacing.blockGap, tokens, 'spacing');
+            spacingBlock.blockGap = resolveBaseStyleValueForThemeJson(baseStyles.spacing.blockGap, 'blockGap', tokens);
         }
         if (baseStyles.spacing.padding) {
             const padding = {};
             for (const [side, value] of Object.entries(baseStyles.spacing.padding)) {
                 if (value !== undefined) {
-                    padding[side] = resolveForThemeJson(value, tokens, 'spacing');
+                    padding[side] = resolveBaseStyleValueForThemeJson(value, 'padding', tokens);
                 }
             }
             if (Object.keys(padding).length > 0) {
@@ -191,7 +196,7 @@ function buildStylesBlock(baseStyles, tokens) {
         // Link :hover pseudo-class
         if (element === 'link' && def.hoverColor !== undefined) {
             const hoverColor = {
-                text: resolveForThemeJson(def.hoverColor, tokens, 'colorPalette'),
+                text: resolveBaseStyleValueForThemeJson(def.hoverColor, 'hoverColor', tokens),
             };
             elementObj[':hover'] = { color: hoverColor };
         }
@@ -206,39 +211,42 @@ function buildStylesBlock(baseStyles, tokens) {
 }
 /**
  * Build a theme.json typography object from a BaseStyleElementDef.
- * Values are resolved through resolveForThemeJson.
+ * Each property is resolved strictly against its expected token category.
+ * Preset tokens (fontFamily, fontSize) emit `var(--wp--preset--*)`;
+ * custom-only tokens (fontWeight, lineHeight) emit their underlying value
+ * so WordPress receives valid CSS rather than a semantic slug.
  */
 function buildTypographyObject(def, tokens) {
     const result = {};
     if (def.fontFamily !== undefined) {
-        result.fontFamily = resolveForThemeJson(def.fontFamily, tokens);
+        result.fontFamily = resolveBaseStyleValueForThemeJson(def.fontFamily, 'fontFamily', tokens);
     }
     if (def.fontSize !== undefined) {
-        result.fontSize = resolveForThemeJson(def.fontSize, tokens);
+        result.fontSize = resolveBaseStyleValueForThemeJson(def.fontSize, 'fontSize', tokens);
     }
     if (def.fontStyle !== undefined) {
-        result.fontStyle = def.fontStyle;
+        result.fontStyle = resolveBaseStyleValueForThemeJson(def.fontStyle, 'fontStyle', tokens);
     }
     if (def.fontWeight !== undefined) {
-        result.fontWeight = def.fontWeight;
+        result.fontWeight = resolveBaseStyleValueForThemeJson(def.fontWeight, 'fontWeight', tokens);
     }
     if (def.lineHeight !== undefined) {
-        result.lineHeight = def.lineHeight;
+        result.lineHeight = resolveBaseStyleValueForThemeJson(def.lineHeight, 'lineHeight', tokens);
     }
     return result;
 }
 /**
  * Build a theme.json color object from a BaseStyleElementDef.
- * Maps color → text and background → background.
- * Values are resolved through resolveForThemeJson with 'colorPalette' preference.
+ * Maps color → text and background → background. Resolved strictly against
+ * tokens.colorPalette.
  */
 function buildColorObject(def, tokens) {
     const result = {};
     if (def.color !== undefined) {
-        result.text = resolveForThemeJson(def.color, tokens, 'colorPalette');
+        result.text = resolveBaseStyleValueForThemeJson(def.color, 'color', tokens);
     }
     if (def.background !== undefined) {
-        result.background = resolveForThemeJson(def.background, tokens, 'colorPalette');
+        result.background = resolveBaseStyleValueForThemeJson(def.background, 'background', tokens);
     }
     return result;
 }
