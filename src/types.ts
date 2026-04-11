@@ -202,6 +202,22 @@ export const CATEGORY_ORDER = [...VALID_CATEGORIES].sort(
   (a, b) => CATEGORY_REGISTRY[a].order - CATEGORY_REGISTRY[b].order,
 );
 
+/**
+ * Fluid typography viewport anchors. These define the viewport widths at
+ * which a fluid font size locks to its min and max values respectively.
+ * Values must be CSS lengths with a `px` unit.
+ */
+export interface FluidConfig {
+  minViewport: string;
+  maxViewport: string;
+}
+
+/** Default viewport anchors used when `fluid` is not set in config. */
+export const DEFAULT_FLUID: FluidConfig = {
+  minViewport: '320px',
+  maxViewport: '1600px',
+};
+
 /** Internal config after normalization — uses flat category keys like colorPalette */
 export interface C2bConfig {
   prefix: string;
@@ -210,6 +226,8 @@ export interface C2bConfig {
   wpThemeable: boolean;
   tokens: Partial<Record<TokenCategory, TokenGroup>>;
   baseStyles?: BaseStylesConfig;
+  /** Fluid typography viewport anchors. Always populated by the validator; optional here so hand-written test fixtures can omit it. */
+  fluid?: FluidConfig;
 }
 
 /** Output configuration group */
@@ -245,6 +263,8 @@ export interface C2bConfigInput {
   output?: OutputConfig;
   tokens?: Record<string, TokenGroupInput>;
   baseStyles?: BaseStylesConfig;
+  /** Fluid typography viewport anchors. Both fields optional; defaults to 320px / 1600px. */
+  fluid?: Partial<FluidConfig>;
   /** @deprecated Use output.tokensPath */
   tokensPath?: string;
   /** @deprecated Use output.wpDir */

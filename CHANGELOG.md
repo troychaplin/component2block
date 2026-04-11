@@ -20,6 +20,11 @@ Prefix the change with one of these keywords:
 ### Added
 
 - `pnpm run release <version>` command (`scripts/release.mjs`) that moves `CHANGELOG.md` `[Unreleased]` entries into a dated section, bumps `package.json`, refreshes `pnpm-lock.yaml`, runs tests and build, and creates a `release: <version>` commit and tag. Verifies the active Node version matches `.nvmrc` up front so a stale Node version can't produce a half-finished release.
+- Optional top-level `fluid` config section for fluid typography viewport anchors: `{ "fluid": { "minViewport": "320px", "maxViewport": "1600px" } }`. Both fields default to WordPress's conventional values and must be CSS lengths with a `px` unit. When a non-default range is set, it also propagates to `settings.typography.fluid` in the generated `theme.json` so WordPress's own fluid calculations stay in sync.
+
+### Fixed
+
+- Fluid font-size `clamp()` output was mathematically broken: the denominator had no unit, so `(100vw - 320px) / 1280` resolved to a length instead of a unit-free ratio, and the scaling constant was a bare number instead of a rem delta. The result: fluid tokens stayed pinned near their minimum value and never actually scaled with the viewport. The generator now emits `clamp(<min>, <min> + (<delta><unit> * ((100vw - <vwMin>px) / <vwRange>px)), <max>)` with a length denominator and a unit-carrying delta, matching the formula shape WordPress uses internally. Regression coverage includes a test that evaluates the emitted formula at several viewport widths and asserts it actually interpolates between min and max.
 
 ## [0.2.1] - 2026-04-11
 

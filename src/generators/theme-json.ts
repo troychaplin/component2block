@@ -1,5 +1,5 @@
 import type { C2bConfig, TokenCategory, TokenGroup, BaseStylesConfig, BaseStyleElementDef } from '../types.js';
-import { CATEGORY_REGISTRY, CATEGORY_ORDER } from '../types.js';
+import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID } from '../types.js';
 import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -77,10 +77,18 @@ export function generateThemeJson(config: C2bConfig): string {
     }
   }
 
-  // When custom font sizes are defined, enable fluid typography
+  // When custom font sizes are defined, enable fluid typography. If the config
+  // uses non-default viewport anchors, emit them explicitly so WordPress's own
+  // fluid typography calculations stay in sync with tokens.css / tokens.wp.css.
   if (config.tokens.fontSize) {
     if (!settings.typography) settings.typography = {};
-    settings.typography.fluid = true;
+    const fluid = config.fluid ?? DEFAULT_FLUID;
+    const isDefaultFluid =
+      fluid.minViewport === DEFAULT_FLUID.minViewport &&
+      fluid.maxViewport === DEFAULT_FLUID.maxViewport;
+    settings.typography.fluid = isDefaultFluid
+      ? true
+      : { minViewportWidth: fluid.minViewport, maxViewportWidth: fluid.maxViewport };
   }
 
   // Merge custom values into settings

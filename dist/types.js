@@ -96,6 +96,11 @@ export const CATEGORY_REGISTRY = {
 export const VALID_CATEGORIES = Object.keys(CATEGORY_REGISTRY);
 /** Categories sorted by their output order */
 export const CATEGORY_ORDER = [...VALID_CATEGORIES].sort((a, b) => CATEGORY_REGISTRY[a].order - CATEGORY_REGISTRY[b].order);
+/** Default viewport anchors used when `fluid` is not set in config. */
+export const DEFAULT_FLUID = {
+    minViewport: '320px',
+    maxViewport: '1600px',
+};
 /**
  * Convert a kebab-case key to camelCase.
  * e.g. "content-size" → "contentSize"
