@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-04-11
+
 ### Changed
 
 - Renamed the generated base typography file from `_content-generated.scss` to `base-styles.scss`. Authored `content.scss` files should update their import to `@use 'base-styles'`.
