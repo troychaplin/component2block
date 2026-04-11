@@ -25,7 +25,7 @@ The preset reads `c2b.config.json`, derives file paths from `output.tokensPath`,
 | `tokens.css` | CSS custom properties (generated) |
 | `fonts.css` | @font-face declarations (generated, if fontFace defined) |
 | `reset.scss` | Structural CSS reset (authored by you) |
-| `content.scss` | Base typography — imports `_content-generated.scss` + your behavioral rules (authored by you) |
+| `content.scss` | Base typography — imports `base-styles.scss` + your behavioral rules (authored by you) |
 
 All paths are derived from the `output.tokensPath` config value. If `output.tokensPath` is `src/styles/tokens.css`, the preset looks for `src/styles/fonts.css`, `src/styles/reset.scss`, and `src/styles/content.scss` in the same directory.
 
@@ -40,7 +40,7 @@ Files that don't exist on disk are silently skipped. For example, if you haven't
 1. Start Storybook: `npm run dev`
 2. Open browser dev tools on any story
 3. Check that `tokens.css` variables are available on `:root`
-4. Check that base typography from `_content-generated.scss` is applied to body and heading elements
+4. Check that base typography from `base-styles.scss` is applied to body and heading elements
 5. Check that `@font-face` declarations from `fonts.css` are present (if you have font tokens)
 
 ## No Manual Imports Needed

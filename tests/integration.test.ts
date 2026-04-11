@@ -127,19 +127,19 @@ describe('integration: generate() — baseStyles', () => {
     rmSync(BS_TEST_DIR, { recursive: true, force: true });
   });
 
-  it('file count includes _content-generated.scss', () => {
+  it('file count includes base-styles.scss', () => {
     const result = generate(BS_CONFIG_PATH, BS_TEST_DIR);
 
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/_content-generated.scss');
-    // base files: src/tokens.css, out/wp/tokens.css, theme.json, integrate.php + _content-generated.scss = 5
+    expect(paths).toContain('src/base-styles.scss');
+    // base files: src/tokens.css, out/wp/tokens.css, theme.json, integrate.php + base-styles.scss = 5
     expect(result.files.length).toBeGreaterThanOrEqual(5);
   });
 
-  it('_content-generated.scss has :where() selectors', () => {
+  it('base-styles.scss has :where() selectors', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
     const content = readFileSync(
-      resolve(BS_TEST_DIR, 'src/_content-generated.scss'),
+      resolve(BS_TEST_DIR, 'src/base-styles.scss'),
       'utf-8',
     );
 
@@ -249,10 +249,10 @@ describe('integration: generate() — baseStyles spacing', () => {
     expect(parsed.styles.spacing.padding.top).toBe('0');
   });
 
-  it('_content-generated.scss includes root padding and alignfull rules', () => {
+  it('base-styles.scss includes root padding and alignfull rules', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
     const content = readFileSync(
-      resolve(SP_TEST_DIR, 'src/_content-generated.scss'),
+      resolve(SP_TEST_DIR, 'src/base-styles.scss'),
       'utf-8',
     );
 

@@ -60,7 +60,7 @@ try {
     }
     const contentScss = generateContentScss(config);
     if (contentScss) {
-      console.log('=== _content-generated.scss ===');
+      console.log('=== base-styles.scss ===');
       console.log(contentScss);
     }
     if (config.wpThemeable) {

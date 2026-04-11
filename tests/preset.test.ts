@@ -82,7 +82,7 @@ describe('preset: previewAnnotations — all files', () => {
     writeFileSync(join(ALL_STYLES, 'tokens.css'), ':root {}');
     writeFileSync(join(ALL_STYLES, 'fonts.css'), '@font-face {}');
     writeFileSync(join(ALL_STYLES, 'reset.scss'), '* {}');
-    writeFileSync(join(ALL_STYLES, 'content.scss'), '@use "content-generated";');
+    writeFileSync(join(ALL_STYLES, 'content.scss'), '@use "base-styles";');
 
     process.chdir(ALL_DIR);
   });

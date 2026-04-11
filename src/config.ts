@@ -374,14 +374,20 @@ const CSS_KEYWORDS: Record<string, Set<string>> = {
 };
 
 /**
- * Detect values that are obviously raw CSS — numeric values (with or without
- * units), hex colors, function notation (rgb/var/calc/clamp/min/max),
- * multi-value stacks (commas or whitespace), and quoted strings. These
- * bypass token lookup and keyword checks entirely.
+ * Detect values that are obviously raw CSS — numeric/length values, hex colors,
+ * function notation (rgb/var/calc/clamp/min/max), multi-value stacks (commas or
+ * whitespace), and quoted strings. These bypass token lookup and keyword checks.
+ *
+ * The numeric check is strict: a value matches only if it is a valid CSS number
+ * or length (optional sign, digits with optional decimal, optional unit).
+ * Identifiers like "6x-large" or "2x-small" do NOT match, so undefined token
+ * references are caught by validation instead of silently passing through.
  */
+const NUMERIC_CSS_VALUE = /^-?(?:\d+\.?\d*|\.\d+)(?:[a-z]+|%)?$/i;
+
 function looksLikeRawValue(value: string): boolean {
   if (value.length === 0) return true;
-  if (/^[-\d.]/.test(value)) return true;
+  if (NUMERIC_CSS_VALUE.test(value)) return true;
   if (value.startsWith('#')) return true;
   if (value.includes('(')) return true;
   if (/[\s,]/.test(value)) return true;

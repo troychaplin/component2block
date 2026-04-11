@@ -88,7 +88,7 @@ your-project/
 ├── src/styles/
 │   ├── tokens.css                   generated — CSS custom properties
 │   ├── fonts.css                    generated — @font-face declarations
-│   └── _content-generated.scss      generated — base typography (if baseStyles defined)
+│   └── base-styles.scss             generated — base typography (if baseStyles defined)
 │
 └── dist/wp/
     ├── theme.json                   generated — WordPress settings + styles
@@ -118,7 +118,7 @@ It injects any of these files that exist in your `output.tokensPath` directory:
 | `tokens.css` | CSS custom properties (always generated) |
 | `fonts.css` | `@font-face` declarations (if `fontFace` defined) |
 | `reset.scss` | Structural CSS reset (authored by you) |
-| `content.scss` | Base typography — imports `_content-generated.scss` + your behavioral rules (authored by you) |
+| `content.scss` | Base typography — imports `base-styles.scss` + your behavioral rules (authored by you) |
 
 See [Storybook Preset](./guides/storybook-preset.md) for details.
 

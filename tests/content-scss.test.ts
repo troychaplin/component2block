@@ -75,6 +75,30 @@ describe('generateContentScss', () => {
     expect(result).toContain(':where(h2) {');
   });
 
+  it('h1.fontSize resolves to var() when referencing a defined token', () => {
+    // Regression: identifiers like "2x-large" start with a digit and used
+    // to be classified as raw CSS, emitting a bare identifier. When the
+    // token exists in tokens.fontSize, the generator must emit a var() ref.
+    const cfg: C2bConfig = {
+      ...config,
+      tokens: {
+        ...config.tokens,
+        fontSize: {
+          ...config.tokens.fontSize!,
+          '2x-large': { value: '3rem', name: '2x Large', slug: '2x-large' },
+        },
+      },
+      baseStyles: {
+        ...config.baseStyles,
+        h1: { fontSize: '2x-large', fontWeight: '500' },
+      },
+    };
+    const result = generateContentScss(cfg)!;
+    const h1Block = result.split(':where(h1) {')[1].split('}')[0];
+    expect(h1Block).toContain('font-size: var(--design-system--font-size-2x-large);');
+    expect(h1Block).not.toMatch(/font-size: 2x-large;/);
+  });
+
   it('individual headings include font-style: normal by default', () => {
     const result = generateContentScss(config)!;
     // h1 has no fontStyle in config — should get normal

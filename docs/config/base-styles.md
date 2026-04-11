@@ -504,21 +504,21 @@ A heading inside a Card component gets the Card's styles, not the base typograph
 
 ## Generated Files
 
-### _content-generated.scss
+### base-styles.scss
 
-All base styles are written to `_content-generated.scss` in the `output.tokensPath` directory. This file is auto-generated and should not be edited manually.
+All base styles are written to `base-styles.scss` in the `output.tokensPath` directory. This file is auto-generated and should not be edited manually.
 
 ### Two-Layer Content Approach
 
 Content styles are split into two files:
 
-**Generated** — `_content-generated.scss` contains config-driven element typography. Regenerated every time you run the generator.
+**Generated** — `base-styles.scss` contains config-driven element typography. Regenerated every time you run the generator.
 
-**Authored** — `content.scss` is a file you own. It imports the generated partial and adds behavioral rules that don't belong in a config:
+**Authored** — `content.scss` is a file you own. It imports the generated file and adds behavioral rules that don't belong in a config:
 
 ```scss
 // content.scss — you own this file
-@use 'content-generated';
+@use 'base-styles';
 
 :where(p, ul, ol, blockquote, pre, figure, table) {
   margin-block: 0 1em;
@@ -535,7 +535,7 @@ Content styles are split into two files:
 }
 ```
 
-The generator only writes `_content-generated.scss`. Your `content.scss` is never touched.
+The generator only writes `base-styles.scss`. Your `content.scss` is never touched.
 
 The Storybook preset auto-injects `content.scss` when it exists. See [Storybook Preset](../guides/storybook-preset.md) for details.
 
