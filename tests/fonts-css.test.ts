@@ -4,9 +4,9 @@ import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
   prefix: 'test',
-  tokensPath: 'src/styles/tokens.css',
+  srcDir: 'src/styles',
 
-  wpDir: 'dist/wp',
+  themeDir: 'dist/wp',
   tokens: {
     fontFamily: {
       inter: {

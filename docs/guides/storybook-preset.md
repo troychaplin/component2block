@@ -18,7 +18,7 @@ export default {
 
 ## What It Injects
 
-The preset reads `c2b.config.json`, derives file paths from `output.tokensPath`, and injects any that exist:
+The preset reads `c2b.config.json`, derives file paths from `output.srcDir`, and injects any that exist:
 
 | File | Description |
 |------|-------------|
@@ -27,7 +27,7 @@ The preset reads `c2b.config.json`, derives file paths from `output.tokensPath`,
 | `reset.scss` | Structural CSS reset (authored by you) |
 | `content.scss` | Base typography — imports `base-styles.scss` + your behavioral rules (authored by you) |
 
-All paths are derived from the `output.tokensPath` config value. If `output.tokensPath` is `src/styles/tokens.css`, the preset looks for `src/styles/fonts.css`, `src/styles/reset.scss`, and `src/styles/content.scss` in the same directory.
+All paths are derived from the `output.srcDir` config value. If `output.srcDir` is `src/styles`, the preset looks for `src/styles/tokens.css`, `src/styles/fonts.css`, `src/styles/reset.scss`, and `src/styles/content.scss` in that directory.
 
 ## How It Works
 

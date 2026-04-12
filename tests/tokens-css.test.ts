@@ -4,9 +4,9 @@ import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
   prefix: 'test',
-  tokensPath: 'src/styles/tokens.css',
+  srcDir: 'src/styles',
 
-  wpDir: 'dist/wp',
+  themeDir: 'dist/wp',
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -76,8 +76,8 @@ describe('generateTokensCss', () => {
 describe('generateTokensCss — layout tokens', () => {
   const layoutConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
     tokens: {
       layout: {
         contentSize: { value: '645px' },
@@ -101,8 +101,8 @@ describe('generateTokensCss — layout tokens', () => {
 describe('generateTokensCss — fluid font sizes', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
     tokens: {
       fontSize: {
         medium: {
@@ -230,8 +230,8 @@ describe('generateTokensCss — fluid font sizes', () => {
   it('matches WordPress reference output for 320/1280 anchors (1rem → 1.125rem)', () => {
     const wpMatchConfig: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
       tokens: {
         fontSize: {
           body: {

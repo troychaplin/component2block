@@ -18,7 +18,7 @@ node_modules/your-component-library/dist/
 │   ├── integrate.php     PHP hooks (theme.json filter + token CSS enqueue)
 │   ├── theme.json        Design token presets (base layer)
 │   ├── tokens.css        CSS variables — hardcoded values (always present)
-│   └── tokens.wp.css     CSS variables — mapped to --wp--preset--* (if output.wpThemeable)
+│   └── tokens.wp.css     CSS variables — mapped to --wp--preset--* (if output.themeable)
 └── fonts/
     └── inter/
         └── inter-400-normal.woff2
@@ -127,4 +127,4 @@ For details on locked vs themeable mode, style variations, and advanced override
 
 ### Theme overrides not affecting components
 
-This is expected if you're using `tokens.css` (locked mode). Components use hardcoded values and ignore Site Editor changes. Switch to `tokens.wp.css` by setting `output.wpThemeable: true` in the library's config. See [WordPress Theming](./theming.md) for details.
+This is expected if you're using `tokens.css` (locked mode). Components use hardcoded values and ignore Site Editor changes. Switch to `tokens.wp.css` by setting `output.themeable: true` in the library's config. See [WordPress Theming](./theming.md) for details.

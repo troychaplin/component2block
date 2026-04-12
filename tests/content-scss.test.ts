@@ -4,9 +4,9 @@ import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
   prefix: 'design-system',
-  tokensPath: 'src/styles/tokens.css',
-  wpDir: 'dist/wp',
-  wpThemeable: false,
+  srcDir: 'src/styles',
+  themeDir: 'dist/wp',
+  themeable: false,
   tokens: {
     fontFamily: {
       inter: { value: 'Inter, sans-serif', name: 'Inter', slug: 'inter' },
@@ -182,9 +182,9 @@ describe('generateContentScss', () => {
 describe('generateContentScss — spacing padding', () => {
   const spacingConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       spacing: {
         large: { value: 'min(2.25rem, 3vw)', slug: '60', name: 'Large' },
@@ -295,9 +295,9 @@ describe('generateContentScss — spacing padding', () => {
 describe('generateContentScss — spacing blockGap', () => {
   const blockGapConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       spacing: {
         medium: { value: 'min(1.5rem, 2vw)', slug: '50', name: 'Medium' },
@@ -395,9 +395,9 @@ describe('generateContentScss — spacing blockGap', () => {
 describe('generateContentScss — layout constraints', () => {
   const layoutConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       layout: {
         contentSize: { value: '768px' },
@@ -507,9 +507,9 @@ describe('generateContentScss — layout constraints', () => {
 describe('generateContentScss — baseStyles color', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       colorPalette: {
         primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -621,9 +621,9 @@ describe('generateContentScss — baseStyles color', () => {
 describe('generateContentScss — button element', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       colorPalette: {
         primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -672,9 +672,9 @@ describe('generateContentScss — button element', () => {
 describe('generateContentScss — link element', () => {
   const colorConfig: C2bConfig = {
     prefix: 'design-system',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       colorPalette: {
         primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },

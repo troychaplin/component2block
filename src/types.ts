@@ -221,9 +221,9 @@ export const DEFAULT_FLUID: FluidConfig = {
 /** Internal config after normalization — uses flat category keys like colorPalette */
 export interface C2bConfig {
   prefix: string;
-  tokensPath: string;
-  wpDir: string;
-  wpThemeable: boolean;
+  srcDir: string;
+  themeDir: string;
+  themeable: boolean;
   tokens: Partial<Record<TokenCategory, TokenGroup>>;
   baseStyles?: BaseStylesConfig;
   /** Fluid typography viewport anchors. Always populated by the validator; optional here so hand-written test fixtures can omit it. */
@@ -232,9 +232,9 @@ export interface C2bConfig {
 
 /** Output configuration group */
 export interface OutputConfig {
-  tokensPath?: string;
-  wpDir?: string;
-  wpThemeable?: boolean;
+  srcDir?: string;
+  themeDir?: string;
+  themeable?: boolean;
 }
 
 /**
@@ -265,12 +265,6 @@ export interface C2bConfigInput {
   baseStyles?: BaseStylesConfig;
   /** Fluid typography viewport anchors. Both fields optional; defaults to 320px / 1600px. */
   fluid?: Partial<FluidConfig>;
-  /** @deprecated Use output.tokensPath */
-  tokensPath?: string;
-  /** @deprecated Use output.wpDir */
-  outDir?: string;
-  /** @deprecated Use output.wpThemeable */
-  wpThemeable?: boolean;
   /** @deprecated Use tokens wrapper */
   [category: string]: string | boolean | OutputConfig | BaseStylesConfig | TokenGroupInput | undefined;
 }

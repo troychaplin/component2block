@@ -92,7 +92,7 @@ Every shadow token becomes a CSS custom property:
 
 ### tokens.wp.css
 
-Only generated when `output.wpThemeable: true`. Preset tokens map to WordPress preset variables; CSS-only tokens stay hardcoded:
+Only generated when `output.themeable: true`. Preset tokens map to WordPress preset variables; CSS-only tokens stay hardcoded:
 
 ```css
 :root {

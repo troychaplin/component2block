@@ -4,9 +4,9 @@ import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
   prefix: 'test',
-  tokensPath: 'src/styles/tokens.css',
+  srcDir: 'src/styles',
 
-  wpDir: 'dist/wp',
+  themeDir: 'dist/wp',
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -88,9 +88,9 @@ describe('generateTokensWpCss', () => {
 describe('generateTokensWpCss — shadow presets', () => {
   const shadowConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
+    themeDir: 'dist/wp',
     tokens: {
       shadow: {
         sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
@@ -115,9 +115,9 @@ describe('generateTokensWpCss — shadow presets', () => {
 describe('generateTokensWpCss — layout tokens', () => {
   const layoutConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
+    themeDir: 'dist/wp',
     tokens: {
       layout: {
         contentSize: { value: '645px' },
@@ -138,8 +138,8 @@ describe('generateTokensWpCss — layout tokens', () => {
 describe('generateTokensWpCss — fluid font size fallbacks', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
     tokens: {
       fontSize: {
         medium: {

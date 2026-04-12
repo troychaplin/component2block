@@ -85,14 +85,14 @@ add_action( 'enqueue_block_editor_assets', $c2b_enqueue_tokens );
 /**
  * Locked mode enforcement.
  *
- * When the library was built with wpThemeable: false (detected by the
+ * When the library was built with themeable: false (detected by the
  * absence of tokens.wp.css), enforce design system restrictions at the
  * theme layer so the theme's theme.json cannot override them:
  *
  *   - Layout sizes (contentSize, wideSize) are locked
  *   - Custom color/gradient creation is disabled in the Site Editor
  *
- * When wpThemeable: true (tokens.wp.css exists), none of these
+ * When themeable: true (tokens.wp.css exists), none of these
  * restrictions apply — the theme has full control.
  */
 if ( ! file_exists( __DIR__ . '/tokens.wp.css' ) ) {

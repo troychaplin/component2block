@@ -13,7 +13,7 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateTokensCss()      → tokens.css (CSS custom properties)
   → generateFontsCss()       → fonts.css (@font-face declarations)
   → generateContentScss()    → base-styles.scss (base styles)
-  → generateTokensWpCss()    → tokens.wp.css (WP preset mappings, only when wpThemeable: true)
+  → generateTokensWpCss()    → tokens.wp.css (WP preset mappings, only when themeable: true)
   → generateThemeJson()      → theme.json (WordPress settings + styles)
   → generateIntegratePhp()   → integrate.php (PHP hooks, from template)
 ```
@@ -102,8 +102,8 @@ Link's `hoverColor` generates `:hover` pseudo-class in both theme.json (nested `
 
 ### Locked vs Themeable Mode
 
-- **`wpThemeable: false`** (default): Hardcoded token values, `custom`/`customDuotone`/`customGradient` set to `false` in theme.json. integrate.php enforces layout lock and editor restrictions at theme layer.
-- **`wpThemeable: true`**: Generates `tokens.wp.css` mapping to `--wp--preset--*` variables. No editor restrictions. Theme has full control.
+- **`themeable: false`** (default): Hardcoded token values, `custom`/`customDuotone`/`customGradient` set to `false` in theme.json. integrate.php enforces layout lock and editor restrictions at theme layer.
+- **`themeable: true`**: Generates `tokens.wp.css` mapping to `--wp--preset--*` variables. No editor restrictions. Theme has full control.
 
 Auto-detection in integrate.php: presence of `tokens.wp.css` = themeable, absence = locked.
 
@@ -184,4 +184,4 @@ tests/
 - **Strict `baseStyles` validation**: Every string in `baseStyles` is classified at config load time as a token (strict per-property category lookup), raw CSS, or invalid. Typos and stale token references throw clearly-located errors before any files are written. No cross-category fallback — `fontStyle: "normal"` cannot accidentally resolve to `fontWeight.normal`.
 - **Unified `cssOnly` contract**: `cssOnly: true` means "CSS variable only, never in WordPress" across every category and every generator — including `settings.custom.*` in theme.json.
 - **No default preset flags**: The generator never sets `defaultPalette`, `defaultGradients`, etc. — that's the theme's responsibility
-- **Locked mode enforcement**: When `wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
+- **Locked mode enforcement**: When `themeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them

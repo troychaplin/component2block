@@ -9,7 +9,7 @@ const STYLES_DIR = join(TEST_DIR, 'src/styles');
 const minimalConfig = {
   prefix: 'test',
   output: {
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   },
   tokens: {
     color: { primary: { value: '#000', name: 'Primary' } },

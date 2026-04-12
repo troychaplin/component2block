@@ -2,9 +2,9 @@
     "prefix": "design-system",
 
     "output": {
-        "tokensPath": "src/styles/tokens.css",
-        "wpDir": "dist/c2b",
-        "wpThemeable": false
+        "srcDir": "src/styles",
+        "themeDir": "dist/c2b",
+        "themeable": false
     },
 
     "tokens": {

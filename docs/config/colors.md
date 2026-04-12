@@ -153,7 +153,7 @@ Every color and gradient becomes a CSS custom property with a static value:
 
 ### tokens.wp.css
 
-Only generated when `output.wpThemeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
+Only generated when `output.themeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
 
 ```css
 :root {
@@ -199,9 +199,9 @@ CSS-only tokens like `primary-hover` are excluded from theme.json entirely.
 
 ## Locked vs Themeable Mode
 
-The `output.wpThemeable` config field controls whether WordPress admins can create custom colors and gradients beyond your defined presets.
+The `output.themeable` config field controls whether WordPress admins can create custom colors and gradients beyond your defined presets.
 
-### Locked Mode (`wpThemeable: false` — default)
+### Locked Mode (`themeable: false` — default)
 
 The generated theme.json disables custom color/gradient creation:
 
@@ -220,7 +220,7 @@ The generated theme.json disables custom color/gradient creation:
 
 Admins can only pick from the colors and gradients you've defined. They cannot enter arbitrary hex values or create custom gradients in the Site Editor. This keeps the design system locked.
 
-### Themeable Mode (`wpThemeable: true`)
+### Themeable Mode (`themeable: true`)
 
 The `custom` flags are omitted, allowing admins to create their own colors and gradients alongside your presets. Additionally, `tokens.wp.css` is generated so that preset tokens map to `--wp--preset--*` variables — meaning Site Editor changes flow into your component library.
 

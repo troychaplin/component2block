@@ -506,7 +506,7 @@ A heading inside a Card component gets the Card's styles, not the base typograph
 
 ### base-styles.scss
 
-All base styles are written to `base-styles.scss` in the `output.tokensPath` directory. This file is auto-generated and should not be edited manually.
+All base styles are written to `base-styles.scss` in the `output.srcDir` directory. This file is auto-generated and should not be edited manually.
 
 ### Two-Layer Content Approach
 

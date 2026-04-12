@@ -119,7 +119,7 @@ Every spacing token becomes a CSS custom property with a static value:
 
 ### tokens.wp.css
 
-Only generated when `output.wpThemeable: true`. Preset tokens map to WordPress variables with the original value as a fallback:
+Only generated when `output.themeable: true`. Preset tokens map to WordPress variables with the original value as a fallback:
 
 ```css
 :root {

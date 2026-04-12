@@ -17,6 +17,13 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- _Changed_: Renamed `output.tokensPath` to `output.srcDir` — now accepts a directory path (default: `src/styles`) instead of a file path. The `tokens.css` filename is hardcoded internally, consistent with how `fonts.css` and `base-styles.scss` are handled.
+- _Changed_: Renamed `output.wpDir` to `output.themeDir`.
+- _Changed_: Renamed `output.wpThemeable` to `output.themeable`.
+- _Removed_: Deprecated root-level config keys (`tokensPath`, `outDir`, `wpThemeable`). All output settings must now use the `output` wrapper.
+
 ## [0.2.4] - 2026-04-12
 
 ### Fixed

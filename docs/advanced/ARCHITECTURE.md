@@ -12,7 +12,7 @@ Design decisions, project structure, and internals of the `component2block` pack
 - **Zero-specificity content styles** — `:where()` selectors ensure component BEM classes always win over base typography
 - **Two-layer content approach** — Generated `base-styles.scss` (config-driven, regenerated) + authored `content.scss` (hand-written behavioral rules, never touched)
 - **No default preset flags** — The generator never sets `defaultPalette`, `defaultGradients`, etc. — that's the theme's responsibility
-- **Locked mode enforcement** — When `output.wpThemeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
+- **Locked mode enforcement** — When `output.themeable: false`, restrictions are enforced at the `wp_theme_json_data_theme` filter layer so themes can't override them
 
 ## Project Structure
 
@@ -84,7 +84,7 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateTokensCss()      → tokens.css
   → generateFontsCss()       → fonts.css (if fontFace present)
   → generateContentScss()    → base-styles.scss (if baseStyles present)
-  → generateTokensWpCss()    → tokens.wp.css (if wpThemeable: true)
+  → generateTokensWpCss()    → tokens.wp.css (if themeable: true)
   → generateThemeJson()      → theme.json
   → generateIntegratePhp()   → integrate.php
 ```

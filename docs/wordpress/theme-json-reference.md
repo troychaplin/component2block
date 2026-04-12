@@ -23,7 +23,7 @@ The generated `theme.json` includes `settings` (what's available) and optionally
 }
 ```
 
-In locked mode (`output.wpThemeable: false`), the generator also sets:
+In locked mode (`output.themeable: false`), the generator also sets:
 - `custom: false` — Disables the free-form color picker
 - `customDuotone: false` — Disables the duotone editor
 - `customGradient: false` — Disables the gradient builder

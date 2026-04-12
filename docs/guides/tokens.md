@@ -40,7 +40,7 @@ Use object syntax when you need to override `slug`, `name`, or add other propert
 
 - Excluded from every theme.json preset array (`settings.color.palette`, `settings.spacing.spacingSizes`, `settings.typography.fontFamilies`, `settings.typography.fontSizes`, `settings.shadow.presets`)
 - Excluded from `settings.custom.*` (including custom-only categories like `fontWeight`, `lineHeight`, `radius`, `transition` and the custom portion of `shadow`)
-- Excluded from the `--wp--preset--*` / `--wp--custom--*` fallback mapping in `tokens.wp.css` when `wpThemeable: true`
+- Excluded from the `--wp--preset--*` / `--wp--custom--*` fallback mapping in `tokens.wp.css` when `themeable: true`
 - Still emitted as a `--{prefix}--{segment}-{key}` variable in `tokens.css`
 - Still resolvable from `baseStyles` in the SCSS output (it emits the CSS variable reference); in theme.json `styles` the generator falls back to the underlying raw value
 
@@ -187,7 +187,7 @@ Every token becomes a CSS custom property with static values:
 
 ### tokens.wp.css — WordPress Preset Mapping
 
-Only generated when `output.wpThemeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
+Only generated when `output.themeable: true`. Preset entries map to WordPress preset variables with the original value as a fallback. CSS-only tokens stay hardcoded:
 
 ```css
 :root {

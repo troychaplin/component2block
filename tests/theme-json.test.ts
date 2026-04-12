@@ -4,10 +4,10 @@ import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
   prefix: 'test',
-  tokensPath: 'src/styles/tokens.css',
+  srcDir: 'src/styles',
 
-  wpDir: 'dist/wp',
-  wpThemeable: false,
+  themeDir: 'dist/wp',
+  themeable: false,
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -122,10 +122,10 @@ describe('generateThemeJson', () => {
 describe('generateThemeJson — layout tokens', () => {
   const layoutConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       layout: {
         contentSize: { value: '645px' },
@@ -148,10 +148,10 @@ describe('generateThemeJson — layout tokens', () => {
 describe('generateThemeJson — shadow presets', () => {
   const shadowConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       shadow: {
         sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
@@ -189,9 +189,9 @@ describe('generateThemeJson — shadow presets', () => {
   it('excludes cssOnly shadows from both settings.shadow.presets and settings.custom.shadow', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         shadow: {
           sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
@@ -211,9 +211,9 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
   it('excludes cssOnly fontWeight entries from settings.custom.fontWeight', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontWeight: {
           normal: { value: '400' },
@@ -230,9 +230,9 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
   it('excludes cssOnly lineHeight entries from settings.custom.lineHeight', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         lineHeight: {
           normal: { value: '1.6' },
@@ -248,9 +248,9 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
   it('excludes cssOnly radius entries from settings.custom.radius', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         radius: {
           md: { value: '4px' },
@@ -266,9 +266,9 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
   it('drops settings.custom.* entry entirely when all tokens in a custom-only category are cssOnly', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         transition: {
           internal: { value: '150ms ease', cssOnly: true },
@@ -285,9 +285,9 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
     // not appear anywhere in theme.json.
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontWeight: {
           normal: { value: '400' },
@@ -310,10 +310,10 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
 describe('generateThemeJson — fluid font sizes', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       fontSize: {
         small: { value: '1rem', name: 'Small', slug: 'small', fluid: { min: '0.875rem', max: '1rem' } },
@@ -340,10 +340,10 @@ describe('generateThemeJson — typography flags', () => {
   it('sets fluid with explicit viewport anchors when fontSize tokens exist', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
+      srcDir: 'src/styles',
 
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontSize: {
           small: { value: '1rem', name: 'Small', slug: 'small' },
@@ -361,9 +361,9 @@ describe('generateThemeJson — typography flags', () => {
   it('defaults to 320px / 1600px anchors when config.fluid is omitted', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontSize: {
           small: { value: '1rem', name: 'Small', slug: 'small' },
@@ -380,9 +380,9 @@ describe('generateThemeJson — typography flags', () => {
   it('passes custom viewport anchors through to theme.json', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontSize: {
           small: { value: '1rem', name: 'Small', slug: 'small' },
@@ -400,10 +400,10 @@ describe('generateThemeJson — typography flags', () => {
   it('does not set typography.fluid when no fontSize tokens', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
+      srcDir: 'src/styles',
     
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontFamily: {
           base: { value: 'sans-serif', name: 'Sans', slug: 'body' },
@@ -418,15 +418,15 @@ describe('generateThemeJson — typography flags', () => {
 describe('generateThemeJson — WordPress default preset flags', () => {
   const baseConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
 
-    wpDir: 'dist/wp',
+    themeDir: 'dist/wp',
   };
 
   it('never sets default preset flags (theme responsibility, not library)', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: false,
+      themeable: false,
       tokens: {
         colorPalette: { primary: { value: '#0073aa', name: 'Primary', slug: 'primary' } },
         colorGradient: { sunset: { value: 'linear-gradient(#ff6b6b, #feca57)', name: 'Sunset', slug: 'sunset' } },
@@ -445,7 +445,7 @@ describe('generateThemeJson — WordPress default preset flags', () => {
   it('does not set shadow defaults when no shadow tokens', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: false,
+      themeable: false,
       tokens: {
         colorPalette: { primary: { value: '#0073aa', name: 'Primary', slug: 'primary' } },
       },
@@ -458,14 +458,14 @@ describe('generateThemeJson — WordPress default preset flags', () => {
 describe('generateThemeJson — locked vs themeable mode', () => {
   const baseConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
   };
 
-  it('disables custom color, duotone, and gradient when wpThemeable is false', () => {
+  it('disables custom color, duotone, and gradient when themeable is false', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: false,
+      themeable: false,
       tokens: {
         colorPalette: { primary: { value: '#0073aa', name: 'Primary', slug: 'primary' } },
       },
@@ -476,10 +476,10 @@ describe('generateThemeJson — locked vs themeable mode', () => {
     expect(parsed.settings.color.customGradient).toBe(false);
   });
 
-  it('does not set custom flags when wpThemeable is true', () => {
+  it('does not set custom flags when themeable is true', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: true,
+      themeable: true,
       tokens: {
         colorPalette: { primary: { value: '#0073aa', name: 'Primary', slug: 'primary' } },
       },
@@ -493,7 +493,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   it('places custom flags before palette and gradients in output', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: false,
+      themeable: false,
       tokens: {
         colorPalette: { primary: { value: '#0073aa', name: 'Primary', slug: 'primary' } },
         colorGradient: { sunset: { value: 'linear-gradient(#ff6b6b, #feca57)', name: 'Sunset', slug: 'sunset' } },
@@ -516,7 +516,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
   it('creates color settings object for custom flags even without color tokens', () => {
     const cfg: C2bConfig = {
       ...baseConfig,
-      wpThemeable: false,
+      themeable: false,
       tokens: {
         spacing: { md: { value: '1rem', slug: '40', name: 'Medium' } },
       },
@@ -532,10 +532,10 @@ describe('generateThemeJson — locked vs themeable mode', () => {
 describe('generateThemeJson — fontFace', () => {
   const fontConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
+    srcDir: 'src/styles',
   
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       fontFamily: {
         inter: {
@@ -579,9 +579,9 @@ describe('generateThemeJson — fontFace', () => {
 describe('generateThemeJson — baseStyles', () => {
   const baseStylesConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       fontFamily: {
         inter: { value: 'Inter, sans-serif', name: 'Inter', slug: 'inter' },
@@ -619,9 +619,9 @@ describe('generateThemeJson — baseStyles', () => {
     // instead of a dangling preset var reference.
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontSize: {
           display: { value: '4.5rem', cssOnly: true },
@@ -639,9 +639,9 @@ describe('generateThemeJson — baseStyles', () => {
   it('resolves fontWeight and lineHeight token refs to their underlying value', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
-      tokensPath: 'src/styles/tokens.css',
-      wpDir: 'dist/wp',
-      wpThemeable: false,
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      themeable: false,
       tokens: {
         fontWeight: { medium: { value: '500' } },
         lineHeight: { normal: { value: '1.6' } },
@@ -695,9 +695,9 @@ describe('generateThemeJson — baseStyles', () => {
 describe('generateThemeJson — baseStyles spacing', () => {
   const spacingConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       spacing: {
         large: { value: 'min(2.25rem, 3vw)', slug: '60', name: 'Large' },
@@ -769,9 +769,9 @@ describe('generateThemeJson — baseStyles spacing', () => {
 describe('generateThemeJson — baseStyles blockGap', () => {
   const baseConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       spacing: {
         medium: { value: 'min(1.5rem, 2vw)', slug: '50', name: 'Medium' },
@@ -834,9 +834,9 @@ describe('generateThemeJson — baseStyles blockGap', () => {
 describe('generateThemeJson — baseStyles color', () => {
   const colorConfig: C2bConfig = {
     prefix: 'test',
-    tokensPath: 'src/styles/tokens.css',
-    wpDir: 'dist/wp',
-    wpThemeable: false,
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    themeable: false,
     tokens: {
       colorPalette: {
         primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
