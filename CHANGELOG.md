@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-04-12
+
 ### Changed
 
 - Fluid typography rounding precision changed from 4 decimal places to 3, matching Gutenberg's `roundToPrecision(value, 3)`. Rates like `0.2083` now emit as `0.208`, producing byte-for-byte identical `clamp()` values to WordPress.
