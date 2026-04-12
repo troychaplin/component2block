@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-04-12
+
 ### Added
 
 - `output.fontsDir` option to specify where font source files live (e.g. `public/fonts`). When set, c2b copies `.woff2` files to dist and generates two `fonts.css` outputs with different URL paths.
