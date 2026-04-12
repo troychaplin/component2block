@@ -16,9 +16,9 @@ function parsePx(value) {
     const match = /^(-?\d*\.?\d+)px$/.exec(value);
     return match ? parseFloat(match[1]) : null;
 }
-/** Round to 4 decimal places to avoid floating-point noise in generated CSS. */
-function round4(n) {
-    return Math.round(n * 10000) / 10000;
+/** Round to 3 decimal places to match WordPress/Gutenberg fluid typography output. */
+function round3(n) {
+    return Math.round(n * 1000) / 1000;
 }
 /**
  * Build a clamp() value for fluid typography matching the shape WordPress
@@ -64,8 +64,8 @@ export function buildFluidClamp(entry, fluidConfig = DEFAULT_FLUID) {
     const minVwRem = vwMinPx / 100 / ROOT_FONT_PX;
     const maxVwRem = vwMaxPx / 100 / ROOT_FONT_PX;
     const rate = (max.num - min.num) / (maxVwRem - minVwRem);
-    const minVwRemRounded = round4(minVwRem);
-    const rateRounded = round4(rate);
+    const minVwRemRounded = round3(minVwRem);
+    const rateRounded = round3(rate);
     const unit = min.unit;
     return `clamp(${entry.fluid.min}, ${entry.fluid.min} + ((1vw - ${minVwRemRounded}${unit}) * ${rateRounded}), ${entry.fluid.max})`;
 }

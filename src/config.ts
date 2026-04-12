@@ -195,7 +195,8 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   const wpDir = output.wpDir ?? input.outDir ?? DEFAULTS.wpDir;
   const wpThemeable = output.wpThemeable ?? input.wpThemeable ?? false;
 
-  const fluid = resolveFluidConfig(input.fluid);
+  const layoutWideSize = (tokens.layout as TokenGroup | undefined)?.wideSize?.value;
+  const fluid = resolveFluidConfig(input.fluid, layoutWideSize);
 
   return {
     prefix: input.prefix,
@@ -211,14 +212,22 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
 /**
  * Resolve and validate the fluid typography viewport anchors.
  *
- * Defaults to 320px / 1600px when omitted. Both values must be CSS lengths
- * with a `px` unit (other units would produce a non-length denominator in
- * the clamp formula), and min must be strictly less than max.
+ * Resolution order for maxViewport:
+ *   1. Explicit `fluid.maxViewport` from config
+ *   2. `layout.wideSize` from tokens (mirrors WordPress/Gutenberg behavior)
+ *   3. DEFAULT_FLUID.maxViewport (1600px)
+ *
+ * Defaults to 320px / 1600px when nothing else applies. Both values must be
+ * CSS lengths with a `px` unit (other units would produce a non-length
+ * denominator in the clamp formula), and min must be strictly less than max.
  */
-function resolveFluidConfig(input: Partial<FluidConfig> | undefined): FluidConfig {
+function resolveFluidConfig(
+  input: Partial<FluidConfig> | undefined,
+  layoutWideSize?: string,
+): FluidConfig {
   const merged: FluidConfig = {
     minViewport: input?.minViewport ?? DEFAULT_FLUID.minViewport,
-    maxViewport: input?.maxViewport ?? DEFAULT_FLUID.maxViewport,
+    maxViewport: input?.maxViewport ?? layoutWideSize ?? DEFAULT_FLUID.maxViewport,
   };
 
   const minPx = parsePxLength(merged.minViewport, 'fluid.minViewport');

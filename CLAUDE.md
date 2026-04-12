@@ -172,7 +172,7 @@ tests/
 - The parent project runs `node component2block/dist/cli.js generate` to produce output
 
 ### Local testing in a consuming project
-- `pnpm link --global` inside component2block, then `pnpm link --global @troychaplin/component2block` inside the consuming project, to test local changes without publishing
+- `pnpm link /path/to/component2block` inside the consuming project to create a direct symlink — no global store needed
 - Run `pnpm run dev` (tsc --watch) in component2block for a live rebuild loop
 - See `docs/guides/cli-and-build.md` → "Testing Local Changes in a Consuming Project" for the full workflow, gotchas, and unlink steps
 

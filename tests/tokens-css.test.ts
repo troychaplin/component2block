@@ -129,9 +129,9 @@ describe('generateTokensCss — fluid font sizes', () => {
   const output = generateTokensCss(fluidConfig);
 
   it('generates clamp() for fluid font sizes using WP-compatible formula shape', () => {
-    // (1.125 - 0.875) / (1600/1600 - 320/1600) = 0.25 / 0.8 = 0.3125
+    // (1.125 - 0.875) / (1600/1600 - 320/1600) = 0.25 / 0.8 = 0.313 (3dp)
     expect(output).toContain(
-      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.3125), 1.125rem);'
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.313), 1.125rem);'
     );
   });
 
@@ -170,10 +170,9 @@ describe('generateTokensCss — fluid font sizes', () => {
     // Default viewport anchors are 320px / 1600px.
     // minVwRem should equal 320/1600 = 0.2 (1vw at 320px viewport, in rem at 16px root).
     expect(minVwRem).toBeCloseTo(0.2, 4);
-    // rate should satisfy: min + (maxVwRem - minVwRem) * rate === max
-    //   (1 - 0.2) * rate === max - min
-    //   0.8 * rate === 0.25  →  rate === 0.3125
-    expect(rate).toBeCloseTo((maxRem - minRem) / 0.8, 4);
+    // rate should satisfy: min + (maxVwRem - minVwRem) * rate ≈ max
+    //   0.8 * rate ≈ 0.25  →  rate ≈ 0.313 (3dp rounding to match WP)
+    expect(rate).toBeCloseTo((maxRem - minRem) / 0.8, 2);
 
     // Evaluate the clamp formula at a given viewport width (px), matching how
     // a browser would: 1vw = viewportPx / 100 = viewportPx / 1600 rem (at a
@@ -201,9 +200,10 @@ describe('generateTokensCss — fluid font sizes', () => {
     expect(at1200).toBeGreaterThan(at768);
     expect(at1200).toBeLessThan(maxRem);
 
-    // Midpoint viewport should land exactly halfway between min and max.
+    // Midpoint viewport should land close to halfway between min and max.
+    // Precision reduced to 2dp to account for 3dp rate rounding (matching WP).
     const midVw = (320 + 1600) / 2; // 960px
-    expect(evalClamp(midVw)).toBeCloseTo(minRem + (maxRem - minRem) / 2, 4);
+    expect(evalClamp(midVw)).toBeCloseTo(minRem + (maxRem - minRem) / 2, 2);
   });
 
   /**
@@ -216,9 +216,9 @@ describe('generateTokensCss — fluid font sizes', () => {
     };
     const customOutput = generateTokensCss(customConfig);
     // minVwRem = 320/1600 = 0.2, maxVwRem = 1280/1600 = 0.8
-    // rate = (1.125 - 0.875) / (0.8 - 0.2) = 0.25 / 0.6 = 0.4167
+    // rate = (1.125 - 0.875) / (0.8 - 0.2) = 0.25 / 0.6 = 0.417 (3dp)
     expect(customOutput).toContain(
-      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.4167), 1.125rem);',
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.417), 1.125rem);',
     );
   });
 
@@ -247,10 +247,9 @@ describe('generateTokensCss — fluid font sizes', () => {
     const out = generateTokensCss(wpMatchConfig);
     // Reference from WP's own :root emission:
     //   clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.208), 1.125rem)
-    // Our rounding is 4 decimals → 0.2083 vs WP's 3-decimal 0.208. Both are
-    // within float-comparison tolerance and render identically in browsers.
+    // Now matches WP exactly with 3-decimal rounding.
     expect(out).toContain(
-      '--test--font-size-body: clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.2083), 1.125rem);',
+      '--test--font-size-body: clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.208), 1.125rem);',
     );
   });
 });
