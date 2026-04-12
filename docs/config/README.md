@@ -14,9 +14,9 @@ Output-related fields are grouped under the `output` key:
 
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `output.tokensPath` | No | `src/styles/tokens.css` | Output path for the generated tokens CSS file |
-| `output.wpDir` | No | `dist/wp` | Output directory for WordPress files |
-| `output.wpThemeable` | No | `false` | When `true`, generates `tokens.wp.css` with `--wp--preset--*` mappings |
+| `output.srcDir` | No | `src/styles` | Directory for generated source files (tokens.css, fonts.css, base-styles.scss) |
+| `output.themeDir` | No | `dist/wp` | Output directory for WordPress files |
+| `output.themeable` | No | `false` | When `true`, generates `tokens.wp.css` with `--wp--preset--*` mappings |
 
 ## Token Categories
 
@@ -141,13 +141,13 @@ When `name` and `slug` are omitted, they're derived from the token key:
 
 | File | Location | When Generated | Purpose |
 |------|----------|----------------|---------|
-| `tokens.css` | `{output.tokensPath}` | Always | CSS custom properties with hardcoded values |
-| `fonts.css` | `{output.tokensPath dir}/fonts.css` | When `fontFace` defined | `@font-face` declarations |
-| `base-styles.scss` | `{output.tokensPath dir}/base-styles.scss` | When `baseStyles` defined | Base typography with `:where()` selectors |
-| `tokens.css` | `{output.wpDir}/tokens.css` | Always | CSS variables for WordPress (hardcoded) |
-| `tokens.wp.css` | `{output.wpDir}/tokens.wp.css` | When `wpThemeable: true` | CSS variables mapped to `--wp--preset--*` |
-| `theme.json` | `{output.wpDir}/theme.json` | Always | WordPress settings and styles |
-| `integrate.php` | `{output.wpDir}/integrate.php` | Always | PHP hooks for the theme.json cascade |
+| `tokens.css` | `{output.srcDir}/tokens.css` | Always | CSS custom properties with hardcoded values |
+| `fonts.css` | `{output.srcDir}/fonts.css` | When `fontFace` defined | `@font-face` declarations |
+| `base-styles.scss` | `{output.srcDir}/base-styles.scss` | When `baseStyles` defined | Base typography with `:where()` selectors |
+| `tokens.css` | `{output.themeDir}/tokens.css` | Always | CSS variables for WordPress (hardcoded) |
+| `tokens.wp.css` | `{output.themeDir}/tokens.wp.css` | When `themeable: true` | CSS variables mapped to `--wp--preset--*` |
+| `theme.json` | `{output.themeDir}/theme.json` | Always | WordPress settings and styles |
+| `integrate.php` | `{output.themeDir}/integrate.php` | Always | PHP hooks for the theme.json cascade |
 
 ---
 
@@ -215,16 +215,16 @@ And CSS variables `--prefix--layout-content-size` / `--prefix--layout-wide-size`
 
 ## Locked vs Themeable Mode
 
-The `output.wpThemeable` field controls two behaviors:
+The `output.themeable` field controls two behaviors:
 
-### Locked Mode (`output.wpThemeable: false` — default)
+### Locked Mode (`output.themeable: false` — default)
 
 - `tokens.css` uses hardcoded values
 - `tokens.wp.css` is **not** generated
 - theme.json disables custom color/gradient creation in the Site Editor
 - Design system stays locked — admins can only pick from defined presets
 
-### Themeable Mode (`output.wpThemeable: true`)
+### Themeable Mode (`output.themeable: true`)
 
 - `tokens.css` still uses hardcoded values (for Storybook)
 - `tokens.wp.css` is generated with `var(--wp--preset--*, fallback)` mappings
@@ -242,9 +242,9 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
   "prefix": "mylib",
 
   "output": {
-    "tokensPath": "src/styles/tokens.css",
-    "wpDir": "dist/wp",
-    "wpThemeable": false
+    "srcDir": "src/styles",
+    "themeDir": "dist/c2b",
+    "themeable": false
   },
 
   "tokens": {

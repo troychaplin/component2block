@@ -23,9 +23,9 @@ This creates `c2b.config.json` in your project root with sensible defaults. Edit
   "prefix": "mylib",
 
   "output": {
-    "tokensPath": "src/styles/tokens.css",
-    "wpDir": "dist/wp",
-    "wpThemeable": false
+    "srcDir": "src/styles",
+    "themeDir": "dist/c2b",
+    "themeable": false
   },
 
   "tokens": {
@@ -90,10 +90,10 @@ your-project/
 │   ├── fonts.css                    generated — @font-face declarations
 │   └── base-styles.scss             generated — base typography (if baseStyles defined)
 │
-└── dist/wp/
+└── dist/c2b/
     ├── theme.json                   generated — WordPress settings + styles
     ├── tokens.css                   generated — CSS vars (hardcoded values)
-    ├── tokens.wp.css                generated — CSS vars (if wpThemeable: true)
+    ├── tokens.wp.css                generated — CSS vars (if themeable: true)
     └── integrate.php                generated — PHP hooks
 ```
 
@@ -111,7 +111,7 @@ export default {
 };
 ```
 
-It injects any of these files that exist in your `output.tokensPath` directory:
+It injects any of these files that exist in your `output.srcDir` directory:
 
 | File | Description |
 |------|-------------|

@@ -16,11 +16,11 @@ export function generateThemeJson(config: C2bConfig): string {
   // Themes that want to hide WordPress core presets should set these flags in
   // their own theme.json (layer 3), where they won't affect the library.
 
-  // When locked (wpThemeable: false), disable custom color/gradient/duotone
+  // When locked (themeable: false), disable custom color/gradient/duotone
   // creation in the Site Editor. Users can only pick from the defined presets.
   // integrate.php enforces this at the theme layer so themes can't override it.
   // Placed before the category loop so these flags appear first in settings.color.
-  if (!config.wpThemeable) {
+  if (!config.themeable) {
     settings.color = {
       custom: false,
       customDuotone: false,

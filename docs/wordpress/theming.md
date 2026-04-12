@@ -6,11 +6,11 @@ For basic setup, see [WordPress Integration](./integration.md) first.
 
 ## Locked vs Themeable Mode
 
-The `output.wpThemeable` flag in `c2b.config.json` controls how much freedom themes and editors have:
+The `output.themeable` flag in `c2b.config.json` controls how much freedom themes and editors have:
 
 | Behavior | Locked (default) | Themeable |
 |----------|-------------------|-----------|
-| Config | `output.wpThemeable: false` | `output.wpThemeable: true` |
+| Config | `output.themeable: false` | `output.themeable: true` |
 | Token CSS file | `tokens.css` (hardcoded) | `tokens.wp.css` (maps to `--wp--preset--*`) |
 | Custom color picker | Disabled | Enabled |
 | Custom duotone creator | Disabled | Enabled |
@@ -26,7 +26,7 @@ Components use hardcoded CSS values. The design system is consistent everywhere 
 
 ### Themeable Mode
 
-Set `output.wpThemeable: true` in the library's `c2b.config.json` and re-run the generator. This produces `tokens.wp.css` which maps preset tokens to `--wp--preset--*` variables:
+Set `output.themeable: true` in the library's `c2b.config.json` and re-run the generator. This produces `tokens.wp.css` which maps preset tokens to `--wp--preset--*` variables:
 
 ```css
 /* Object entry — maps to WP preset, overridable via Site Editor */
@@ -199,7 +199,7 @@ The generator creates font references, not font files. Your build process must c
 ### Theme overrides not affecting components
 
 1. Check which token file is loading — `tokens.css` has hardcoded values, `tokens.wp.css` is needed for themeable behavior
-2. Verify `output.wpThemeable: true` is set in `c2b.config.json` and you've re-run the generator
+2. Verify `output.themeable: true` is set in `c2b.config.json` and you've re-run the generator
 3. Confirm the token is a preset — for preset categories, string shorthand and object entries (without `cssOnly: true`) map to `--wp--preset--*`
 
 ### Style variation preview shows blank colors

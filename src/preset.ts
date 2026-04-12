@@ -6,21 +6,21 @@
  *
  *   addons: ['../component2block/dist/preset.js']
  *
- * The preset reads c2b.config.json, derives file paths from tokensPath,
+ * The preset reads c2b.config.json, derives file paths from srcDir,
  * and injects any that exist: tokens.css, fonts.css, reset.scss, content.scss.
  */
 
 import { existsSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
+import { resolve, join } from 'node:path';
 import { loadConfig } from './config.js';
 
 export function previewAnnotations(entry: string[] = []): string[] {
   try {
     const config = loadConfig();
-    const stylesDir = dirname(resolve(config.tokensPath));
+    const stylesDir = resolve(config.srcDir);
 
     const candidates = [
-      resolve(config.tokensPath),
+      join(stylesDir, 'tokens.css'),
       join(stylesDir, 'fonts.css'),
       join(stylesDir, 'reset.scss'),
       join(stylesDir, 'content.scss'),

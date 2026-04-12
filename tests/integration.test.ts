@@ -10,8 +10,8 @@ const CONFIG_PATH = resolve(TEST_DIR, 'c2b.config.json');
 const testConfig = {
   prefix: 'inttest',
   output: {
-    tokensPath: 'src/tokens.css',
-    wpDir: 'out/wp',
+    srcDir: 'src',
+    themeDir: 'out/wp',
   },
   tokens: {
     color: {
@@ -262,7 +262,7 @@ describe('integration: generate() — baseStyles spacing', () => {
   });
 });
 
-describe('integration: generate() — wpThemeable', () => {
+describe('integration: generate() — themeable', () => {
   const WP_TEST_DIR = resolve(import.meta.dirname ?? '.', '__test-output-wp__');
   const WP_CONFIG_PATH = resolve(WP_TEST_DIR, 'c2b.config.json');
 
@@ -270,7 +270,7 @@ describe('integration: generate() — wpThemeable', () => {
     ...testConfig,
     output: {
       ...testConfig.output,
-      wpThemeable: true,
+      themeable: true,
     },
   };
 
@@ -283,7 +283,7 @@ describe('integration: generate() — wpThemeable', () => {
     rmSync(WP_TEST_DIR, { recursive: true, force: true });
   });
 
-  it('generates tokens.wp.css when wpThemeable is true', () => {
+  it('generates tokens.wp.css when themeable is true', () => {
     const result = generate(WP_CONFIG_PATH, WP_TEST_DIR);
 
     expect(result.files).toHaveLength(5);

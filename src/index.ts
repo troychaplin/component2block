@@ -34,29 +34,27 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   };
 
   // Generate tokens.css for local dev (Storybook)
-  write(config.tokensPath, generateTokensCss(config));
+  write(join(config.srcDir, 'tokens.css'), generateTokensCss(config));
 
   // Generate fonts.css if fontFace entries exist
   const fontsCss = generateFontsCss(config);
   if (fontsCss) {
-    const fontsPath = join(dirname(config.tokensPath), 'fonts.css');
-    write(fontsPath, fontsCss);
+    write(join(config.srcDir, 'fonts.css'), fontsCss);
   }
 
   // Generate base-styles.scss if baseStyles are defined
   const contentScss = generateContentScss(config);
   if (contentScss) {
-    const contentScssPath = join(dirname(config.tokensPath), 'base-styles.scss');
-    write(contentScssPath, contentScss);
+    write(join(config.srcDir, 'base-styles.scss'), contentScss);
   }
 
   // Generate WordPress assets
-  write(`${config.wpDir}/tokens.css`, generateTokensCss(config));
-  if (config.wpThemeable) {
-    write(`${config.wpDir}/tokens.wp.css`, generateTokensWpCss(config));
+  write(`${config.themeDir}/tokens.css`, generateTokensCss(config));
+  if (config.themeable) {
+    write(`${config.themeDir}/tokens.wp.css`, generateTokensWpCss(config));
   }
-  write(`${config.wpDir}/theme.json`, generateThemeJson(config));
-  write(`${config.wpDir}/integrate.php`, generateIntegratePhp());
+  write(`${config.themeDir}/theme.json`, generateThemeJson(config));
+  write(`${config.themeDir}/integrate.php`, generateIntegratePhp());
 
   return { files };
 }

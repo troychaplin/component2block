@@ -22,9 +22,9 @@ c2b.config.json                                single source of truth
     ├──► src/styles/base-styles.scss           Base typography (zero-specificity)
     │
     ├──► dist/wp/theme.json                    WordPress settings + styles
-    ├──► dist/wp/tokens.wp.css                 CSS vars mapped to --wp--preset--*
-    ├──► dist/wp/tokens.css                    CSS vars with hardcoded values
-    └──► dist/wp/integrate.php                 PHP hooks for the theme.json cascade
+    ├──► dist/wp/tokens.wp.css                CSS vars mapped to --wp--preset--*
+    ├──► dist/wp/tokens.css                   CSS vars with hardcoded values
+    └──► dist/wp/integrate.php                PHP hooks for the theme.json cascade
 ```
 
 Your components always reference `--prefix--*` CSS variables. In Storybook, those resolve to hardcoded values. In WordPress, they can optionally map to `--wp--preset--*` variables so themes can override them via the Site Editor.
@@ -33,7 +33,7 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 
 - **Single source of truth** — One config drives all outputs. Change a color once, it updates everywhere.
 - **12 token categories** — Colors, gradients, spacing, font families, font sizes, shadows, layout, font weights, line heights, border radii, transitions, and z-index.
-- **Locked vs themeable** — By default, tokens are hardcoded (locked). Set `output.wpThemeable: true` to let WordPress themes override them.
+- **Locked vs themeable** — By default, tokens are hardcoded (locked). Set `output.themeable: true` to let WordPress themes override them.
 - **Zero-specificity base styles** — Generated SCSS uses `:where()` selectors so component BEM classes always win over base typography.
 - **Storybook preset** — Auto-injects all generated styles into Storybook. No manual imports.
 - **WordPress default layer** — The generated `theme.json` injects at the lowest priority layer, so any theme can override it.

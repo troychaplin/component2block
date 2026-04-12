@@ -63,7 +63,7 @@ try {
       console.log('=== base-styles.scss ===');
       console.log(contentScss);
     }
-    if (config.wpThemeable) {
+    if (config.themeable) {
       console.log('=== tokens.wp.css ===');
       console.log(generateTokensWpCss(config));
     }

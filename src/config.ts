@@ -4,12 +4,12 @@ import type { C2bConfig, C2bConfigInput, FluidConfig, TokenCategory, TokenEntry,
 import { CATEGORY_REGISTRY, DEFAULT_FLUID, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
 
 const DEFAULTS = {
-  tokensPath: 'src/styles/tokens.css',
-  wpDir: 'dist/wp',
+  srcDir: 'src/styles',
+  themeDir: 'dist/wp',
 } as const;
 
 /** Reserved config keys that are not token categories (legacy flat format) */
-const CONFIG_KEYS = ['prefix', 'tokensPath', 'outDir', 'wpThemeable', 'output', 'tokens', 'baseStyles', 'fluid'] as const;
+const CONFIG_KEYS = ['prefix', 'output', 'tokens', 'baseStyles', 'fluid'] as const;
 
 export function loadConfig(configPath?: string): C2bConfig {
   const resolvedPath = resolve(configPath ?? 'c2b.config.json');
@@ -189,20 +189,20 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   // Validate baseStyles references against the token table
   validateBaseStyles(input.baseStyles, tokens);
 
-  // Resolve output settings: new output wrapper takes precedence over legacy root-level keys
+  // Resolve output settings
   const output = input.output ?? {};
-  const tokensPath = output.tokensPath ?? input.tokensPath ?? DEFAULTS.tokensPath;
-  const wpDir = output.wpDir ?? input.outDir ?? DEFAULTS.wpDir;
-  const wpThemeable = output.wpThemeable ?? input.wpThemeable ?? false;
+  const srcDir = output.srcDir ?? DEFAULTS.srcDir;
+  const themeDir = output.themeDir ?? DEFAULTS.themeDir;
+  const themeable = output.themeable ?? false;
 
   const layoutWideSize = (tokens.layout as TokenGroup | undefined)?.wideSize?.value;
   const fluid = resolveFluidConfig(input.fluid, layoutWideSize);
 
   return {
     prefix: input.prefix,
-    tokensPath,
-    wpDir,
-    wpThemeable: wpThemeable === true,
+    srcDir,
+    themeDir,
+    themeable: themeable === true,
     tokens,
     baseStyles: input.baseStyles,
     fluid,

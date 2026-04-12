@@ -13,30 +13,20 @@ describe('validateConfig', () => {
   it('accepts a valid minimal config', () => {
     const result = validateConfig(minimalConfig);
     expect(result.prefix).toBe('test');
-    expect(result.tokensPath).toBe('src/styles/tokens.css');
-    expect(result.wpDir).toBe('dist/wp');
+    expect(result.srcDir).toBe('src/styles');
+    expect(result.themeDir).toBe('dist/wp');
   });
 
-  it('applies custom tokensPath and wpDir via legacy outDir', () => {
-    const result = validateConfig({
-      ...minimalConfig,
-      tokensPath: 'custom/tokens.css',
-      outDir: 'build/wp',
-    });
-    expect(result.tokensPath).toBe('custom/tokens.css');
-    expect(result.wpDir).toBe('build/wp');
-  });
-
-  it('applies custom tokensPath and wpDir via output wrapper', () => {
+  it('applies custom srcDir and themeDir via output wrapper', () => {
     const result = validateConfig({
       ...minimalConfig,
       output: {
-        tokensPath: 'custom/tokens.css',
-        wpDir: 'build/wp',
+        srcDir: 'custom/styles',
+        themeDir: 'build/wp',
       },
     });
-    expect(result.tokensPath).toBe('custom/tokens.css');
-    expect(result.wpDir).toBe('build/wp');
+    expect(result.srcDir).toBe('custom/styles');
+    expect(result.themeDir).toBe('build/wp');
   });
 
   it('throws if prefix is missing', () => {
@@ -209,21 +199,19 @@ describe('validateConfig — fluid value auto-derive', () => {
   });
 });
 
-describe('validateConfig — wpThemeable flag', () => {
-  it('defaults wpThemeable to false when omitted', () => {
+describe('validateConfig — themeable flag', () => {
+  it('defaults themeable to false when omitted', () => {
     const result = validateConfig({ prefix: 'test', color: { primary: { value: '#000' } } });
-    expect(result.wpThemeable).toBe(false);
+    expect(result.themeable).toBe(false);
   });
 
-  it('sets wpThemeable to true when explicitly true', () => {
-    const result = validateConfig({ prefix: 'test', wpThemeable: true, color: { primary: { value: '#000' } } });
-    expect(result.wpThemeable).toBe(true);
-  });
-
-  it('does not treat wpThemeable as a token category', () => {
-    const result = validateConfig({ prefix: 'test', wpThemeable: true, color: { primary: { value: '#000' } } });
-    expect(result.wpThemeable).toBe(true);
-    expect(result.tokens).not.toHaveProperty('wpThemeable');
+  it('sets themeable to true when explicitly true', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      color: { primary: { value: '#000' } },
+      output: { themeable: true },
+    });
+    expect(result.themeable).toBe(true);
   });
 });
 
@@ -496,31 +484,19 @@ describe('validateConfig — fluid typography config', () => {
 });
 
 describe('validateConfig — output wrapper format', () => {
-  it('reads wpThemeable from output wrapper', () => {
+  it('reads all output settings from output wrapper', () => {
     const result = validateConfig({
       prefix: 'test',
       color: { primary: { value: '#000' } },
-      output: { wpThemeable: true },
-    });
-    expect(result.wpThemeable).toBe(true);
-  });
-
-  it('output wrapper takes precedence over legacy root-level keys', () => {
-    const result = validateConfig({
-      prefix: 'test',
-      color: { primary: { value: '#000' } },
-      tokensPath: 'legacy/tokens.css',
-      outDir: 'legacy/wp',
-      wpThemeable: false,
       output: {
-        tokensPath: 'new/tokens.css',
-        wpDir: 'new/wp',
-        wpThemeable: true,
+        srcDir: 'custom/styles',
+        themeDir: 'custom/wp',
+        themeable: true,
       },
     });
-    expect(result.tokensPath).toBe('new/tokens.css');
-    expect(result.wpDir).toBe('new/wp');
-    expect(result.wpThemeable).toBe(true);
+    expect(result.srcDir).toBe('custom/styles');
+    expect(result.themeDir).toBe('custom/wp');
+    expect(result.themeable).toBe(true);
   });
 });
 
