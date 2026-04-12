@@ -17,6 +17,10 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Fixed
+
+- Added `README.md` to the `files` array in `package.json` so it is included in the published npm package and displayed on the npm registry page.
+
 ## [0.2.3] - 2026-04-12
 
 ### Changed

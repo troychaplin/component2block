@@ -21,7 +21,8 @@
   "files": [
     "dist",
     "templates",
-    "c2b.config.example.json"
+    "c2b.config.example.json",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
