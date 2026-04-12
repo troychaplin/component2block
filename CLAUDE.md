@@ -171,6 +171,11 @@ tests/
 - `npm test` runs all tests
 - The parent project runs `node component2block/dist/cli.js generate` to produce output
 
+### Local testing in a consuming project
+- `pnpm link /path/to/component2block` inside the consuming project to create a direct symlink — no global store needed
+- Run `pnpm run dev` (tsc --watch) in component2block for a live rebuild loop
+- See `docs/guides/cli-and-build.md` → "Testing Local Changes in a Consuming Project" for the full workflow, gotchas, and unlink steps
+
 ## Key Design Decisions
 
 - **Zero-specificity content styles**: `:where()` selectors ensure component BEM classes always win over base typography without specificity battles

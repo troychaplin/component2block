@@ -164,7 +164,7 @@ import {
 | [Tokens](./docs/guides/tokens.md) | Token syntax, categories, fluid fonts, CSS output |
 | [Markup Patterns](./docs/guides/markup.md) | Layout classes for Storybook and WordPress |
 | [Storybook Preset](./docs/guides/storybook-preset.md) | Auto-injecting generated styles into Storybook |
-| [CLI & Build](./docs/guides/cli-and-build.md) | CLI commands, build scripts, and publishing setup |
+| [CLI & Build](./docs/guides/cli-and-build.md) | CLI commands, build scripts, local-link testing, and publishing |
 
 ### WordPress
 

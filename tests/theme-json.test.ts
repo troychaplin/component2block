@@ -337,11 +337,31 @@ describe('generateThemeJson — fluid font sizes', () => {
 });
 
 describe('generateThemeJson — typography flags', () => {
-  it('sets fluid when fontSize tokens exist', () => {
+  it('sets fluid with explicit viewport anchors when fontSize tokens exist', () => {
     const cfg: C2bConfig = {
       prefix: 'test',
       tokensPath: 'src/styles/tokens.css',
-    
+
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontSize: {
+          small: { value: '1rem', name: 'Small', slug: 'small' },
+        },
+      },
+      fluid: { minViewport: '320px', maxViewport: '1600px' },
+    };
+    const parsed = JSON.parse(generateThemeJson(cfg));
+    expect(parsed.settings.typography.fluid).toEqual({
+      minViewportWidth: '320px',
+      maxViewportWidth: '1600px',
+    });
+  });
+
+  it('defaults to 320px / 1600px anchors when config.fluid is omitted', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
       wpDir: 'dist/wp',
       wpThemeable: false,
       tokens: {
@@ -351,7 +371,30 @@ describe('generateThemeJson — typography flags', () => {
       },
     };
     const parsed = JSON.parse(generateThemeJson(cfg));
-    expect(parsed.settings.typography.fluid).toBe(true);
+    expect(parsed.settings.typography.fluid).toEqual({
+      minViewportWidth: '320px',
+      maxViewportWidth: '1600px',
+    });
+  });
+
+  it('passes custom viewport anchors through to theme.json', () => {
+    const cfg: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      wpThemeable: false,
+      tokens: {
+        fontSize: {
+          small: { value: '1rem', name: 'Small', slug: 'small' },
+        },
+      },
+      fluid: { minViewport: '480px', maxViewport: '1440px' },
+    };
+    const parsed = JSON.parse(generateThemeJson(cfg));
+    expect(parsed.settings.typography.fluid).toEqual({
+      minViewportWidth: '480px',
+      maxViewportWidth: '1440px',
+    });
   });
 
   it('does not set typography.fluid when no fontSize tokens', () => {
