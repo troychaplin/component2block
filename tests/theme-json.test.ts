@@ -7,6 +7,7 @@ const config: C2bConfig = {
   srcDir: 'src/styles',
 
   themeDir: 'dist/wp',
+  bundleFonts: false,
   themeable: false,
   tokens: {
     colorPalette: {
@@ -125,6 +126,7 @@ describe('generateThemeJson — layout tokens', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       layout: {
@@ -151,6 +153,7 @@ describe('generateThemeJson — shadow presets', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       shadow: {
@@ -191,6 +194,7 @@ describe('generateThemeJson — shadow presets', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         shadow: {
@@ -213,6 +217,7 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontWeight: {
@@ -232,6 +237,7 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         lineHeight: {
@@ -250,6 +256,7 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         radius: {
@@ -268,6 +275,7 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         transition: {
@@ -287,6 +295,7 @@ describe('generateThemeJson — cssOnly in custom-only categories', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontWeight: {
@@ -313,6 +322,7 @@ describe('generateThemeJson — fluid font sizes', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       fontSize: {
@@ -343,6 +353,7 @@ describe('generateThemeJson — typography flags', () => {
       srcDir: 'src/styles',
 
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontSize: {
@@ -363,6 +374,7 @@ describe('generateThemeJson — typography flags', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontSize: {
@@ -382,6 +394,7 @@ describe('generateThemeJson — typography flags', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontSize: {
@@ -403,6 +416,7 @@ describe('generateThemeJson — typography flags', () => {
       srcDir: 'src/styles',
     
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontFamily: {
@@ -421,6 +435,7 @@ describe('generateThemeJson — WordPress default preset flags', () => {
     srcDir: 'src/styles',
 
     themeDir: 'dist/wp',
+  bundleFonts: false,
   };
 
   it('never sets default preset flags (theme responsibility, not library)', () => {
@@ -460,6 +475,7 @@ describe('generateThemeJson — locked vs themeable mode', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
   };
 
   it('disables custom color, duotone, and gradient when themeable is false', () => {
@@ -535,6 +551,7 @@ describe('generateThemeJson — fontFace', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       fontFamily: {
@@ -581,6 +598,7 @@ describe('generateThemeJson — baseStyles', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       fontFamily: {
@@ -621,6 +639,7 @@ describe('generateThemeJson — baseStyles', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontSize: {
@@ -641,6 +660,7 @@ describe('generateThemeJson — baseStyles', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       themeable: false,
       tokens: {
         fontWeight: { medium: { value: '500' } },
@@ -697,6 +717,7 @@ describe('generateThemeJson — baseStyles spacing', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       spacing: {
@@ -771,6 +792,7 @@ describe('generateThemeJson — baseStyles blockGap', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       spacing: {
@@ -836,6 +858,7 @@ describe('generateThemeJson — baseStyles color', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       colorPalette: {

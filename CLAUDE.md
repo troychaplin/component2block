@@ -16,6 +16,7 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateTokensWpCss()    → tokens.wp.css (WP preset mappings, only when themeable: true)
   → generateThemeJson()      → theme.json (WordPress settings + styles)
   → generateIntegratePhp()   → integrate.php (PHP hooks, from template)
+  → copyFontFiles()          → dist/fonts/{slug}/ (copies .woff2 files when fontsDir + bundleFonts)
 ```
 
 ### Token Resolution
@@ -107,6 +108,16 @@ Link's `hoverColor` generates `:hover` pseudo-class in both theme.json (nested `
 
 Auto-detection in integrate.php: presence of `tokens.wp.css` = themeable, absence = locked.
 
+### Font Bundling
+
+When `output.fontsDir` is set (e.g. `public/fonts`), the generator can bundle font files into the dist output for package distribution. `output.bundleFonts` defaults to `true` when `fontsDir` is set.
+
+The generate pipeline handles fonts in two passes:
+1. Writes `srcDir/fonts.css` with `/fonts/...` paths (for Storybook/development use)
+2. When `fontsDir` + `bundleFonts` are active, writes `dist/fonts.css` with `./fonts/...` relative paths and copies `.woff2` files from `fontsDir/{slug}/` to `dist/fonts/{slug}/`
+
+`generateFontsCss()` accepts an optional `basePath` parameter (default `/fonts`) controlling the URL prefix in `@font-face` declarations. The dist-level `fonts.css` uses `./fonts` so paths are relative to the consuming theme.
+
 ### WordPress theme.json Cascade
 
 5 layers: core defaults → library base (via `wp_theme_json_data_default`) → parent theme → child theme → user Global Styles. The library registers at the default layer so themes can override.
@@ -125,6 +136,7 @@ src/
     tokens-wp-css.ts  WordPress preset-mapped CSS variables
     theme-json.ts     WordPress theme.json (settings + styles)
     fonts-css.ts      @font-face declarations
+    copy-fonts.ts     Font file copying from fontsDir to dist
     content-scss.ts   Base typography SCSS with :where() selectors
     integrate-php.ts  PHP integration (reads template)
     fluid.ts          Fluid clamp() calculation utility (3dp rounding, matches WP)

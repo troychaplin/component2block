@@ -8,7 +8,7 @@ function inferFormat(filename) {
     const ext = filename.slice(filename.lastIndexOf('.'));
     return FORMAT_MAP[ext] ?? 'woff2';
 }
-export function generateFontsCss(config) {
+export function generateFontsCss(config, basePath = '/fonts') {
     const group = config.tokens.fontFamily;
     if (!group)
         return null;
@@ -22,7 +22,7 @@ export function generateFontsCss(config) {
                 `  font-family: '${entry.name}';\n` +
                 `  font-style: ${face.style};\n` +
                 `  font-weight: ${face.weight};\n` +
-                `  src: url('/fonts/${entry.slug}/${face.src}') format('${format}');\n` +
+                `  src: url('${basePath}/${entry.slug}/${face.src}') format('${format}');\n` +
                 `}`);
         }
     }

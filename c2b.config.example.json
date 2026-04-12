@@ -4,7 +4,9 @@
     "output": {
         "srcDir": "src/styles",
         "themeDir": "dist/c2b",
-        "themeable": false
+        "themeable": false,
+        "fontsDir": "public/fonts",
+        "bundleFonts": true
     },
 
     "tokens": {

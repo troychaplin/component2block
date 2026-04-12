@@ -7,6 +7,7 @@ const config: C2bConfig = {
   srcDir: 'src/styles',
 
   themeDir: 'dist/wp',
+  bundleFonts: false,
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -91,6 +92,7 @@ describe('generateTokensWpCss — shadow presets', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     tokens: {
       shadow: {
         sm: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)', name: 'Small', slug: 'sm' },
@@ -118,6 +120,7 @@ describe('generateTokensWpCss — layout tokens', () => {
     srcDir: 'src/styles',
   
     themeDir: 'dist/wp',
+  bundleFonts: false,
     tokens: {
       layout: {
         contentSize: { value: '645px' },
@@ -140,6 +143,7 @@ describe('generateTokensWpCss — fluid font size fallbacks', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     tokens: {
       fontSize: {
         medium: {

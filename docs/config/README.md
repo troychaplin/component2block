@@ -17,6 +17,8 @@ Output-related fields are grouped under the `output` key:
 | `output.srcDir` | No | `src/styles` | Directory for generated source files (tokens.css, fonts.css, base-styles.scss) |
 | `output.themeDir` | No | `dist/wp` | Output directory for WordPress files |
 | `output.themeable` | No | `false` | When `true`, generates `tokens.wp.css` with `--wp--preset--*` mappings |
+| `output.fontsDir` | No | — | Directory containing font source files organized by family slug (e.g. `public/fonts`). When set, enables font file copying to dist |
+| `output.bundleFonts` | No | `true`* | Whether to bundle font files in dist. *Defaults to `true` when `fontsDir` is set |
 
 ## Token Categories
 
@@ -148,6 +150,8 @@ When `name` and `slug` are omitted, they're derived from the token key:
 | `tokens.wp.css` | `{output.themeDir}/tokens.wp.css` | When `themeable: true` | CSS variables mapped to `--wp--preset--*` |
 | `theme.json` | `{output.themeDir}/theme.json` | Always | WordPress settings and styles |
 | `integrate.php` | `{output.themeDir}/integrate.php` | Always | PHP hooks for the theme.json cascade |
+| `fonts.css` | `{dist root}/fonts.css` | When `fontsDir` + `bundleFonts` | `@font-face` declarations with relative `./fonts/` paths for package distribution |
+| `fonts/{slug}/*.woff2` | `{dist root}/fonts/{slug}/` | When `fontsDir` + `bundleFonts` | Copied font files for package distribution |
 
 ---
 

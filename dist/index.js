@@ -7,6 +7,7 @@ import { generateThemeJson } from './generators/theme-json.js';
 import { generateIntegratePhp } from './generators/integrate-php.js';
 import { generateFontsCss } from './generators/fonts-css.js';
 import { generateContentScss } from './generators/content-scss.js';
+import { copyFontFiles } from './generators/copy-fonts.js';
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
 export { generateTokensWpCss } from './generators/tokens-wp-css.js';
@@ -14,6 +15,7 @@ export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
 export { generateFontsCss } from './generators/fonts-css.js';
 export { generateContentScss } from './generators/content-scss.js';
+export { copyFontFiles } from './generators/copy-fonts.js';
 export function generate(configPath, cwd) {
     const config = loadConfig(configPath);
     const baseDir = cwd ?? process.cwd();
@@ -29,12 +31,30 @@ export function generate(configPath, cwd) {
     // Generate fonts.css if fontFace entries exist
     const fontsCss = generateFontsCss(config);
     if (fontsCss) {
-        write(join(config.srcDir, 'fonts.css'), fontsCss);
+        if (config.fontsDir) {
+            // Write fonts.css alongside font files (e.g. public/fonts.css) for static serving
+            const fontsDirParent = dirname(config.fontsDir);
+            write(join(fontsDirParent, 'fonts.css'), fontsCss);
+        }
+        else {
+            // No fontsDir — write to srcDir as before
+            write(join(config.srcDir, 'fonts.css'), fontsCss);
+        }
     }
     // Generate base-styles.scss if baseStyles are defined
     const contentScss = generateContentScss(config);
     if (contentScss) {
         write(join(config.srcDir, 'base-styles.scss'), contentScss);
+    }
+    // Bundle font files and generate dist-level fonts.css for published package
+    if (config.fontsDir && config.bundleFonts) {
+        const distFontsCss = generateFontsCss(config, './fonts');
+        if (distFontsCss) {
+            const distRoot = dirname(config.themeDir);
+            write(join(distRoot, 'fonts.css'), distFontsCss);
+            const copied = copyFontFiles(config, resolve(baseDir, distRoot), baseDir);
+            files.push(...copied);
+        }
     }
     // Generate WordPress assets
     write(`${config.themeDir}/tokens.css`, generateTokensCss(config));
