@@ -17,6 +17,11 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- Fluid typography rounding precision changed from 4 decimal places to 3, matching Gutenberg's `roundToPrecision(value, 3)`. Rates like `0.2083` now emit as `0.208`, producing byte-for-byte identical `clamp()` values to WordPress.
+- `fluid.maxViewport` now automatically falls back to `layout.wideSize` when not explicitly set, mirroring how WordPress/Gutenberg uses `settings.layout.wideSize` as the max viewport for fluid typography calculations. Resolution order: explicit `fluid.maxViewport` > `layout.wideSize` from tokens > `1600px` default.
+
 ## [0.2.2] - 2026-04-11
 
 ### Added
