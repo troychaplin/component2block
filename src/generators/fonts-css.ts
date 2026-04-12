@@ -12,7 +12,7 @@ function inferFormat(filename: string): string {
   return FORMAT_MAP[ext] ?? 'woff2';
 }
 
-export function generateFontsCss(config: C2bConfig): string | null {
+export function generateFontsCss(config: C2bConfig, basePath = '/fonts'): string | null {
   const group = config.tokens.fontFamily;
   if (!group) return null;
 
@@ -28,7 +28,7 @@ export function generateFontsCss(config: C2bConfig): string | null {
         `  font-family: '${entry.name}';\n` +
         `  font-style: ${face.style};\n` +
         `  font-weight: ${face.weight};\n` +
-        `  src: url('/fonts/${entry.slug}/${face.src}') format('${format}');\n` +
+        `  src: url('${basePath}/${entry.slug}/${face.src}') format('${format}');\n` +
         `}`,
       );
     }

@@ -446,6 +446,67 @@ Reference the generated CSS variable directly:
 
 The variable pattern is `--{prefix}--font-family-{key}`.
 
+## Font Bundling for Package Distribution
+
+When publishing your component library as a package, you can have c2b bundle font files into the dist output so consumers get everything they need without manually copying fonts.
+
+### Setup
+
+1. Place your `.woff2` font files in a directory organized by family slug:
+
+```
+public/fonts/inter/inter-400-normal.woff2
+public/fonts/inter/inter-700-normal.woff2
+public/fonts/playfair/PlayfairDisplay-VariableFont_wght.woff2
+```
+
+The subdirectory name must match the font family key in your config (e.g. `inter`, `playfair`).
+
+2. Set `output.fontsDir` in your config to point to the fonts directory:
+
+```json
+{
+  "output": {
+    "srcDir": "src/styles",
+    "themeDir": "dist/wp",
+    "fontsDir": "public/fonts"
+  }
+}
+```
+
+`bundleFonts` defaults to `true` when `fontsDir` is set. To disable bundling while keeping `fontsDir` configured, set `"bundleFonts": false` explicitly.
+
+### What Gets Generated
+
+When `fontsDir` and `bundleFonts` are active, `c2b generate` produces two `fonts.css` files with different path strategies:
+
+| File | Path prefix | Purpose |
+|------|-------------|---------|
+| `{srcDir}/fonts.css` | `/fonts/...` | Storybook / development (served from `public/`) |
+| `{themeDir}/fonts.css` | `./fonts/...` | Dist output (relative paths for the consuming theme) |
+
+Font files are copied from `{fontsDir}/{slug}/` to `{themeDir}/fonts/{slug}/`. Only `.woff2` files are copied.
+
+The resulting dist structure looks like:
+
+```
+dist/wp/
+  fonts.css
+  fonts/
+    inter/
+      inter-400-normal.woff2
+      inter-700-normal.woff2
+    playfair/
+      PlayfairDisplay-VariableFont_wght.woff2
+  theme.json
+  integrate.php
+  tokens.css
+```
+
+### WordPress Integration
+
+The dist-level `fonts.css` uses relative `./fonts/...` paths, so a consuming WordPress theme can enqueue it directly and the font files resolve relative to the stylesheet location. The `theme.json` `fontFace` entries continue to use `file:./assets/fonts/{slug}/{src}` for WordPress's built-in font loading, so you still need to copy fonts to `assets/fonts/` in the theme if relying on theme.json font loading rather than the CSS file.
+
 ## Storybook Preset
 
 The Storybook preset auto-injects `fonts.css` when it exists. No manual import needed — just add the preset to `.storybook/main.ts`:

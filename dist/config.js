@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CATEGORY_REGISTRY, DEFAULT_FLUID, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
 const DEFAULTS = {
@@ -155,6 +155,16 @@ export function validateConfig(input) {
     const srcDir = output.srcDir ?? DEFAULTS.srcDir;
     const themeDir = output.themeDir ?? DEFAULTS.themeDir;
     const themeable = output.themeable ?? false;
+    const fontsDir = output.fontsDir;
+    const bundleFonts = output.bundleFonts ?? (fontsDir != null);
+    // Validate fontsDir exists when specified
+    if (fontsDir != null) {
+        const resolvedFontsDir = resolve(fontsDir);
+        if (!existsSync(resolvedFontsDir)) {
+            throw new Error(`Config error: output.fontsDir = "${fontsDir}" does not exist. ` +
+                `Create the directory and add font files, or remove fontsDir from the config.`);
+        }
+    }
     const layoutWideSize = tokens.layout?.wideSize?.value;
     const fluid = resolveFluidConfig(input.fluid, layoutWideSize);
     return {
@@ -162,6 +172,8 @@ export function validateConfig(input) {
         srcDir,
         themeDir,
         themeable: themeable === true,
+        fontsDir,
+        bundleFonts,
         tokens,
         baseStyles: input.baseStyles,
         fluid,

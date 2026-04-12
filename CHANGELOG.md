@@ -23,6 +23,10 @@ Prefix the change with one of these keywords:
 - _Changed_: Renamed `output.wpDir` to `output.themeDir`.
 - _Changed_: Renamed `output.wpThemeable` to `output.themeable`.
 - _Removed_: Deprecated root-level config keys (`tokensPath`, `outDir`, `wpThemeable`). All output settings must now use the `output` wrapper.
+- _Added_: `output.fontsDir` option to specify where font source files live (e.g. `public/fonts`). When set, c2b copies `.woff2` files to dist and generates two `fonts.css` outputs with different URL paths.
+- _Added_: `output.bundleFonts` option (defaults to `true` when `fontsDir` is set) to control whether font files are bundled in dist.
+- _Changed_: `generateFontsCss()` now accepts an optional `basePath` parameter to control the URL prefix in `@font-face` declarations.
+- _Changed_: When `fontsDir` is set, the Storybook-facing `fonts.css` is written to the parent of `fontsDir` (e.g. `public/fonts.css`) for static serving, instead of `srcDir`. This avoids Vite's CSS pipeline mangling font URLs. Without `fontsDir`, `fonts.css` is still written to `srcDir` as before.
 
 ## [0.2.4] - 2026-04-12
 

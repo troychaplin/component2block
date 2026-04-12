@@ -6,6 +6,7 @@ const config: C2bConfig = {
   prefix: 'design-system',
   srcDir: 'src/styles',
   themeDir: 'dist/wp',
+  bundleFonts: false,
   themeable: false,
   tokens: {
     fontFamily: {
@@ -184,6 +185,7 @@ describe('generateContentScss — spacing padding', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       spacing: {
@@ -297,6 +299,7 @@ describe('generateContentScss — spacing blockGap', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       spacing: {
@@ -397,6 +400,7 @@ describe('generateContentScss — layout constraints', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       layout: {
@@ -509,6 +513,7 @@ describe('generateContentScss — baseStyles color', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       colorPalette: {
@@ -623,6 +628,7 @@ describe('generateContentScss — button element', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       colorPalette: {
@@ -674,6 +680,7 @@ describe('generateContentScss — link element', () => {
     prefix: 'design-system',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     themeable: false,
     tokens: {
       colorPalette: {

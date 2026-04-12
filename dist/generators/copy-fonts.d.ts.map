@@ -1,0 +1,1 @@
+{"version":3,"file":"copy-fonts.d.ts","sourceRoot":"","sources":["../../src/generators/copy-fonts.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAE7C,MAAM,WAAW,UAAU;IACzB,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,MAAM,CAAC;CACd;AAED;;;;;;;;;GASG;AACH,wBAAgB,aAAa,CAC3B,MAAM,EAAE,SAAS,EACjB,OAAO,EAAE,MAAM,EACf,OAAO,EAAE,MAAM,GACd,UAAU,EAAE,CAmCd"}

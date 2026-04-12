@@ -224,6 +224,10 @@ export interface C2bConfig {
   srcDir: string;
   themeDir: string;
   themeable: boolean;
+  /** Directory containing font source files organized by family slug (e.g. public/fonts). When set, enables font file copying to dist. */
+  fontsDir?: string;
+  /** Whether to copy font files to dist and generate a dist-level fonts.css. Defaults to true when fontsDir is set. */
+  bundleFonts: boolean;
   tokens: Partial<Record<TokenCategory, TokenGroup>>;
   baseStyles?: BaseStylesConfig;
   /** Fluid typography viewport anchors. Always populated by the validator; optional here so hand-written test fixtures can omit it. */
@@ -235,6 +239,10 @@ export interface OutputConfig {
   srcDir?: string;
   themeDir?: string;
   themeable?: boolean;
+  /** Directory containing font source files organized by family slug (e.g. public/fonts) */
+  fontsDir?: string;
+  /** Whether to bundle font files in dist. Defaults to true when fontsDir is set. */
+  bundleFonts?: boolean;
 }
 
 /**

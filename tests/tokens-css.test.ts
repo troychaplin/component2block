@@ -7,6 +7,7 @@ const config: C2bConfig = {
   srcDir: 'src/styles',
 
   themeDir: 'dist/wp',
+  bundleFonts: false,
   tokens: {
     colorPalette: {
       primary: { value: '#0073aa', name: 'Primary', slug: 'primary' },
@@ -78,6 +79,7 @@ describe('generateTokensCss — layout tokens', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     tokens: {
       layout: {
         contentSize: { value: '645px' },
@@ -103,6 +105,7 @@ describe('generateTokensCss — fluid font sizes', () => {
     prefix: 'test',
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
+  bundleFonts: false,
     tokens: {
       fontSize: {
         medium: {
@@ -232,6 +235,7 @@ describe('generateTokensCss — fluid font sizes', () => {
       prefix: 'test',
       srcDir: 'src/styles',
       themeDir: 'dist/wp',
+  bundleFonts: false,
       tokens: {
         fontSize: {
           body: {
