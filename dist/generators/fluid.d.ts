@@ -1,24 +1,31 @@
 import type { FluidConfig, TokenEntry } from '../types.js';
 /**
- * Build a clamp() value for fluid typography.
+ * Build a clamp() value for fluid typography matching the shape WordPress
+ * emits from `settings.typography.fluid` in theme.json:
  *
- * The emitted formula is:
+ *   clamp(<min>, <min> + ((1vw - <minVwRem>rem) * <rate>), <max>)
  *
- *   clamp(<min>, <min> + (<delta><unit> * ((100vw - <vwMin>px) / <vwRange>px)), <max>)
+ * Why this shape (and not the mathematically-equivalent `((100vw - minVw) /
+ * range)` form)? WordPress writes exactly this structure into `:root` for
+ * every fluid font size, so emitting the same shape from our tokens.css /
+ * tokens.wp.css means both CSS variables land side-by-side with identical
+ * bodies — no divergence when they're compared in devtools.
  *
- * Where:
- *   - `<min>` / `<max>` are the user's fluid range (same unit, rem/em/px)
- *   - `<delta>` = max - min, emitted with the shared unit
- *   - `<vwMin>` = minViewport in px (ratio is 0 at this width → value = min)
- *   - `<vwRange>` = maxViewport - minViewport in px (ratio is 1 at maxViewport → value = max)
+ * Derivation:
+ *   - `1vw` equals (viewport_px / 100). At viewport = minViewport that's
+ *     `minVwPx/100 px`, which at a 16px root is `minVwPx/1600 rem`.
+ *     → `minVwRem = minVwPx / 1600`
+ *   - At minViewport, `(1vw - minVwRem rem)` = 0, so the clamp sits at `min`.
+ *   - At maxViewport, `(1vw - minVwRem rem)` = `maxVwRem - minVwRem`, and we
+ *     want `min + delta = max`, so `rate = delta / (maxVwRem - minVwRem)`.
  *
- * The denominator is a px length, so `(100vw - vwMin px) / vwRange px` resolves
- * to a unit-free ratio. Multiplied by the rem/em delta it produces a value in
- * the same unit as min/max, which adds cleanly to min. This is the formula
- * shape WordPress uses for its own fluid typography calculations.
+ * Fluid output requires rem or em units for min/max. Token values in other
+ * units (px, %, etc.) fall back to the static value — WordPress behaves the
+ * same way, and mixing `1vw` (a length) with a px min/max in this formula
+ * shape produces ambiguous output.
  *
- * Returns null if the fluid range is missing, uses an unsupported unit, or
- * has mismatched units between min and max.
+ * Returns null when the entry has no fluid range, when min/max use different
+ * or unsupported units, or when the viewport anchors are invalid.
  */
 export declare function buildFluidClamp(entry: TokenEntry, fluidConfig?: FluidConfig): string | null;
 //# sourceMappingURL=fluid.d.ts.map

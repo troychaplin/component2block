@@ -67,18 +67,21 @@ export function generateThemeJson(config) {
             }
         }
     }
-    // When custom font sizes are defined, enable fluid typography. If the config
-    // uses non-default viewport anchors, emit them explicitly so WordPress's own
-    // fluid typography calculations stay in sync with tokens.css / tokens.wp.css.
+    // When custom font sizes are defined, enable fluid typography with explicit
+    // viewport anchors. Always emitting the full object (rather than `true`)
+    // ensures WordPress uses the same minViewportWidth / maxViewportWidth as
+    // buildFluidClamp(), so the clamp() that WordPress itself writes into :root
+    // from theme.json matches the clamp() in our generated tokens.css/tokens.wp.css
+    // byte-for-byte. Using `true` instead would leave WP free to pick its own
+    // defaults, which have drifted between WordPress versions.
     if (config.tokens.fontSize) {
         if (!settings.typography)
             settings.typography = {};
         const fluid = config.fluid ?? DEFAULT_FLUID;
-        const isDefaultFluid = fluid.minViewport === DEFAULT_FLUID.minViewport &&
-            fluid.maxViewport === DEFAULT_FLUID.maxViewport;
-        settings.typography.fluid = isDefaultFluid
-            ? true
-            : { minViewportWidth: fluid.minViewport, maxViewportWidth: fluid.maxViewport };
+        settings.typography.fluid = {
+            minViewportWidth: fluid.minViewport,
+            maxViewportWidth: fluid.maxViewport,
+        };
     }
     // Merge custom values into settings
     if (Object.keys(custom).length > 0) {

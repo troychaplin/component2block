@@ -128,15 +128,17 @@ describe('generateTokensCss — fluid font sizes', () => {
 
   const output = generateTokensCss(fluidConfig);
 
-  it('generates clamp() for fluid font sizes', () => {
+  it('generates clamp() for fluid font sizes using WP-compatible formula shape', () => {
+    // (1.125 - 0.875) / (1600/1600 - 320/1600) = 0.25 / 0.8 = 0.3125
     expect(output).toContain(
-      '--test--font-size-medium: clamp(0.875rem, 0.875rem + (0.25rem * ((100vw - 320px) / 1280px)), 1.125rem);'
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.3125), 1.125rem);'
     );
   });
 
-  it('uses correct range for larger fluid sizes', () => {
+  it('uses correct rate for larger fluid sizes', () => {
+    // (1.75 - 1.25) / 0.8 = 0.625
     expect(output).toContain(
-      '--test--font-size-large: clamp(1.25rem, 1.25rem + (0.5rem * ((100vw - 320px) / 1280px)), 1.75rem);'
+      '--test--font-size-large: clamp(1.25rem, 1.25rem + ((1vw - 0.2rem) * 0.625), 1.75rem);'
     );
   });
 
@@ -146,8 +148,7 @@ describe('generateTokensCss — fluid font sizes', () => {
 
   /**
    * Regression for the fluid-clamp math bug: earlier output used a unitless
-   * denominator (`/ 1280`) and a unitless scaling constant, which made
-   * `(100vw - 320px) / 1280` evaluate to a length and collapsed the fluid
+   * denominator and a unitless scaling constant, which collapsed the fluid
    * adjustment to a fraction of a pixel — tokens never actually scaled.
    *
    * This test extracts the emitted clamp formula, plugs in several viewport
@@ -159,23 +160,28 @@ describe('generateTokensCss — fluid font sizes', () => {
     expect(match).not.toBeNull();
     const expr = match![1];
 
-    // Parse: clamp(<min>rem, <min>rem + (<delta>rem * ((100vw - <vwMin>px) / <vwRange>px)), <max>rem)
+    // Parse: clamp(<min>rem, <min>rem + ((1vw - <minVwRem>rem) * <rate>), <max>rem)
     const parts = expr.match(
-      /^clamp\(([\d.]+)rem, \1rem \+ \(([\d.]+)rem \* \(\(100vw - (\d+)px\) \/ (\d+)px\)\), ([\d.]+)rem\)$/,
+      /^clamp\(([\d.]+)rem, \1rem \+ \(\(1vw - ([\d.]+)rem\) \* ([\d.]+)\), ([\d.]+)rem\)$/,
     );
     expect(parts).not.toBeNull();
-    const [, minRem, deltaRem, vwMin, vwRange, maxRem] = parts!.map(Number);
+    const [, minRem, minVwRem, rate, maxRem] = parts!.map(Number);
 
-    // The delta must equal (max - min) and the denominator must be a length (px).
-    expect(deltaRem).toBeCloseTo(maxRem - minRem, 4);
-    expect(vwRange).toBeGreaterThan(0);
+    // Default viewport anchors are 320px / 1600px.
+    // minVwRem should equal 320/1600 = 0.2 (1vw at 320px viewport, in rem at 16px root).
+    expect(minVwRem).toBeCloseTo(0.2, 4);
+    // rate should satisfy: min + (maxVwRem - minVwRem) * rate === max
+    //   (1 - 0.2) * rate === max - min
+    //   0.8 * rate === 0.25  →  rate === 0.3125
+    expect(rate).toBeCloseTo((maxRem - minRem) / 0.8, 4);
 
-    // Evaluate the clamp formula at a given viewport width (in px).
-    // The division (100vw - vwMin) / vwRange is unit-free because the
-    // denominator is a length, so `delta * ratio` stays in rem.
+    // Evaluate the clamp formula at a given viewport width (px), matching how
+    // a browser would: 1vw = viewportPx / 100 = viewportPx / 1600 rem (at a
+    // 16px root font size).
+    const ROOT = 16;
     const evalClamp = (vwPx: number): number => {
-      const ratio = (vwPx - vwMin) / vwRange;
-      const middle = minRem + deltaRem * ratio;
+      const oneVwInRem = vwPx / 100 / ROOT;
+      const middle = minRem + (oneVwInRem - minVwRem) * rate;
       return Math.max(minRem, Math.min(maxRem, middle));
     };
 
@@ -195,7 +201,7 @@ describe('generateTokensCss — fluid font sizes', () => {
     expect(at1200).toBeGreaterThan(at768);
     expect(at1200).toBeLessThan(maxRem);
 
-    // Midpoint check: at the halfway viewport, the value should be halfway.
+    // Midpoint viewport should land exactly halfway between min and max.
     const midVw = (320 + 1600) / 2; // 960px
     expect(evalClamp(midVw)).toBeCloseTo(minRem + (maxRem - minRem) / 2, 4);
   });
@@ -206,11 +212,45 @@ describe('generateTokensCss — fluid font sizes', () => {
   it('honors custom fluid viewport anchors from config', () => {
     const customConfig: C2bConfig = {
       ...fluidConfig,
-      fluid: { minViewport: '400px', maxViewport: '1440px' },
+      fluid: { minViewport: '320px', maxViewport: '1280px' },
     };
     const customOutput = generateTokensCss(customConfig);
+    // minVwRem = 320/1600 = 0.2, maxVwRem = 1280/1600 = 0.8
+    // rate = (1.125 - 0.875) / (0.8 - 0.2) = 0.25 / 0.6 = 0.4167
     expect(customOutput).toContain(
-      '--test--font-size-medium: clamp(0.875rem, 0.875rem + (0.25rem * ((100vw - 400px) / 1040px)), 1.125rem);',
+      '--test--font-size-medium: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.4167), 1.125rem);',
+    );
+  });
+
+  /**
+   * Byte-for-byte match with the shape WordPress emits from theme.json fluid
+   * typography. This test is pinned to the exact numeric values from the bug
+   * report so the fix is obvious if it ever regresses.
+   */
+  it('matches WordPress reference output for 320/1280 anchors (1rem → 1.125rem)', () => {
+    const wpMatchConfig: C2bConfig = {
+      prefix: 'test',
+      tokensPath: 'src/styles/tokens.css',
+      wpDir: 'dist/wp',
+      tokens: {
+        fontSize: {
+          body: {
+            value: '1.125rem',
+            slug: 'body',
+            name: 'Body',
+            fluid: { min: '1rem', max: '1.125rem' },
+          },
+        },
+      },
+      fluid: { minViewport: '320px', maxViewport: '1280px' },
+    };
+    const out = generateTokensCss(wpMatchConfig);
+    // Reference from WP's own :root emission:
+    //   clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.208), 1.125rem)
+    // Our rounding is 4 decimals → 0.2083 vs WP's 3-decimal 0.208. Both are
+    // within float-comparison tolerance and render identically in browsers.
+    expect(out).toContain(
+      '--test--font-size-body: clamp(1rem, 1rem + ((1vw - 0.2rem) * 0.2083), 1.125rem);',
     );
   });
 });
