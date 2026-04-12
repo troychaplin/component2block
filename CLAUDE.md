@@ -69,7 +69,7 @@ User-facing category names map to internal names via `INPUT_CATEGORY_MAP` (e.g. 
 - **String shorthand in a custom-only category** (`"bold": "700"`): CSS variable only, auto-flagged CSS-only because the category has no preset.
 - **Object with `name`/`slug`**: registers as a WordPress preset with explicit overrides.
 - **Object with `cssOnly: true`**: CSS variable only, regardless of category. See below.
-- **Fluid**: `{ fluid: { min, max } }` or the shorthand `{ "min": "...", "max": "..." }` (fontSize only) generates `clamp()` values.
+- **Fluid**: `{ fluid: { min, max } }` or the shorthand `{ "min": "...", "max": "..." }` (fontSize only) generates `clamp()` values. The formula uses 3 decimal place rounding to match WordPress/Gutenberg exactly. The max viewport defaults to `layout.wideSize` (if defined in tokens), then falls back to `1600px`.
 
 ### Unified `cssOnly` Semantics
 
@@ -127,7 +127,7 @@ src/
     fonts-css.ts      @font-face declarations
     content-scss.ts   Base typography SCSS with :where() selectors
     integrate-php.ts  PHP integration (reads template)
-    fluid.ts          Fluid clamp() calculation utility
+    fluid.ts          Fluid clamp() calculation utility (3dp rounding, matches WP)
 templates/
   integrate.php.tpl   PHP template for WordPress integration
 tests/

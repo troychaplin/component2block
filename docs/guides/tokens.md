@@ -174,7 +174,7 @@ Every token becomes a CSS custom property with static values:
   --mylib--color-primary-hover: #005a87;
 
   /* Font Sizes (fluid) */
-  --mylib--font-size-small: clamp(0.875rem, 0.875rem + ((0.125) * ((100vw - 320px) / 1280)), 1rem);
+  --mylib--font-size-small: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.208), 1rem);
 
   /* Font Weights */
   --mylib--font-weight-normal: 400;
