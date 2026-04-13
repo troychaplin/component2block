@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-04-13
+
 ### Added
 
 - Token output reference table in `docs/guides/tokens.md` showing which CSS variable namespaces (`--your-prefix--*`, `--wp--preset--*`, `--wp--custom--*`) each category generates.
