@@ -17,6 +17,10 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Fixed
+
+- Generated `theme.json` now includes `customSpacingSize: false` and `defaultSpacingSizes: false` when spacing tokens are defined. Without these flags, WordPress auto-generates a spacing scale using its own multiplier algorithm, overriding explicit `spacingSizes` values — including responsive `min()` expressions — with static computed values.
+
 ## [0.2.5] - 2026-04-12
 
 ### Added
