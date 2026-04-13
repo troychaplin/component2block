@@ -133,6 +133,31 @@ Override when needed:
 }
 ```
 
+## Token Output by Category
+
+Every token defined in `c2b.config.json` generates a CSS custom property using your project prefix (e.g. `--rds--color-primary`). This variable works everywhere — Storybook, Next.js, WordPress — and is the one your components should reference.
+
+Categories that map to WordPress presets also generate a corresponding `--wp--preset--*` variable through `theme.json`. These power the Site Editor UI (color pickers, spacing controls, font selectors) and are managed by WordPress — you never reference them directly in your components.
+
+Categories without a WordPress preset instead appear under `settings.custom` in `theme.json`, which generates `--wp--custom--*` variables. These exist so theme.json `styles` can reference the values, but again, your components use the prefixed variable.
+
+| Category | `--your-prefix--*` | `--wp--preset--*` | `--wp--custom--*` |
+|----------|:--:|:--:|:--:|
+| color | ✓ | ✓ | |
+| gradient | ✓ | ✓ | |
+| spacing | ✓ | ✓ | |
+| fontFamily | ✓ | ✓ | |
+| fontSize | ✓ | ✓ | |
+| shadow | ✓ | ✓ | |
+| fontWeight | ✓ | | ✓ |
+| lineHeight | ✓ | | ✓ |
+| radius | ✓ | | ✓ |
+| transition | ✓ | | ✓ |
+| layout | ✓ | | |
+| zIndex | ✓ | | |
+
+`layout` maps directly to `settings.layout` in theme.json rather than a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely.
+
 ## Token Categories
 
 ### Preset Categories

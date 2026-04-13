@@ -3,12 +3,15 @@ import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js
 export function generateThemeJson(config) {
     const settings = {};
     const custom = {};
-    // Note: We intentionally do NOT set default*: false flags (defaultPalette,
-    // defaultGradients, defaultSpacingSizes, etc.) because the library's theme.json
-    // is injected at the wp_theme_json_data_default layer. Setting these to false
-    // hides the library's own presets since WordPress treats them as defaults.
-    // Themes that want to hide WordPress core presets should set these flags in
-    // their own theme.json (layer 3), where they won't affect the library.
+    // Note: We intentionally do NOT set most default*: false flags (defaultPalette,
+    // defaultGradients, etc.) because the library's theme.json is injected at the
+    // wp_theme_json_data_default layer. Setting these to false hides the library's
+    // own presets since WordPress treats them as defaults. Themes that want to hide
+    // WordPress core presets should set these flags in their own theme.json (layer 3).
+    //
+    // Exception: defaultSpacingSizes and customSpacingSize are set when spacing
+    // tokens are defined — without them, WordPress auto-generates a spacing scale
+    // that overrides the explicit values in spacingSizes.
     // When locked (themeable: false), disable custom color/gradient/duotone
     // creation in the Site Editor. Users can only pick from the defined presets.
     // integrate.php enforces this at the theme layer so themes can't override it.
@@ -82,6 +85,17 @@ export function generateThemeJson(config) {
             minViewportWidth: fluid.minViewport,
             maxViewportWidth: fluid.maxViewport,
         };
+    }
+    // When spacing tokens are defined, disable WordPress's auto-generated spacing
+    // scale and suppress its built-in defaults. Without these flags, WP regenerates
+    // spacing values using its own multiplier algorithm (producing static values like
+    // 0.44rem, 0.67rem, 1rem) which override the explicit values in spacingSizes —
+    // including any responsive min() values.
+    if (config.tokens.spacing) {
+        if (!settings.spacing)
+            settings.spacing = {};
+        settings.spacing.customSpacingSize = false;
+        settings.spacing.defaultSpacingSizes = false;
     }
     // Merge custom values into settings
     if (Object.keys(custom).length > 0) {

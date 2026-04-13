@@ -17,6 +17,14 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- Token output reference table in `docs/guides/tokens.md` showing which CSS variable namespaces (`--your-prefix--*`, `--wp--preset--*`, `--wp--custom--*`) each category generates.
+
+### Fixed
+
+- Generated `theme.json` now includes `customSpacingSize: false` and `defaultSpacingSizes: false` when spacing tokens are defined. Without these flags, WordPress auto-generates a spacing scale using its own multiplier algorithm, overriding explicit `spacingSizes` values — including responsive `min()` expressions — with static computed values.
+
 ## [0.2.5] - 2026-04-12
 
 ### Added

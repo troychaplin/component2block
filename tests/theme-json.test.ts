@@ -77,8 +77,9 @@ describe('generateThemeJson', () => {
     ]);
   });
 
-  it('does not set default spacing size flag (theme responsibility)', () => {
-    expect(parsed.settings.spacing.defaultSpacingSizes).toBeUndefined();
+  it('disables default spacing sizes and custom spacing scale', () => {
+    expect(parsed.settings.spacing.defaultSpacingSizes).toBe(false);
+    expect(parsed.settings.spacing.customSpacingSize).toBe(false);
   });
 
   it('includes font families', () => {
@@ -453,7 +454,8 @@ describe('generateThemeJson — WordPress default preset flags', () => {
     expect(parsed.settings.color.defaultDuotone).toBeUndefined();
     expect(parsed.settings.color.defaultPalette).toBeUndefined();
     expect(parsed.settings.color.defaultGradients).toBeUndefined();
-    expect(parsed.settings.spacing.defaultSpacingSizes).toBeUndefined();
+    expect(parsed.settings.spacing.defaultSpacingSizes).toBe(false);
+    expect(parsed.settings.spacing.customSpacingSize).toBe(false);
     expect(parsed.settings.shadow.defaultPresets).toBeUndefined();
   });
 
