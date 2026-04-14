@@ -7,9 +7,9 @@
  * (themeable) if present, otherwise falls back to tokens.css (locked).
  *
  * Setup:
- *   1. Copy this file, theme.json, and your token CSS file into your theme
- *      (e.g. assets/c2b/)
- *   2. Add to your theme's functions.php:
+ *   1. Add this function to your theme
+ *   2. Copy theme.json to the root of your theme, and your token CSS file into your theme
+ *   2. Add tokens.css to your theme and include it in your build, or enqueue it
  *      require_once get_template_directory() . '/assets/c2b/integrate.php';
  *
  * @package component2block

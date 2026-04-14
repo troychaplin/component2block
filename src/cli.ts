@@ -67,10 +67,10 @@ try {
       console.log('=== tokens.wp.css ===');
       console.log(generateTokensWpCss(config));
     }
-    console.log('=== theme.json ===');
+    console.log(`=== theme-${config.prefix}.json ===`);
     console.log(generateThemeJson(config));
     console.log('=== integrate.php ===');
-    console.log(generateIntegratePhp());
+    console.log(generateIntegratePhp(config.prefix));
   } else {
     const result = generate(configPath);
     console.log('c2b: generated files:');

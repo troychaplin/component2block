@@ -73,8 +73,8 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   if (config.themeable) {
     write(`${config.themeDir}/tokens.wp.css`, generateTokensWpCss(config));
   }
-  write(`${config.themeDir}/theme.json`, generateThemeJson(config));
-  write(`${config.themeDir}/integrate.php`, generateIntegratePhp());
+  write(`${config.themeDir}/theme-${config.prefix}.json`, generateThemeJson(config));
+  write(`${config.themeDir}/integrate.php`, generateIntegratePhp(config.prefix));
 
   return { files };
 }

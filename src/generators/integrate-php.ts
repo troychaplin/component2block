@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_PATH = resolve(__dirname, '../../templates/integrate.php.tpl');
 
-export function generateIntegratePhp(): string {
-  return readFileSync(TEMPLATE_PATH, 'utf-8');
+export function generateIntegratePhp(prefix: string): string {
+  const template = readFileSync(TEMPLATE_PATH, 'utf-8');
+  return template.replace(/theme\.json/g, `theme-${prefix}.json`);
 }
