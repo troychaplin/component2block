@@ -17,6 +17,10 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- Generated theme.json is now named `theme-{prefix}.json` (e.g. `theme-rds.json`), using the `prefix` value from the config. The `integrate.php` template references are updated dynamically to match.
+
 ## [0.2.6] - 2026-04-13
 
 ### Added

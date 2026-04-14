@@ -49,7 +49,7 @@ describe('integration: generate() — default (locked)', () => {
     expect(paths).toContain('src/tokens.css');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).not.toContain('out/wp/tokens.wp.css');
-    expect(paths).toContain('out/wp/theme.json');
+    expect(paths).toContain('out/wp/theme-inttest.json');
     expect(paths).toContain('out/wp/integrate.php');
   });
 
@@ -63,7 +63,7 @@ describe('integration: generate() — default (locked)', () => {
   });
 
   it('writes theme.json — only object tokens appear in presets', () => {
-    const content = readFileSync(resolve(TEST_DIR, 'out/wp/theme.json'), 'utf-8');
+    const content = readFileSync(resolve(TEST_DIR, 'out/wp/theme-inttest.json'), 'utf-8');
     const parsed = JSON.parse(content);
 
     expect(parsed.version).toBe(3);
@@ -154,7 +154,7 @@ describe('integration: generate() — baseStyles', () => {
   it('theme.json includes styles block', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
     const content = readFileSync(
-      resolve(BS_TEST_DIR, 'out/wp/theme.json'),
+      resolve(BS_TEST_DIR, 'out/wp/theme-inttest.json'),
       'utf-8',
     );
     const parsed = JSON.parse(content);
@@ -171,7 +171,7 @@ describe('integration: generate() — baseStyles', () => {
   it('settings remain unchanged when baseStyles is added', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
     const content = readFileSync(
-      resolve(BS_TEST_DIR, 'out/wp/theme.json'),
+      resolve(BS_TEST_DIR, 'out/wp/theme-inttest.json'),
       'utf-8',
     );
     const parsed = JSON.parse(content);
@@ -240,7 +240,7 @@ describe('integration: generate() — baseStyles spacing', () => {
 
   it('theme.json includes styles.spacing.padding with resolved refs', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
-    const content = readFileSync(resolve(SP_TEST_DIR, 'out/wp/theme.json'), 'utf-8');
+    const content = readFileSync(resolve(SP_TEST_DIR, 'out/wp/theme-inttest.json'), 'utf-8');
     const parsed = JSON.parse(content);
 
     expect(parsed.styles.spacing).toBeDefined();
@@ -292,7 +292,7 @@ describe('integration: generate() — themeable', () => {
     expect(paths).toContain('src/tokens.css');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).toContain('out/wp/tokens.wp.css');
-    expect(paths).toContain('out/wp/theme.json');
+    expect(paths).toContain('out/wp/theme-inttest.json');
     expect(paths).toContain('out/wp/integrate.php');
   });
 

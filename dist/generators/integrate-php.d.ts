@@ -1,2 +1,2 @@
-export declare function generateIntegratePhp(): string;
+export declare function generateIntegratePhp(prefix: string): string;
 //# sourceMappingURL=integrate-php.d.ts.map
