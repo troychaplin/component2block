@@ -194,7 +194,7 @@ Fluid font sizes generate `clamp()` values. Use the shorthand `{ "min", "max" }`
 |--------|-------|
 | tokens.css | `--mylib--font-size-small: clamp(0.875rem, 0.875rem + ((1vw - 0.2rem) * 0.208), 1rem);` |
 | tokens.wp.css | `--mylib--font-size-small: var(--wp--preset--font-size--small, clamp(...));` |
-| theme.json | `{ "slug": "small", "size": "1rem", "fluid": { "min": "0.875rem", "max": "1rem" } }` |
+| theme-{prefix}.json | `{ "slug": "small", "size": "1rem", "fluid": { "min": "0.875rem", "max": "1rem" } }` |
 
 In theme.json, the `size` field uses the `max` value (or explicit `value` if provided). WordPress handles its own fluid calculation from the `fluid` object.
 

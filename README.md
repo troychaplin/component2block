@@ -1,4 +1,4 @@
-<img src="docs/images/banner.png" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;">
+<img src="docs/images/banner.png" alt="component2block banner" style="width: 100%; height: auto;">
 
 # component2block
 
@@ -21,7 +21,7 @@ c2b.config.json                                single source of truth
     ├──► src/styles/fonts.css                  @font-face declarations
     ├──► src/styles/base-styles.scss           Base typography (zero-specificity)
     │
-    ├──► dist/wp/theme.json                    WordPress settings + styles
+    ├──► dist/wp/theme-{prefix}.json           WordPress settings + styles
     ├──► dist/wp/tokens.wp.css                CSS vars mapped to --wp--preset--*
     ├──► dist/wp/tokens.css                   CSS vars with hardcoded values
     └──► dist/wp/integrate.php                PHP hooks for the theme.json cascade
@@ -122,24 +122,36 @@ Options (generate):
 ## Programmatic API
 
 ```ts
-import { generate } from 'component2block';
+import { generate } from '@troychaplin/component2block';
 
 const result = generate('./c2b.config.json');
 // result.files: Array<{ path: string; size: number }>
 ```
 
-Individual generators are also exported:
+Individual generators, config helpers, and types are also exported:
 
 ```ts
 import {
+  // Config
   loadConfig,
+  validateConfig,
+  // Generators
   generateTokensCss,
   generateTokensWpCss,
   generateThemeJson,
   generateFontsCss,
   generateContentScss,
   generateIntegratePhp,
-} from 'component2block';
+  copyFontFiles,
+  // Types
+  type C2bConfig,
+  type C2bConfigInput,
+  type TokenEntry,
+  type TokenGroup,
+  type TokenCategory,
+  type FontFaceEntry,
+  type BaseStylesConfig,
+} from '@troychaplin/component2block';
 ```
 
 ## Documentation
@@ -180,7 +192,7 @@ import {
 
 | Guide | Description |
 |-------|-------------|
-| [Architecture](./docs/advanced/architecture.md) | Design decisions, project structure, category registry |
+| [Architecture](./docs/advanced/ARCHITECTURE.md) | Design decisions, project structure, category registry |
 | [Token Flow](./docs/advanced/token-flow.md) | How tokens resolve differently per output |
 
 ## Development
@@ -188,14 +200,14 @@ import {
 ```bash
 npm install
 npm run build    # Compile TypeScript
-npm test         # Run 215 tests
+npm test         # Run the test suite
 ```
 
 ## Screenshots
 
 | Before | After |
 |-------|-------------|
-| <img src="docs/images/before-01-styles.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-01-styles.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
-| <img src="docs/images/before-02-typography.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-02-typography.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
-| <img src="docs/images/before-03-colors.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-03-colors.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
-| <img src="docs/images/before-04-template.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> | <img src="docs/images/after-04-template.jpg" alt="Block Finder Plugin Banner" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-01-styles.jpg" alt="Site Editor styles panel before component2block" style="width: 100%; height: auto;"> | <img src="docs/images/after-01-styles.jpg" alt="Site Editor styles panel with component2block presets" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-02-typography.jpg" alt="Typography controls before component2block" style="width: 100%; height: auto;"> | <img src="docs/images/after-02-typography.jpg" alt="Typography controls with component2block fonts" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-03-colors.jpg" alt="Color palette before component2block" style="width: 100%; height: auto;"> | <img src="docs/images/after-03-colors.jpg" alt="Color palette with component2block tokens" style="width: 100%; height: auto;"> |
+| <img src="docs/images/before-04-template.jpg" alt="Block template before component2block" style="width: 100%; height: auto;"> | <img src="docs/images/after-04-template.jpg" alt="Block template with component2block styles" style="width: 100%; height: auto;"> |

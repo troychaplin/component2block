@@ -498,7 +498,7 @@ dist/wp/
       inter-700-normal.woff2
     playfair/
       PlayfairDisplay-VariableFont_wght.woff2
-  theme.json
+  theme-{prefix}.json
   integrate.php
   tokens.css
 ```

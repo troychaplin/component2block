@@ -11,7 +11,7 @@ Add the preset to your `.storybook/main.ts` addons:
 export default {
   addons: [
     '@storybook/addon-docs',
-    '../component2block/dist/preset.js',
+    '@troychaplin/component2block/preset',
   ],
 };
 ```

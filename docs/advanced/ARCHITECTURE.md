@@ -33,6 +33,7 @@ component2block/
 │       ├── tokens-wp-css.ts     CSS vars mapped to --wp--preset--* with fallbacks
 │       ├── theme-json.ts        WordPress theme.json builder
 │       ├── fonts-css.ts         @font-face declarations
+│       ├── copy-fonts.ts        Font file copying from fontsDir to dist
 │       ├── content-scss.ts      Base typography with :where() selectors
 │       ├── integrate-php.ts     Reads PHP template, writes output
 │       └── fluid.ts             Fluid clamp() calculation utility
@@ -62,7 +63,7 @@ component2block/
 │   │   └── theme-json-reference.md
 │   └── advanced/                Internals
 │       ├── README.md
-│       ├── architecture.md      This file
+│       ├── ARCHITECTURE.md      This file
 │       └── token-flow.md        Token resolution internals
 └── tests/
     ├── config.test.ts           Config loading and validation
@@ -70,8 +71,10 @@ component2block/
     ├── tokens-wp-css.test.ts    WP CSS generation
     ├── theme-json.test.ts       theme.json generation
     ├── fonts-css.test.ts        Font CSS generation
+    ├── copy-fonts.test.ts       Font file copying
     ├── content-scss.test.ts     SCSS generation
     ├── preset.test.ts           Storybook preset
+    ├── init.test.ts             c2b init CLI command
     └── integration.test.ts      Full pipeline integration
 ```
 
@@ -85,7 +88,7 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
   → generateFontsCss()       → fonts.css (if fontFace present)
   → generateContentScss()    → base-styles.scss (if baseStyles present)
   → generateTokensWpCss()    → tokens.wp.css (if themeable: true)
-  → generateThemeJson()      → theme.json
+  → generateThemeJson()      → theme-{prefix}.json
   → generateIntegratePhp()   → integrate.php
 ```
 

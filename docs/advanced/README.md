@@ -4,7 +4,7 @@ Deep-dive documentation on the internal architecture and token resolution pipeli
 
 ## Contents
 
-- [Architecture](./architecture.md) — Design decisions, project structure, and generator pipeline
+- [Architecture](./ARCHITECTURE.md) — Design decisions, project structure, and generator pipeline
 - [Token Flow](./token-flow.md) — How tokens flow from config through resolution to generated output
 
 ## Related

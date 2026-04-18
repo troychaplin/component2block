@@ -127,6 +127,7 @@ The generate pipeline handles fonts in two passes:
 ```
 src/
   cli.ts              CLI entry point (c2b generate)
+  init.ts             c2b init command (scaffolds c2b.config.json)
   index.ts            Programmatic API, generate() function
   config.ts           Config loading, validation, token resolution
   types.ts            Type system, category registry, utility functions
@@ -148,8 +149,10 @@ tests/
   tokens-wp-css.test.ts WP CSS generation
   theme-json.test.ts    theme.json generation, cssOnly exclusions
   fonts-css.test.ts     Font CSS generation
+  copy-fonts.test.ts    Font file copying from fontsDir to dist
   content-scss.test.ts  SCSS generation, per-property resolution
   preset.test.ts        Storybook preset
+  init.test.ts          c2b init CLI command
   integration.test.ts   Full pipeline integration
 ```
 
@@ -172,7 +175,7 @@ tests/
 - SCSS uses `:where()` for zero-specificity element selectors
 
 ### Testing
-- Vitest with 233+ tests across 9 files
+- Vitest with 250+ tests across 10 files
 - Unit tests per generator — each test creates its own `C2bConfig` inline
 - Integration tests use temp directories with `beforeAll`/`afterAll` for setup/cleanup
 - Test fixtures create `c2b.config.json` files in temp dirs

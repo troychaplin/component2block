@@ -15,10 +15,10 @@ After installing your component library from npm, the WordPress assets are in `d
 ```
 node_modules/your-component-library/dist/
 ├── wp/
-│   ├── integrate.php     PHP hooks (theme.json filter + token CSS enqueue)
-│   ├── theme.json        Design token presets (base layer)
-│   ├── tokens.css        CSS variables — hardcoded values (always present)
-│   └── tokens.wp.css     CSS variables — mapped to --wp--preset--* (if output.themeable)
+│   ├── integrate.php        PHP hooks (theme.json filter + token CSS enqueue)
+│   ├── theme-{prefix}.json  Design token presets (base layer, filename uses the config `prefix`)
+│   ├── tokens.css           CSS variables — hardcoded values (always present)
+│   └── tokens.wp.css        CSS variables — mapped to --wp--preset--* (if output.themeable)
 └── fonts/
     └── inter/
         └── inter-400-normal.woff2
@@ -44,7 +44,7 @@ your-theme/
 ├── assets/
 │   ├── c2b/
 │   │   ├── integrate.php
-│   │   ├── theme.json
+│   │   ├── theme-{prefix}.json
 │   │   ├── tokens.css
 │   │   └── tokens.wp.css
 │   └── fonts/

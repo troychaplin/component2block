@@ -32,12 +32,12 @@ All token categories are nested under the `tokens` key in the config. Categories
 | `fontFamily` | `--prefix--font-family-*` | `settings.typography.fontFamilies` | [Fonts](./fonts.md) |
 | `fontSize` | `--prefix--font-size-*` | `settings.typography.fontSizes` | [Fonts](./fonts.md) |
 | `shadow` | `--prefix--shadow-*` | `settings.shadow.presets` | [Shadows](./shadow.md) |
-| `layout` | `--prefix--layout-*` | `settings.layout` (direct map) | — |
-| `fontWeight` | `--prefix--font-weight-*` | `settings.custom` (CSS only) | — |
-| `lineHeight` | `--prefix--line-height-*` | `settings.custom` (CSS only) | — |
-| `radius` | `--prefix--radius-*` | `settings.custom` (CSS only) | — |
-| `transition` | `--prefix--transition-*` | `settings.custom` (CSS only) | — |
-| `zIndex` | `--prefix--z-*` | Excluded from theme.json | — |
+| `layout` | `--prefix--layout-*` | `settings.layout` (direct map) | [layout](#layout) |
+| `fontWeight` | `--prefix--font-weight-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
+| `lineHeight` | `--prefix--line-height-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
+| `radius` | `--prefix--radius-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
+| `transition` | `--prefix--transition-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
+| `zIndex` | `--prefix--z-*` | Excluded from theme.json | [Custom-Only Categories](#custom-only-categories) |
 
 ### baseStyles
 
@@ -148,7 +148,7 @@ When `name` and `slug` are omitted, they're derived from the token key:
 | `base-styles.scss` | `{output.srcDir}/base-styles.scss` | When `baseStyles` defined | Base typography with `:where()` selectors |
 | `tokens.css` | `{output.themeDir}/tokens.css` | Always | CSS variables for WordPress (hardcoded) |
 | `tokens.wp.css` | `{output.themeDir}/tokens.wp.css` | When `themeable: true` | CSS variables mapped to `--wp--preset--*` |
-| `theme.json` | `{output.themeDir}/theme.json` | Always | WordPress settings and styles |
+| `theme-{prefix}.json` | `{output.themeDir}/theme-{prefix}.json` | Always | WordPress settings and styles (filename uses the config `prefix`) |
 | `integrate.php` | `{output.themeDir}/integrate.php` | Always | PHP hooks for the theme.json cascade |
 | `fonts.css` | `{dist root}/fonts.css` | When `fontsDir` + `bundleFonts` | `@font-face` declarations with relative `./fonts/` paths for package distribution |
 | `fonts/{slug}/*.woff2` | `{dist root}/fonts/{slug}/` | When `fontsDir` + `bundleFonts` | Copied font files for package distribution |

@@ -101,7 +101,7 @@ Fluid font sizes generate responsive `clamp()` values. Use the shorthand `{ "min
 }
 ```
 
-The nested `{ "fluid": { "min", "max" } }` syntax is also supported for backward compatibility.
+The shorthand expands internally to `{ "value": "1rem", "fluid": { "min": "0.875rem", "max": "1rem" } }` — `value` is auto-derived from `max`, which becomes the non-fluid fallback and the `size` emitted to `theme-{prefix}.json`. You can also write the nested form explicitly (`{ "fluid": { "min", "max" } }`) and omit `value` — the same auto-derivation applies. Provide `value` explicitly only when you want a different fallback than `max`.
 
 ## Token Properties
 

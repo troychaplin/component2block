@@ -91,7 +91,7 @@ your-project/
 │   └── base-styles.scss             generated — base typography (if baseStyles defined)
 │
 └── dist/c2b/
-    ├── theme.json                   generated — WordPress settings + styles
+    ├── theme-{prefix}.json          generated — WordPress settings + styles
     ├── tokens.css                   generated — CSS vars (hardcoded values)
     ├── tokens.wp.css                generated — CSS vars (if themeable: true)
     └── integrate.php                generated — PHP hooks
@@ -173,5 +173,5 @@ The generate step ensures `tokens.css` exists before Storybook or Vite needs it.
   - [Editor Styles](./wordpress/editor-styles.md) — Loading styles inside the block editor iframe
   - [theme.json Reference](./wordpress/theme-json-reference.md) — Full settings and styles structure
 - [Advanced](./advanced/README.md) — Architecture and internal pipeline
-  - [Architecture](./advanced/architecture.md) — Design decisions and project structure
+  - [Architecture](./advanced/ARCHITECTURE.md) — Design decisions and project structure
   - [Token Flow](./advanced/token-flow.md) — How tokens flow from config to generated output

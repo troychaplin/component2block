@@ -185,7 +185,7 @@ The `file:./` paths in theme.json resolve relative to the **theme root**:
 your-theme/
 ├── assets/
 │   ├── c2b/
-│   │   └── theme.json       ← fontFace references file:./assets/fonts/...
+│   │   └── theme-{prefix}.json  ← fontFace references file:./assets/fonts/...
 │   └── fonts/
 │       └── inter/
 │           └── inter-400-normal.woff2
