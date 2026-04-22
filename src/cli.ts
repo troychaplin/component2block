@@ -43,6 +43,7 @@ try {
   if (dryRun) {
     const { loadConfig } = await import('./config.js');
     const { generateTokensCss } = await import('./generators/tokens-css.js');
+    const { generateTokensScss } = await import('./generators/tokens-scss.js');
     const { generateTokensWpCss } = await import('./generators/tokens-wp-css.js');
     const { generateThemeJson } = await import('./generators/theme-json.js');
     const { generateIntegratePhp } = await import('./generators/integrate-php.js');
@@ -53,6 +54,8 @@ try {
 
     console.log('=== tokens.css ===');
     console.log(generateTokensCss(config));
+    console.log('=== _tokens.scss ===');
+    console.log(generateTokensScss(config));
     const fontsCss = generateFontsCss(config);
     if (fontsCss) {
       console.log('=== fonts.css ===');

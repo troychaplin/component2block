@@ -18,6 +18,7 @@ c2b.config.json                                single source of truth
     │   npx c2b generate
     │
     ├──► src/styles/tokens.css                 CSS custom properties
+    ├──► src/styles/_tokens.scss               SCSS variables (for @media queries)
     ├──► src/styles/fonts.css                  @font-face declarations
     ├──► src/styles/base-styles.scss           Base typography (zero-specificity)
     │
@@ -137,6 +138,7 @@ import {
   validateConfig,
   // Generators
   generateTokensCss,
+  generateTokensScss,
   generateTokensWpCss,
   generateThemeJson,
   generateFontsCss,

@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { loadConfig } from './config.js';
 import { generateTokensCss } from './generators/tokens-css.js';
+import { generateTokensScss } from './generators/tokens-scss.js';
 import { generateTokensWpCss } from './generators/tokens-wp-css.js';
 import { generateThemeJson } from './generators/theme-json.js';
 import { generateIntegratePhp } from './generators/integrate-php.js';
@@ -10,6 +11,7 @@ import { generateContentScss } from './generators/content-scss.js';
 import { copyFontFiles } from './generators/copy-fonts.js';
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
+export { generateTokensScss } from './generators/tokens-scss.js';
 export { generateTokensWpCss } from './generators/tokens-wp-css.js';
 export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
@@ -28,6 +30,8 @@ export function generate(configPath, cwd) {
     };
     // Generate tokens.css for local dev (Storybook)
     write(join(config.srcDir, 'tokens.css'), generateTokensCss(config));
+    // Generate _tokens.scss so consumers can use tokens in @media queries and other compile-time contexts
+    write(join(config.srcDir, '_tokens.scss'), generateTokensScss(config));
     // Generate fonts.css if fontFace entries exist
     const fontsCss = generateFontsCss(config);
     if (fontsCss) {

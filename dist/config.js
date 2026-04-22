@@ -319,8 +319,8 @@ function validateTokenGroup(category, group) {
 // ============================================================================
 /**
  * Map baseStyles property names to their expected token category.
- * Properties with no entry here have no associated token category and
- * accept only CSS keywords or raw values.
+ * Properties with no entry here (e.g. `fontStyle`) have no associated token
+ * category and accept only CSS keywords (from CSS_KEYWORDS below) or raw values.
  */
 const PROPERTY_CATEGORY = {
     fontFamily: 'fontFamily',
