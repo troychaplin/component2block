@@ -1,5 +1,6 @@
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
+export { generateTokensScss } from './generators/tokens-scss.js';
 export { generateTokensWpCss } from './generators/tokens-wp-css.js';
 export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';

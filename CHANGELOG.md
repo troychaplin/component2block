@@ -17,6 +17,10 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- New `_tokens.scss` output written alongside `tokens.css` in `srcDir`. Emits the same tokens as SCSS variables (`$prefix-segment-key: value;`) so consumers can reference tokens inside `@media` queries and other compile-time SCSS contexts where CSS custom properties can't be used. Always on — no opt-out needed. Mirrors the CSS output: same category grouping, same fluid `clamp()` handling, same `camelToKebab` conversion for layout keys, includes `cssOnly` entries (SCSS is another compile-time output).
+
 ## [0.2.7] - 2026-04-14
 
 ### Changed
