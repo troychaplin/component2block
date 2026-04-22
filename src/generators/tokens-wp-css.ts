@@ -16,6 +16,7 @@ export function generateTokensWpCss(config: C2bConfig): string {
     if (!group) continue;
 
     const def = CATEGORY_REGISTRY[category];
+    if (def.scssOnly) continue;
 
     if (!firstCategory) {
       lines.push('');

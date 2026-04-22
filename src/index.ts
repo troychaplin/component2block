@@ -40,8 +40,12 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   // Generate tokens.css for local dev (Storybook)
   write(join(config.srcDir, 'tokens.css'), generateTokensCss(config));
 
-  // Generate _tokens.scss so consumers can use tokens in @media queries and other compile-time contexts
-  write(join(config.srcDir, '_tokens.scss'), generateTokensScss(config));
+  // Generate _variables.scss for compile-time SCSS contexts (e.g. @media queries).
+  // Opt-in per category via output.scssVars. Skipped when the list is empty.
+  const tokensScss = generateTokensScss(config);
+  if (tokensScss) {
+    write(join(config.srcDir, '_variables.scss'), tokensScss);
+  }
 
   // Generate fonts.css if fontFace entries exist
   const fontsCss = generateFontsCss(config);

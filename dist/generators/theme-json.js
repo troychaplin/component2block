@@ -31,6 +31,9 @@ export function generateThemeJson(config) {
         // Excluded categories (zIndex) — skip entirely
         if (def.exclude)
             continue;
+        // SCSS-only categories (mediaQuery) never appear in theme.json
+        if (def.scssOnly)
+            continue;
         // Direct-map categories (layout) — map token keys directly to a settings object
         // Layout keys are expected in camelCase (e.g. "contentSize", "wideSize")
         if (def.directMap && def.themeJson) {

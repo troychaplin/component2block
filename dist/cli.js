@@ -46,8 +46,11 @@ try {
         const config = loadConfig(configPath);
         console.log('=== tokens.css ===');
         console.log(generateTokensCss(config));
-        console.log('=== _tokens.scss ===');
-        console.log(generateTokensScss(config));
+        const tokensScss = generateTokensScss(config);
+        if (tokensScss) {
+            console.log('=== _variables.scss ===');
+            console.log(tokensScss);
+        }
         const fontsCss = generateFontsCss(config);
         if (fontsCss) {
             console.log('=== fonts.css ===');

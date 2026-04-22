@@ -6,13 +6,21 @@
         "themeDir": "dist/c2b",
         "themeable": false,
         "fontsDir": "public/fonts",
-        "bundleFonts": true
+        "bundleFonts": true,
+        "scssVars": ["mediaQuery", "spacing"]
     },
 
     "tokens": {
         "layout": {
             "contentSize": "768px",
             "wideSize": "1280px"
+        },
+
+        "mediaQuery": {
+            "sm": "600px",
+            "md": "784px",
+            "lg": "1024px",
+            "xl": "1280px"
         },
 
         "color": {

@@ -17,11 +17,18 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- Opt-in `_variables.scss` output for compile-time SCSS contexts (e.g. `@media` queries, SCSS math) where CSS custom properties don't work. Controlled by a new `output.scssVars` array listing which token categories to emit — e.g. `"scssVars": ["mediaQuery", "spacing"]`. Emits `$prefix-segment-key: value;` per entry, grouped by category in registry order, with the same fluid `clamp()` handling and `camelToKebab` conversion (layout) as the CSS generator. Omit or set to `[]` to skip the file entirely. Unknown category names throw at config load time.
+- New `mediaQuery` token category for breakpoint values. SCSS-only by design — excluded from `tokens.css`, `tokens.wp.css`, and `theme.json` so breakpoints never leak into outputs where they'd have no meaning. Only reachable via `output.scssVars: ["mediaQuery"]`.
+- `CategoryDef.scssOnly` flag in the category registry, honored by every non-SCSS generator. Adding future SCSS-only categories is a one-line change.
+
 ## [0.3.0] - 2026-04-22
 
 ### Added
 
 - New `_tokens.scss` output written alongside `tokens.css` in `srcDir`. Emits the same tokens as SCSS variables (`$prefix-segment-key: value;`) so consumers can reference tokens inside `@media` queries and other compile-time SCSS contexts where CSS custom properties can't be used. Always on — no opt-out needed. Mirrors the CSS output: same category grouping, same fluid `clamp()` handling, same `camelToKebab` conversion for layout keys, includes `cssOnly` entries (SCSS is another compile-time output).
+
 
 ## [0.2.7] - 2026-04-14
 

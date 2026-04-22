@@ -84,6 +84,12 @@ export interface CategoryDef {
     exclude?: boolean;
     /** If true, tokens map directly to a settings object (not a preset array). Used by layout. */
     directMap?: boolean;
+    /**
+     * If true, category is SCSS-only — skipped by the CSS, WP CSS, and theme.json
+     * generators. Exists solely to be opted into `output.scssVars`. Used by
+     * `mediaQuery`, where breakpoints only make sense inside SCSS `@media` rules.
+     */
+    scssOnly?: boolean;
 }
 /**
  * Central registry mapping token category names to their output behavior.
@@ -95,7 +101,7 @@ export interface CategoryDef {
  */
 export declare const INPUT_CATEGORY_MAP: Record<string, TokenCategory>;
 export declare const CATEGORY_REGISTRY: Record<string, CategoryDef>;
-export type TokenCategory = 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize' | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex' | 'layout';
+export type TokenCategory = 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize' | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex' | 'layout' | 'mediaQuery';
 /** All valid category names, derived from the registry */
 export declare const VALID_CATEGORIES: TokenCategory[];
 /** Categories sorted by their output order */
@@ -121,6 +127,14 @@ export interface C2bConfig {
     fontsDir?: string;
     /** Whether to copy font files to dist and generate a dist-level fonts.css. Defaults to true when fontsDir is set. */
     bundleFonts: boolean;
+    /**
+     * Token categories to emit as SCSS variables in `_variables.scss`.
+     * Normalized to internal category names (e.g. "color" → "colorPalette").
+     * Always populated by the validator (default `[]`); optional here so
+     * hand-written test fixtures can omit it. Empty or omitted means no
+     * SCSS file is written.
+     */
+    scssVars?: TokenCategory[];
     tokens: Partial<Record<TokenCategory, TokenGroup>>;
     baseStyles?: BaseStylesConfig;
     /** Fluid typography viewport anchors. Always populated by the validator; optional here so hand-written test fixtures can omit it. */
@@ -135,6 +149,13 @@ export interface OutputConfig {
     fontsDir?: string;
     /** Whether to bundle font files in dist. Defaults to true when fontsDir is set. */
     bundleFonts?: boolean;
+    /**
+     * List of token categories to emit as SCSS variables in `_variables.scss`.
+     * Accepts user-facing category names (e.g. "color", "mediaQuery"). Omit or set
+     * to an empty array to skip SCSS output entirely. Unknown category names
+     * throw at config load time.
+     */
+    scssVars?: string[];
 }
 /**
  * Token entry as written by user — can be a string (shorthand) or full object.

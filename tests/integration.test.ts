@@ -43,11 +43,11 @@ describe('integration: generate() — default (locked)', () => {
   it('generates expected files without tokens.wp.css', () => {
     const result = generate(CONFIG_PATH, TEST_DIR);
 
-    expect(result.files).toHaveLength(5);
+    expect(result.files).toHaveLength(4);
 
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
-    expect(paths).toContain('src/_tokens.scss');
+    expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).not.toContain('out/wp/tokens.wp.css');
     expect(paths).toContain('out/wp/theme-inttest.json');
@@ -287,11 +287,11 @@ describe('integration: generate() — themeable', () => {
   it('generates tokens.wp.css when themeable is true', () => {
     const result = generate(WP_CONFIG_PATH, WP_TEST_DIR);
 
-    expect(result.files).toHaveLength(6);
+    expect(result.files).toHaveLength(5);
 
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
-    expect(paths).toContain('src/_tokens.scss');
+    expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).toContain('out/wp/tokens.wp.css');
     expect(paths).toContain('out/wp/theme-inttest.json');
@@ -313,5 +313,83 @@ describe('integration: generate() — themeable', () => {
       '--inttest--spacing-md: var(--wp--preset--spacing--40, 1rem);',
     );
     expect(content).toContain('--inttest--font-weight-bold: 700;');
+  });
+});
+
+describe('integration: generate() — scssVars + mediaQuery', () => {
+  const SV_TEST_DIR = resolve(import.meta.dirname ?? '.', '__test-output-sv__');
+  const SV_CONFIG_PATH = resolve(SV_TEST_DIR, 'c2b.config.json');
+
+  const svConfig = {
+    prefix: 'sv',
+    output: {
+      srcDir: 'src',
+      themeDir: 'out/wp',
+      scssVars: ['mediaQuery', 'spacing'],
+    },
+    tokens: {
+      color: {
+        primary: '#ff0000',
+      },
+      spacing: {
+        sm: { value: '0.5rem', slug: '30', name: 'Small' },
+        md: { value: '1rem', slug: '40', name: 'Medium' },
+      },
+      mediaQuery: {
+        sm: '600px',
+        md: '784px',
+        lg: '1024px',
+      },
+    },
+  };
+
+  beforeAll(() => {
+    mkdirSync(SV_TEST_DIR, { recursive: true });
+    writeFileSync(SV_CONFIG_PATH, JSON.stringify(svConfig, null, 2));
+  });
+
+  afterAll(() => {
+    rmSync(SV_TEST_DIR, { recursive: true, force: true });
+  });
+
+  it('emits _variables.scss only for opted-in categories', () => {
+    const result = generate(SV_CONFIG_PATH, SV_TEST_DIR);
+    const paths = result.files.map((f) => f.path);
+    expect(paths).toContain('src/_variables.scss');
+
+    const content = readFileSync(resolve(SV_TEST_DIR, 'src/_variables.scss'), 'utf-8');
+    expect(content).toContain('$sv-media-query-sm: 600px;');
+    expect(content).toContain('$sv-media-query-md: 784px;');
+    expect(content).toContain('$sv-media-query-lg: 1024px;');
+    expect(content).toContain('$sv-spacing-sm: 0.5rem;');
+    expect(content).toContain('$sv-spacing-md: 1rem;');
+    expect(content).not.toContain('$sv-color-');
+  });
+
+  it('keeps mediaQuery tokens out of tokens.css, tokens.wp.css, and theme.json', () => {
+    generate(SV_CONFIG_PATH, SV_TEST_DIR);
+    const tokensCss = readFileSync(resolve(SV_TEST_DIR, 'src/tokens.css'), 'utf-8');
+    expect(tokensCss).not.toContain('media-query');
+
+    const themeJson = JSON.parse(
+      readFileSync(resolve(SV_TEST_DIR, 'out/wp/theme-sv.json'), 'utf-8'),
+    );
+    expect(JSON.stringify(themeJson)).not.toContain('media-query');
+    expect(JSON.stringify(themeJson)).not.toContain('mediaQuery');
+  });
+
+  it('throws on unknown category in scssVars', () => {
+    const badDir = resolve(import.meta.dirname ?? '.', '__test-output-sv-bad__');
+    const badPath = resolve(badDir, 'c2b.config.json');
+    mkdirSync(badDir, { recursive: true });
+    writeFileSync(
+      badPath,
+      JSON.stringify({
+        ...svConfig,
+        output: { ...svConfig.output, scssVars: ['spacings'] },
+      }),
+    );
+    expect(() => generate(badPath, badDir)).toThrow(/unknown category "spacings"/);
+    rmSync(badDir, { recursive: true, force: true });
   });
 });

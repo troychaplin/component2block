@@ -157,6 +157,7 @@ export function validateConfig(input) {
     const themeable = output.themeable ?? false;
     const fontsDir = output.fontsDir;
     const bundleFonts = output.bundleFonts ?? (fontsDir != null);
+    const scssVars = normalizeScssVars(output.scssVars);
     // Validate fontsDir exists when specified
     if (fontsDir != null) {
         const resolvedFontsDir = resolve(fontsDir);
@@ -174,10 +175,43 @@ export function validateConfig(input) {
         themeable: themeable === true,
         fontsDir,
         bundleFonts,
+        scssVars,
         tokens,
         baseStyles: input.baseStyles,
         fluid,
     };
+}
+/**
+ * Normalize `output.scssVars` — a list of user-facing category names (e.g.
+ * "color", "mediaQuery") — into internal category names. Validates each entry
+ * against the registry so typos fail loudly at config load, the same way
+ * unknown token categories do.
+ */
+function normalizeScssVars(input) {
+    if (!input)
+        return [];
+    if (!Array.isArray(input)) {
+        throw new Error('Config error: output.scssVars must be an array of category names.');
+    }
+    const result = [];
+    const validInputNames = [
+        ...Object.keys(INPUT_CATEGORY_MAP),
+        ...VALID_CATEGORIES,
+    ];
+    for (const name of input) {
+        if (typeof name !== 'string') {
+            throw new Error('Config error: output.scssVars entries must be strings.');
+        }
+        const internal = INPUT_CATEGORY_MAP[name] ?? name;
+        if (!VALID_CATEGORIES.includes(internal)) {
+            throw new Error(`Config error: output.scssVars contains unknown category "${name}". ` +
+                `Valid categories: ${validInputNames.join(', ')}.`);
+        }
+        if (!result.includes(internal)) {
+            result.push(internal);
+        }
+    }
+    return result;
 }
 /**
  * Resolve and validate the fluid typography viewport anchors.
