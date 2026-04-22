@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-04-22
+
 ### Added
 
 - Opt-in `_variables.scss` output for compile-time SCSS contexts (e.g. `@media` queries, SCSS math) where CSS custom properties don't work. Controlled by a new `output.scssVars` array listing which token categories to emit — e.g. `"scssVars": ["mediaQuery", "spacing"]`. Emits `$prefix-segment-key: value;` per entry, grouped by category in registry order, with the same fluid `clamp()` handling and `camelToKebab` conversion (layout) as the CSS generator. Omit or set to `[]` to skip the file entirely. Unknown category names throw at config load time.
