@@ -15,6 +15,8 @@ export interface BaseStyleElementDef {
     color?: string;
     background?: string;
     hoverColor?: string;
+    /** Top margin applied to this element when it follows a sibling inside a constrained-layout flow. Spacing token key or raw CSS value. */
+    marginBlockStart?: string;
 }
 /** Valid element keys in baseStyles config */
 export type BaseStyleElement = 'body' | 'heading' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'caption' | 'button' | 'link';
@@ -29,6 +31,10 @@ export interface BaseStylesSpacingPadding {
 export interface BaseStylesSpacing {
     blockGap?: string;
     padding?: BaseStylesSpacingPadding;
+    /** Tightened gap applied between a heading and the next sibling. Spacing token key or raw CSS value. */
+    afterHeading?: string;
+    /** Gap between consecutive `<li>` siblings. Spacing token key or raw CSS value. */
+    listItem?: string;
 }
 /** The full baseStyles config section */
 export type BaseStylesConfig = Partial<Record<BaseStyleElement, BaseStyleElementDef>> & {

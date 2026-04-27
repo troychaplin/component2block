@@ -17,6 +17,13 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- New `baseStyles.h1`–`h6` `marginBlockStart` property defining each heading's top margin within constrained-layout flow. Resolves against `tokens.spacing` (or accepts a raw CSS value). Emitted as `:where(.is-layout-constrained) > * + hN { margin-block-start: ... }` in `base-styles.scss` (specificity beats the block-gap rule; first-child headings fall through to the `:first-child` reset) and as `styles.elements.{hN}.spacing.margin.top` preset reference in `theme.json` so block-editor spacing controls pick up the defaults.
+- New `baseStyles.spacing.afterHeading` property tightening the gap between a heading and the next sibling, emitted as `:where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * { margin-block-start: ... }`. Source-order-emitted after the block-gap rule (specificity ties on `(0,0,0)`). Sibling-selector — not expressible in `theme.json`, so lives in CSS only.
+- New `baseStyles.spacing.listItem` property setting `<li>` rhythm via `li + li { margin-block-start: ... }`. List items aren't direct children of `.is-layout-constrained`, so the block-gap rule doesn't apply to them — this is the path to a tighter list-internal cadence than top-level block flow.
+- New `typography.css` output written alongside `tokens.css` in `themeDir`. Carries the same flow-spacing rules as `base-styles.scss` (per-heading top margin, after-heading tightening, `li + li` rhythm) as plain CSS for WordPress contexts. **Not** auto-enqueued by `integrate.php` — consumers import it manually so they retain control over which CSS chunks land in the document. Skipped entirely when no flow-spacing properties are configured.
+
 ## [0.3.1] - 2026-04-22
 
 ### Added

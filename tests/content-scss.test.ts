@@ -753,3 +753,107 @@ describe('generateContentScss — link element', () => {
     expect(result).not.toContain(':where(a)');
   });
 });
+
+describe('generateContentScss — flow-spacing rules', () => {
+  const flowConfig: C2bConfig = {
+    prefix: 'rds',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    bundleFonts: false,
+    themeable: false,
+    tokens: {
+      spacing: {
+        'x-small': { value: '0.5rem', slug: '20', name: 'X Small' },
+        small: { value: '0.75rem', slug: '30', name: 'Small' },
+        medium: { value: '1rem', slug: '40', name: 'Medium' },
+        large: { value: '1.5rem', slug: '60', name: 'Large' },
+        'x-large': { value: '2.25rem', slug: '70', name: 'X Large' },
+        '2x-large': { value: '3rem', slug: '80', name: '2X Large' },
+      },
+    },
+    baseStyles: {
+      h1: { marginBlockStart: '2x-large' },
+      h2: { marginBlockStart: 'x-large' },
+      h3: { marginBlockStart: 'large' },
+      h4: { marginBlockStart: 'large' },
+      h5: { marginBlockStart: 'medium' },
+      h6: { marginBlockStart: 'medium' },
+      spacing: {
+        blockGap: 'medium',
+        afterHeading: 'small',
+        listItem: 'x-small',
+      },
+    },
+  };
+
+  it('emits per-heading top-margin rules using > * + hN', () => {
+    const result = generateContentScss(flowConfig)!;
+    expect(result).toContain(':where(.is-layout-constrained) > * + h1 {');
+    expect(result).toContain('  margin-block-start: var(--rds--spacing-2x-large);');
+    expect(result).toContain(':where(.is-layout-constrained) > * + h2 {');
+    expect(result).toContain('  margin-block-start: var(--rds--spacing-x-large);');
+    expect(result).toContain(':where(.is-layout-constrained) > * + h6 {');
+  });
+
+  it('emits the after-heading tightening rule', () => {
+    const result = generateContentScss(flowConfig)!;
+    expect(result).toContain(
+      ':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {',
+    );
+  });
+
+  it('emits the li + li rule', () => {
+    const result = generateContentScss(flowConfig)!;
+    expect(result).toContain('li + li {');
+    expect(result).toContain('  margin-block-start: var(--rds--spacing-x-small);');
+  });
+
+  it('emits flow-spacing rules after the block-gap rule (source order matters for tied specificity)', () => {
+    const result = generateContentScss(flowConfig)!;
+    const blockGapIndex = result.indexOf(':where(.is-layout-constrained) > * + * {');
+    const afterHeadingIndex = result.indexOf(
+      ':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {',
+    );
+    expect(blockGapIndex).toBeGreaterThan(-1);
+    expect(afterHeadingIndex).toBeGreaterThan(blockGapIndex);
+  });
+
+  it('omits a heading rule when marginBlockStart is not set', () => {
+    const cfg: C2bConfig = {
+      ...flowConfig,
+      baseStyles: {
+        h2: { marginBlockStart: 'x-large' },
+        // h3-h6 omitted
+      },
+    };
+    const result = generateContentScss(cfg)!;
+    expect(result).toContain('> * + h2 {');
+    expect(result).not.toContain('> * + h3 {');
+    expect(result).not.toContain('> * + h6 {');
+  });
+
+  it('omits afterHeading and listItem when not configured', () => {
+    const cfg: C2bConfig = {
+      ...flowConfig,
+      baseStyles: { h2: { marginBlockStart: 'x-large' } },
+    };
+    const result = generateContentScss(cfg)!;
+    expect(result).not.toContain(':where(h1, h2, h3, h4, h5, h6) + *');
+    expect(result).not.toContain('li + li');
+  });
+
+  it('passes raw spacing values through unchanged', () => {
+    const cfg: C2bConfig = {
+      ...flowConfig,
+      baseStyles: {
+        h2: { marginBlockStart: '2.5rem' },
+        spacing: { afterHeading: '0.5rem', listItem: '0.25rem' },
+      },
+    };
+    const result = generateContentScss(cfg)!;
+    expect(result).toContain(':where(.is-layout-constrained) > * + h2 {');
+    expect(result).toContain('  margin-block-start: 2.5rem;');
+    expect(result).toContain('li + li {');
+    expect(result).toContain('  margin-block-start: 0.25rem;');
+  });
+});

@@ -1051,3 +1051,79 @@ describe('generateThemeJson — baseStyles color', () => {
     expect(result.styles.elements.button.color.text).toBeUndefined();
   });
 });
+
+describe('generateThemeJson — flow-spacing on element headings', () => {
+  const spacingConfig: C2bConfig = {
+    prefix: 'rds',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+    bundleFonts: false,
+    themeable: false,
+    tokens: {
+      spacing: {
+        small: { value: '0.75rem', slug: '30', name: 'Small' },
+        medium: { value: '1rem', slug: '40', name: 'Medium' },
+        large: { value: '1.5rem', slug: '60', name: 'Large' },
+        'x-large': { value: '2.25rem', slug: '70', name: 'X Large' },
+      },
+    },
+    baseStyles: {
+      h1: { marginBlockStart: 'x-large' },
+      h2: { marginBlockStart: 'large' },
+      spacing: {
+        afterHeading: 'small',
+        listItem: 'small',
+      },
+    },
+  };
+
+  it('emits styles.elements.{hN}.spacing.margin.top as a preset reference', () => {
+    const result = JSON.parse(generateThemeJson(spacingConfig));
+    expect(result.styles.elements.h1.spacing).toEqual({
+      margin: { top: 'var(--wp--preset--spacing--70)' },
+    });
+    expect(result.styles.elements.h2.spacing).toEqual({
+      margin: { top: 'var(--wp--preset--spacing--60)' },
+    });
+  });
+
+  it('does not emit spacing on headings without marginBlockStart', () => {
+    const result = JSON.parse(generateThemeJson(spacingConfig));
+    expect(result.styles.elements.h3).toBeUndefined();
+    expect(result.styles.elements.h4).toBeUndefined();
+  });
+
+  it('does not emit afterHeading or listItem in theme.json (sibling-only rules live in typography.css)', () => {
+    const result = JSON.parse(generateThemeJson(spacingConfig));
+    const json = JSON.stringify(result);
+    expect(json).not.toMatch(/afterHeading/);
+    expect(json).not.toMatch(/listItem/);
+  });
+
+  it('does not emit spacing on heading group, caption, button, or link', () => {
+    const config: C2bConfig = {
+      ...spacingConfig,
+      baseStyles: {
+        heading: { color: 'primary' },
+        h1: { marginBlockStart: 'x-large' },
+      },
+      tokens: {
+        ...spacingConfig.tokens,
+        colorPalette: { primary: { value: '#000', slug: 'primary', name: 'Primary' } },
+      },
+    };
+    const result = JSON.parse(generateThemeJson(config));
+    expect(result.styles.elements.heading?.spacing).toBeUndefined();
+  });
+
+  it('passes raw marginBlockStart values through unchanged', () => {
+    const config: C2bConfig = {
+      ...spacingConfig,
+      baseStyles: { h2: { marginBlockStart: '2.5rem' } },
+    };
+    const result = JSON.parse(generateThemeJson(config));
+    expect(result.styles.elements.h2.spacing).toEqual({
+      margin: { top: '2.5rem' },
+    });
+  });
+});

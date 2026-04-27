@@ -1,9 +1,12 @@
 import { camelToKebab } from '../types.js';
 import { resolveBaseStyleValueForScss, ensureFontStyle } from '../config.js';
+import { appendFlowSpacingRules } from './flow-spacing.js';
 /** Property output order for consistent generated CSS */
 const PROPERTY_ORDER = ['fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight'];
 /** Padding sides in output order */
 const PADDING_SIDES = ['top', 'right', 'bottom', 'left'];
+/** Heading levels in output order */
+const HEADING_LEVELS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 export function generateContentScss(config) {
     if (!config.baseStyles)
         return null;
@@ -36,6 +39,10 @@ export function generateContentScss(config) {
     if (hasBlockGap) {
         appendBlockGapRules(lines, prefix);
     }
+    // Flow-spacing rules: heading top margins, after-heading tightening, list-item rhythm.
+    // Must come after appendBlockGapRules — the after-heading selector ties on specificity
+    // with the block-gap rule and relies on source order to win.
+    appendFlowSpacingRules(lines, baseStyles, prefix, tokens);
     // Layout constraint rules (contentSize / wideSize)
     appendLayoutConstraintRules(lines, prefix, tokens);
     // Global padding + alignfull rules
@@ -65,8 +72,7 @@ export function generateContentScss(config) {
         lines.push('}');
     }
     // Individual headings — :where(hN) { ... }
-    const headingLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-    for (const level of headingLevels) {
+    for (const level of HEADING_LEVELS) {
         const def = baseStyles[level];
         if (!def)
             continue;

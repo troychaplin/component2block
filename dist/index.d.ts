@@ -6,6 +6,7 @@ export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
 export { generateFontsCss } from './generators/fonts-css.js';
 export { generateContentScss } from './generators/content-scss.js';
+export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
 export type { C2bConfig, C2bConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig } from './types.js';
 export interface GenerateResult {
