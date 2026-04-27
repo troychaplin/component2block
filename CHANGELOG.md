@@ -17,6 +17,18 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** `base-styles.scss` is now `base-styles.css` and contains **only** per-element typography and color rules. Layout utilities (block-gap rules, layout-constraint rules, `.has-global-padding`, `.alignfull` helpers) moved to a new `layout.css`; flow-spacing rules (`> * + hN`, after-heading, `li + li`) moved to `typography.css`. Each output now has a single, focused purpose.
+- **Breaking:** `base-styles.css`, `layout.css`, and `typography.css` are now dual-output — written to both `srcDir` and `themeDir` (matching the existing `tokens.css` pattern) so each file is available in both the React/local-build context and the WordPress context. Consumers choose what to import; nothing is auto-enqueued.
+- **Breaking:** `generateContentScss` is removed and replaced by `generateBaseStylesCss` and `generateLayoutCss`. The CLI (`c2b generate`) is unaffected; only direct programmatic API users need to update imports.
+
+### Added
+
+- New `layout.css` output containing the `body { ... }` block with root-padding/block-gap CSS variables, the constrained/flex/grid block-gap rules, the layout-constraint rules (`contentSize` / `wideSize`), and the `.has-global-padding` / `.alignfull` helpers. Returns null when no relevant config is present (`spacing.padding`, `spacing.blockGap`, or `tokens.layout`).
+- The block-gap rules in `layout.css` now also emit `:where(.is-layout-constrained) > * { margin-block-start: 0; margin-block-end: 0 }`, matching WordPress's own block-gap reset. This kills browser default vertical margins on flow children and gives first-child elements `margin-block-start: 0` without a separate `:first-child` rule. Consumers can drop their hand-written equivalent.
+- `ELEMENT_REGISTRY` and `TYPOGRAPHY_PROPERTIES` exported from the public API as the single source of truth for the element list (`heading`, `h1`–`h6`, `caption`, `button`, `link`) and typography property order (`fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `lineHeight`). `validateBaseStyles`, the CSS generator, and the theme.json generator all loop over these registries — adding a new element or typography property is a one-entry change.
+
 ## [0.4.0] - 2026-04-27
 
 ### Added

@@ -1,5 +1,5 @@
 import type { C2bConfig, TokenCategory, TokenGroup, BaseStylesConfig, BaseStyleElementDef } from '../types.js';
-import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID } from '../types.js';
+import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, ELEMENT_REGISTRY, TYPOGRAPHY_PROPERTIES } from '../types.js';
 import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -229,18 +229,14 @@ function buildStylesBlock(
     }
   }
 
-  // Elements → styles.elements
+  // Elements → styles.elements (driven by ELEMENT_REGISTRY)
   const elements: Record<string, unknown> = {};
-  const elementKeys = ['heading', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'caption', 'button', 'link'] as const;
 
-  for (const element of elementKeys) {
-    const def = baseStyles[element];
+  for (const elementDef of ELEMENT_REGISTRY) {
+    const def = baseStyles[elementDef.key];
     if (!def) continue;
 
-    // Individual headings get fontStyle: normal default
-    const isIndividualHeading = /^h[1-6]$/.test(element);
-    const withDefaults = isIndividualHeading ? ensureFontStyle(def) : def;
-
+    const withDefaults = elementDef.isHeading ? ensureFontStyle(def) : def;
     const elementObj: Record<string, unknown> = {};
 
     const typo = buildTypographyObject(withDefaults, tokens);
@@ -254,26 +250,23 @@ function buildStylesBlock(
     }
 
     // Per-heading top margin → styles.elements.{hN}.spacing.margin.top
-    // Only individual headings receive this — sibling-based rules
-    // (afterHeading, listItem) can't be expressed in theme.json and live in
-    // the generated typography.css instead.
-    if (isIndividualHeading) {
+    // Sibling-based rules (afterHeading, listItem) live in typography.css.
+    if (elementDef.isHeading) {
       const spacing = buildSpacingObject(def, tokens);
       if (spacing) {
         elementObj.spacing = spacing;
       }
     }
 
-    // Link :hover pseudo-class
-    if (element === 'link' && def.hoverColor !== undefined) {
-      const hoverColor: Record<string, string> = {
-        text: resolveBaseStyleValueForThemeJson(def.hoverColor, 'hoverColor', tokens),
+    // Hover pseudo (link)
+    if (elementDef.hoverCssSelector && def.hoverColor !== undefined) {
+      elementObj[':hover'] = {
+        color: { text: resolveBaseStyleValueForThemeJson(def.hoverColor, 'hoverColor', tokens) },
       };
-      elementObj[':hover'] = { color: hoverColor };
     }
 
     if (Object.keys(elementObj).length > 0) {
-      elements[element] = elementObj;
+      elements[elementDef.themeJsonKey] = elementObj;
     }
   }
 
@@ -296,23 +289,11 @@ function buildTypographyObject(
   tokens: C2bConfig['tokens'],
 ): Record<string, string> {
   const result: Record<string, string> = {};
-
-  if (def.fontFamily !== undefined) {
-    result.fontFamily = resolveBaseStyleValueForThemeJson(def.fontFamily, 'fontFamily', tokens);
+  for (const prop of TYPOGRAPHY_PROPERTIES) {
+    const value = def[prop];
+    if (value === undefined) continue;
+    result[prop] = resolveBaseStyleValueForThemeJson(value, prop, tokens);
   }
-  if (def.fontSize !== undefined) {
-    result.fontSize = resolveBaseStyleValueForThemeJson(def.fontSize, 'fontSize', tokens);
-  }
-  if (def.fontStyle !== undefined) {
-    result.fontStyle = resolveBaseStyleValueForThemeJson(def.fontStyle, 'fontStyle', tokens);
-  }
-  if (def.fontWeight !== undefined) {
-    result.fontWeight = resolveBaseStyleValueForThemeJson(def.fontWeight, 'fontWeight', tokens);
-  }
-  if (def.lineHeight !== undefined) {
-    result.lineHeight = resolveBaseStyleValueForThemeJson(def.lineHeight, 'lineHeight', tokens);
-  }
-
   return result;
 }
 

@@ -20,6 +20,39 @@ export interface BaseStyleElementDef {
 }
 /** Valid element keys in baseStyles config */
 export type BaseStyleElement = 'body' | 'heading' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'caption' | 'button' | 'link';
+/**
+ * Definition for an element under `styles.elements.*` in theme.json and
+ * its `:where(...)` rule in base-styles.css. `body` is excluded because its
+ * theme.json output goes to top-level `styles.typography` / `styles.color`
+ * instead of `styles.elements.body`, and its CSS output wraps a `body { }`
+ * block rather than a `:where(...)` rule.
+ */
+export interface BaseElementDef {
+    /** Key in baseStyles config */
+    key: 'heading' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'caption' | 'button' | 'link';
+    /** CSS selector — written verbatim into the generated stylesheet */
+    cssSelector: string;
+    /** Element key under styles.elements in theme.json */
+    themeJsonKey: string;
+    /** True for h1–h6: receives ensureFontStyle('normal') and supports marginBlockStart */
+    isHeading?: boolean;
+    /** Explicit hover selector when the element supports hoverColor → :hover. Element gets a theme.json `:hover` pseudo too. */
+    hoverCssSelector?: string;
+}
+/**
+ * Single source of truth for elements that get per-element styling. Adding a
+ * new element is a one-entry change here; validation and every generator loop
+ * over this registry rather than maintaining their own lists.
+ */
+export declare const ELEMENT_REGISTRY: BaseElementDef[];
+/** Heading levels in output order — derived from the registry */
+export declare const HEADING_KEYS: Array<"h1" | "h2" | "h3" | "h4" | "h5" | "h6">;
+/**
+ * Typography properties on BaseStyleElementDef, in canonical output order.
+ * Used by both the CSS generator (font-family/font-size/...) and the theme.json
+ * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
+ */
+export declare const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight'>;
 /** Padding values for each side */
 export interface BaseStylesSpacingPadding {
     top?: string;

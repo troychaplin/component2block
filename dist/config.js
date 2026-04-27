@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { CATEGORY_REGISTRY, DEFAULT_FLUID, INPUT_CATEGORY_MAP, VALID_CATEGORIES, kebabToTitle } from './types.js';
+import { CATEGORY_REGISTRY, DEFAULT_FLUID, ELEMENT_REGISTRY, INPUT_CATEGORY_MAP, TYPOGRAPHY_PROPERTIES, VALID_CATEGORIES, kebabToTitle } from './types.js';
 const DEFAULTS = {
     srcDir: 'src/styles',
     themeDir: 'dist/wp',
@@ -524,21 +524,15 @@ function buildBaseStyleValueError(context, value, property, classification) {
 export function validateBaseStyles(baseStyles, tokens) {
     if (!baseStyles)
         return;
+    // body is validated alongside the registered elements but isn't in
+    // ELEMENT_REGISTRY (its theme.json output is top-level, not under
+    // styles.elements.body).
     const elements = [
         ['body', baseStyles.body],
-        ['heading', baseStyles.heading],
-        ['h1', baseStyles.h1],
-        ['h2', baseStyles.h2],
-        ['h3', baseStyles.h3],
-        ['h4', baseStyles.h4],
-        ['h5', baseStyles.h5],
-        ['h6', baseStyles.h6],
-        ['caption', baseStyles.caption],
-        ['button', baseStyles.button],
-        ['link', baseStyles.link],
+        ...ELEMENT_REGISTRY.map(e => [e.key, baseStyles[e.key]]),
     ];
     const props = [
-        'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'fontStyle',
+        ...TYPOGRAPHY_PROPERTIES,
         'color', 'background', 'hoverColor',
         'marginBlockStart',
     ];

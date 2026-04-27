@@ -42,7 +42,9 @@ try {
         const { generateThemeJson } = await import('./generators/theme-json.js');
         const { generateIntegratePhp } = await import('./generators/integrate-php.js');
         const { generateFontsCss } = await import('./generators/fonts-css.js');
-        const { generateContentScss } = await import('./generators/content-scss.js');
+        const { generateBaseStylesCss } = await import('./generators/base-styles-css.js');
+        const { generateLayoutCss } = await import('./generators/layout-css.js');
+        const { generateTypographyCss } = await import('./generators/typography-css.js');
         const config = loadConfig(configPath);
         console.log('=== tokens.css ===');
         console.log(generateTokensCss(config));
@@ -56,10 +58,20 @@ try {
             console.log('=== fonts.css ===');
             console.log(fontsCss);
         }
-        const contentScss = generateContentScss(config);
-        if (contentScss) {
-            console.log('=== base-styles.scss ===');
-            console.log(contentScss);
+        const baseStylesCss = generateBaseStylesCss(config);
+        if (baseStylesCss) {
+            console.log('=== base-styles.css ===');
+            console.log(baseStylesCss);
+        }
+        const layoutCss = generateLayoutCss(config);
+        if (layoutCss) {
+            console.log('=== layout.css ===');
+            console.log(layoutCss);
+        }
+        const typographyCss = generateTypographyCss(config);
+        if (typographyCss) {
+            console.log('=== typography.css ===');
+            console.log(typographyCss);
         }
         if (config.themeable) {
             console.log('=== tokens.wp.css ===');
