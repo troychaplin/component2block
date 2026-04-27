@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-27
+
 ### Added
 
 - New `baseStyles.h1`–`h6` `marginBlockStart` property defining each heading's top margin within constrained-layout flow. Resolves against `tokens.spacing` (or accepts a raw CSS value). Emitted as `:where(.is-layout-constrained) > * + hN { margin-block-start: ... }` in `base-styles.scss` (specificity beats the block-gap rule; first-child headings fall through to the `:first-child` reset) and as `styles.elements.{hN}.spacing.margin.top` preset reference in `theme.json` so block-editor spacing controls pick up the defaults.
