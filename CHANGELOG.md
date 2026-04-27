@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-27
+
 ### Changed
 
 - **Breaking:** `base-styles.scss` is now `base-styles.css` and contains **only** per-element typography and color rules. Layout utilities (block-gap rules, layout-constraint rules, `.has-global-padding`, `.alignfull` helpers) moved to a new `layout.css`; flow-spacing rules (`> * + hN`, after-heading, `li + li`) moved to `typography.css`. Each output now has a single, focused purpose.
