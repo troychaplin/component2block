@@ -220,6 +220,16 @@ function buildStylesBlock(baseStyles, tokens) {
         if (Object.keys(color).length > 0) {
             elementObj.color = color;
         }
+        // Per-heading top margin → styles.elements.{hN}.spacing.margin.top
+        // Only individual headings receive this — sibling-based rules
+        // (afterHeading, listItem) can't be expressed in theme.json and live in
+        // the generated typography.css instead.
+        if (isIndividualHeading) {
+            const spacing = buildSpacingObject(def, tokens);
+            if (spacing) {
+                elementObj.spacing = spacing;
+            }
+        }
         // Link :hover pseudo-class
         if (element === 'link' && def.hoverColor !== undefined) {
             const hoverColor = {
@@ -276,5 +286,16 @@ function buildColorObject(def, tokens) {
         result.background = resolveBaseStyleValueForThemeJson(def.background, 'background', tokens);
     }
     return result;
+}
+/**
+ * Build a theme.json spacing object from a BaseStyleElementDef.
+ * Currently only handles `marginBlockStart` → `margin.top`. Returns null when
+ * no spacing properties are set.
+ */
+function buildSpacingObject(def, tokens) {
+    if (def.marginBlockStart === undefined)
+        return null;
+    const top = resolveBaseStyleValueForThemeJson(def.marginBlockStart, 'marginBlockStart', tokens);
+    return { margin: { top } };
 }
 //# sourceMappingURL=theme-json.js.map

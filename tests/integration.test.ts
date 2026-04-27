@@ -393,3 +393,100 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
     rmSync(badDir, { recursive: true, force: true });
   });
 });
+
+describe('integration: generate() — flow-spacing emits typography.css', () => {
+  const FS_TEST_DIR = resolve(import.meta.dirname ?? '.', '__test-output-flow__');
+  const FS_CONFIG_PATH = resolve(FS_TEST_DIR, 'c2b.config.json');
+
+  const fsConfig = {
+    prefix: 'rds',
+    output: {
+      srcDir: 'src',
+      themeDir: 'out/wp',
+    },
+    tokens: {
+      spacing: {
+        'x-small': { value: '0.5rem', slug: '20', name: 'X Small' },
+        small: { value: '0.75rem', slug: '30', name: 'Small' },
+        medium: { value: '1rem', slug: '40', name: 'Medium' },
+        large: { value: '1.5rem', slug: '60', name: 'Large' },
+        'x-large': { value: '2.25rem', slug: '70', name: 'X Large' },
+      },
+    },
+    baseStyles: {
+      h2: { marginBlockStart: 'x-large' },
+      h3: { marginBlockStart: 'large' },
+      spacing: {
+        blockGap: 'medium',
+        afterHeading: 'small',
+        listItem: 'x-small',
+      },
+    },
+  };
+
+  beforeAll(() => {
+    mkdirSync(FS_TEST_DIR, { recursive: true });
+    writeFileSync(FS_CONFIG_PATH, JSON.stringify(fsConfig, null, 2));
+  });
+
+  afterAll(() => {
+    rmSync(FS_TEST_DIR, { recursive: true, force: true });
+  });
+
+  it('writes typography.css to the WP output directory', () => {
+    const result = generate(FS_CONFIG_PATH, FS_TEST_DIR);
+    const paths = result.files.map((f) => f.path);
+    expect(paths).toContain('out/wp/typography.css');
+  });
+
+  it('typography.css contains heading + after-heading + listItem rules', () => {
+    generate(FS_CONFIG_PATH, FS_TEST_DIR);
+    const content = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
+    expect(content).toContain(':where(.is-layout-constrained) > * + h2 {');
+    expect(content).toContain('  margin-block-start: var(--rds--spacing-x-large);');
+    expect(content).toContain(':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {');
+    expect(content).toContain('li + li {');
+  });
+
+  it('theme.json carries per-heading margin via styles.elements.{hN}.spacing.margin.top', () => {
+    generate(FS_CONFIG_PATH, FS_TEST_DIR);
+    const parsed = JSON.parse(
+      readFileSync(resolve(FS_TEST_DIR, 'out/wp/theme-rds.json'), 'utf-8'),
+    );
+    expect(parsed.styles.elements.h2.spacing).toEqual({
+      margin: { top: 'var(--wp--preset--spacing--70)' },
+    });
+    expect(parsed.styles.elements.h3.spacing).toEqual({
+      margin: { top: 'var(--wp--preset--spacing--60)' },
+    });
+  });
+
+  it('integrate.php is unchanged — typography.css is NOT auto-enqueued', () => {
+    generate(FS_CONFIG_PATH, FS_TEST_DIR);
+    const phpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/integrate.php'), 'utf-8');
+    expect(phpContent).not.toContain('typography.css');
+  });
+
+  it('skips typography.css when no flow-spacing properties are configured', () => {
+    const noFlowDir = resolve(import.meta.dirname ?? '.', '__test-output-noflow__');
+    const noFlowPath = resolve(noFlowDir, 'c2b.config.json');
+    mkdirSync(noFlowDir, { recursive: true });
+    writeFileSync(
+      noFlowPath,
+      JSON.stringify({
+        prefix: 'noflow',
+        output: { srcDir: 'src', themeDir: 'out/wp' },
+        tokens: {
+          spacing: {
+            md: { value: '1rem', slug: '40', name: 'Medium' },
+          },
+        },
+        baseStyles: { spacing: { blockGap: 'md' } },
+      }),
+    );
+    const result = generate(noFlowPath, noFlowDir);
+    const paths = result.files.map((f) => f.path);
+    expect(paths).not.toContain('out/wp/typography.css');
+    rmSync(noFlowDir, { recursive: true, force: true });
+  });
+});

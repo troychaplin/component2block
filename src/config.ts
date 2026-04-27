@@ -456,6 +456,9 @@ const PROPERTY_CATEGORY: Record<string, TokenCategory> = {
   hoverColor: 'colorPalette',
   padding: 'spacing',
   blockGap: 'spacing',
+  marginBlockStart: 'spacing',
+  afterHeading: 'spacing',
+  listItem: 'spacing',
 };
 
 /**
@@ -661,6 +664,7 @@ export function validateBaseStyles(
   const props: Array<keyof BaseStyleElementDef> = [
     'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'fontStyle',
     'color', 'background', 'hoverColor',
+    'marginBlockStart',
   ];
 
   for (const [elementName, def] of elements) {
@@ -692,6 +696,22 @@ export function validateBaseStyles(
     const c = classifyBaseStyleValue(baseStyles.spacing.blockGap, 'blockGap', tokens);
     if (c.kind === 'invalid') {
       throw new Error(buildBaseStyleValueError('spacing.blockGap', baseStyles.spacing.blockGap, 'blockGap', c));
+    }
+  }
+
+  // Spacing afterHeading (sibling-rule flow override)
+  if (baseStyles.spacing?.afterHeading !== undefined) {
+    const c = classifyBaseStyleValue(baseStyles.spacing.afterHeading, 'afterHeading', tokens);
+    if (c.kind === 'invalid') {
+      throw new Error(buildBaseStyleValueError('spacing.afterHeading', baseStyles.spacing.afterHeading, 'afterHeading', c));
+    }
+  }
+
+  // Spacing listItem (li + li gap)
+  if (baseStyles.spacing?.listItem !== undefined) {
+    const c = classifyBaseStyleValue(baseStyles.spacing.listItem, 'listItem', tokens);
+    if (c.kind === 'invalid') {
+      throw new Error(buildBaseStyleValueError('spacing.listItem', baseStyles.spacing.listItem, 'listItem', c));
     }
   }
 }

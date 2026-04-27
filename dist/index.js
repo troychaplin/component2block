@@ -8,6 +8,7 @@ import { generateThemeJson } from './generators/theme-json.js';
 import { generateIntegratePhp } from './generators/integrate-php.js';
 import { generateFontsCss } from './generators/fonts-css.js';
 import { generateContentScss } from './generators/content-scss.js';
+import { generateTypographyCss } from './generators/typography-css.js';
 import { copyFontFiles } from './generators/copy-fonts.js';
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
@@ -17,6 +18,7 @@ export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
 export { generateFontsCss } from './generators/fonts-css.js';
 export { generateContentScss } from './generators/content-scss.js';
+export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
 export function generate(configPath, cwd) {
     const config = loadConfig(configPath);
@@ -71,6 +73,13 @@ export function generate(configPath, cwd) {
     }
     write(`${config.themeDir}/theme-${config.prefix}.json`, generateThemeJson(config));
     write(`${config.themeDir}/integrate.php`, generateIntegratePhp(config.prefix));
+    // typography.css is generated alongside tokens.css but NOT enqueued by
+    // integrate.php — consumers import it manually if they want flow-spacing
+    // rules (per-heading top margin, after-heading, li + li) on the WP side.
+    const typographyCss = generateTypographyCss(config);
+    if (typographyCss) {
+        write(`${config.themeDir}/typography.css`, typographyCss);
+    }
     return { files };
 }
 //# sourceMappingURL=index.js.map

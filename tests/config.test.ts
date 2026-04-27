@@ -615,3 +615,84 @@ describe('validateConfig — layout camelCase keys', () => {
     expect(result.tokens.layout!.contentSize.name).toBeUndefined();
   });
 });
+
+describe('validateConfig — flow-spacing baseStyles properties', () => {
+  const tokensWithSpacing: C2bConfigInput = {
+    prefix: 'test',
+    spacing: {
+      small: { value: '0.5rem', slug: '20', name: 'Small' },
+      medium: { value: '1rem', slug: '40', name: 'Medium' },
+      large: { value: '2rem', slug: '60', name: 'Large' },
+    },
+  };
+
+  it('accepts marginBlockStart on a heading element', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: { h2: { marginBlockStart: 'large' } },
+      }),
+    ).not.toThrow();
+  });
+
+  it('accepts spacing.afterHeading and spacing.listItem', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: {
+          spacing: { afterHeading: 'small', listItem: 'small' },
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  it('throws when marginBlockStart references an undefined spacing token', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: { h2: { marginBlockStart: 'huge' } },
+      }),
+    ).toThrow(/h2\.marginBlockStart.*"huge"/);
+  });
+
+  it('throws when afterHeading references an undefined spacing token', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: { spacing: { afterHeading: 'huge' } },
+      }),
+    ).toThrow(/spacing\.afterHeading.*"huge"/);
+  });
+
+  it('throws when listItem references an undefined spacing token', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: { spacing: { listItem: 'huge' } },
+      }),
+    ).toThrow(/spacing\.listItem.*"huge"/);
+  });
+
+  it('does not cross-resolve marginBlockStart against fontSize tokens', () => {
+    // "small" exists in both spacing and fontSize — strict lookup must use spacing only.
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        fontSize: { 'unrelated-name': { value: '1rem' } },
+        baseStyles: { h2: { marginBlockStart: 'unrelated-name' } },
+      }),
+    ).toThrow(/h2\.marginBlockStart.*"unrelated-name"/);
+  });
+
+  it('accepts raw CSS values for spacing properties', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: {
+          h2: { marginBlockStart: '2.5rem' },
+          spacing: { afterHeading: '0.75rem', listItem: '0.25rem' },
+        },
+      }),
+    ).not.toThrow();
+  });
+});
