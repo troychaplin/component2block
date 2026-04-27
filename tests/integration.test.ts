@@ -128,28 +128,35 @@ describe('integration: generate() — baseStyles', () => {
     rmSync(BS_TEST_DIR, { recursive: true, force: true });
   });
 
-  it('file count includes base-styles.scss', () => {
+  it('file count includes dual-output base-styles.css', () => {
     const result = generate(BS_CONFIG_PATH, BS_TEST_DIR);
 
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/base-styles.scss');
-    // base files: src/tokens.css, out/wp/tokens.css, theme.json, integrate.php + base-styles.scss = 5
-    expect(result.files.length).toBeGreaterThanOrEqual(5);
+    expect(paths).toContain('src/base-styles.css');
+    expect(paths).toContain('out/wp/base-styles.css');
+    // base files: src/tokens.css, out/wp/tokens.css, theme.json, integrate.php + base-styles.css ×2 = 6
+    expect(result.files.length).toBeGreaterThanOrEqual(6);
   });
 
-  it('base-styles.scss has :where() selectors', () => {
+  it('base-styles.css has :where() selectors and matches across srcDir/themeDir', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
-    const content = readFileSync(
-      resolve(BS_TEST_DIR, 'src/base-styles.scss'),
+    const srcContent = readFileSync(
+      resolve(BS_TEST_DIR, 'src/base-styles.css'),
+      'utf-8',
+    );
+    const wpContent = readFileSync(
+      resolve(BS_TEST_DIR, 'out/wp/base-styles.css'),
       'utf-8',
     );
 
-    expect(content).toContain(':where(h1, h2, h3, h4, h5, h6) {');
-    expect(content).toContain(':where(h1) {');
-    expect(content).toContain(':where(h2) {');
-    expect(content).toContain(':where(figcaption) {');
-    expect(content).toContain('var(--inttest--font-family-inter)');
-    expect(content).toContain('var(--inttest--font-size-medium)');
+    expect(srcContent).toContain(':where(h1, h2, h3, h4, h5, h6) {');
+    expect(srcContent).toContain(':where(h1) {');
+    expect(srcContent).toContain(':where(h2) {');
+    expect(srcContent).toContain(':where(figcaption) {');
+    expect(srcContent).toContain('var(--inttest--font-family-inter)');
+    expect(srcContent).toContain('var(--inttest--font-size-medium)');
+    // Dual outputs are byte-identical
+    expect(srcContent).toBe(wpContent);
   });
 
   it('theme.json includes styles block', () => {
@@ -250,16 +257,31 @@ describe('integration: generate() — baseStyles spacing', () => {
     expect(parsed.styles.spacing.padding.top).toBe('0');
   });
 
-  it('base-styles.scss includes root padding and alignfull rules', () => {
+  it('layout.css includes root padding and alignfull rules (dual-output)', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
-    const content = readFileSync(
-      resolve(SP_TEST_DIR, 'src/base-styles.scss'),
+    const srcContent = readFileSync(
+      resolve(SP_TEST_DIR, 'src/layout.css'),
+      'utf-8',
+    );
+    const wpContent = readFileSync(
+      resolve(SP_TEST_DIR, 'out/wp/layout.css'),
       'utf-8',
     );
 
-    expect(content).toContain('--inttest--root-padding-right: var(--inttest--spacing-large);');
-    expect(content).toContain('.has-global-padding');
-    expect(content).toContain('.alignfull');
+    expect(srcContent).toContain('--inttest--root-padding-right: var(--inttest--spacing-large);');
+    expect(srcContent).toContain('.has-global-padding');
+    expect(srcContent).toContain('.alignfull');
+    expect(srcContent).toBe(wpContent);
+  });
+
+  it('base-styles.css does NOT contain layout utilities', () => {
+    generate(SP_CONFIG_PATH, SP_TEST_DIR);
+    const content = readFileSync(
+      resolve(SP_TEST_DIR, 'src/base-styles.css'),
+      'utf-8',
+    );
+    expect(content).not.toContain('.has-global-padding');
+    expect(content).not.toContain('--inttest--root-padding-');
   });
 });
 
@@ -433,19 +455,30 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     rmSync(FS_TEST_DIR, { recursive: true, force: true });
   });
 
-  it('writes typography.css to the WP output directory', () => {
+  it('writes typography.css to BOTH srcDir and themeDir (dual output)', () => {
     const result = generate(FS_CONFIG_PATH, FS_TEST_DIR);
     const paths = result.files.map((f) => f.path);
+    expect(paths).toContain('src/typography.css');
     expect(paths).toContain('out/wp/typography.css');
   });
 
-  it('typography.css contains heading + after-heading + listItem rules', () => {
+  it('typography.css contains heading + after-heading + listItem rules (and srcDir matches themeDir)', () => {
     generate(FS_CONFIG_PATH, FS_TEST_DIR);
-    const content = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
-    expect(content).toContain(':where(.is-layout-constrained) > * + h2 {');
-    expect(content).toContain('  margin-block-start: var(--rds--spacing-x-large);');
-    expect(content).toContain(':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {');
-    expect(content).toContain('li + li {');
+    const wpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
+    const srcContent = readFileSync(resolve(FS_TEST_DIR, 'src/typography.css'), 'utf-8');
+    expect(wpContent).toContain(':where(.is-layout-constrained) > * + h2 {');
+    expect(wpContent).toContain('  margin-block-start: var(--rds--spacing-x-large);');
+    expect(wpContent).toContain(':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {');
+    expect(wpContent).toContain('li + li {');
+    expect(srcContent).toBe(wpContent);
+  });
+
+  it('flow-spacing rules do NOT leak into base-styles.css', () => {
+    generate(FS_CONFIG_PATH, FS_TEST_DIR);
+    const content = readFileSync(resolve(FS_TEST_DIR, 'src/base-styles.css'), 'utf-8');
+    expect(content).not.toContain('* + h2');
+    expect(content).not.toContain('h1, h2, h3, h4, h5, h6) + *');
+    expect(content).not.toContain('li + li');
   });
 
   it('theme.json carries per-heading margin via styles.elements.{hN}.spacing.margin.top', () => {
@@ -487,6 +520,7 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     const result = generate(noFlowPath, noFlowDir);
     const paths = result.files.map((f) => f.path);
     expect(paths).not.toContain('out/wp/typography.css');
+    expect(paths).not.toContain('src/typography.css');
     rmSync(noFlowDir, { recursive: true, force: true });
   });
 });

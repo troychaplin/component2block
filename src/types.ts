@@ -24,6 +24,56 @@ export interface BaseStyleElementDef {
 /** Valid element keys in baseStyles config */
 export type BaseStyleElement = 'body' | 'heading' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'caption' | 'button' | 'link';
 
+/**
+ * Definition for an element under `styles.elements.*` in theme.json and
+ * its `:where(...)` rule in base-styles.css. `body` is excluded because its
+ * theme.json output goes to top-level `styles.typography` / `styles.color`
+ * instead of `styles.elements.body`, and its CSS output wraps a `body { }`
+ * block rather than a `:where(...)` rule.
+ */
+export interface BaseElementDef {
+  /** Key in baseStyles config */
+  key: 'heading' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'caption' | 'button' | 'link';
+  /** CSS selector — written verbatim into the generated stylesheet */
+  cssSelector: string;
+  /** Element key under styles.elements in theme.json */
+  themeJsonKey: string;
+  /** True for h1–h6: receives ensureFontStyle('normal') and supports marginBlockStart */
+  isHeading?: boolean;
+  /** Explicit hover selector when the element supports hoverColor → :hover. Element gets a theme.json `:hover` pseudo too. */
+  hoverCssSelector?: string;
+}
+
+/**
+ * Single source of truth for elements that get per-element styling. Adding a
+ * new element is a one-entry change here; validation and every generator loop
+ * over this registry rather than maintaining their own lists.
+ */
+export const ELEMENT_REGISTRY: BaseElementDef[] = [
+  { key: 'heading', cssSelector: ':where(h1, h2, h3, h4, h5, h6)', themeJsonKey: 'heading' },
+  { key: 'h1', cssSelector: ':where(h1)', themeJsonKey: 'h1', isHeading: true },
+  { key: 'h2', cssSelector: ':where(h2)', themeJsonKey: 'h2', isHeading: true },
+  { key: 'h3', cssSelector: ':where(h3)', themeJsonKey: 'h3', isHeading: true },
+  { key: 'h4', cssSelector: ':where(h4)', themeJsonKey: 'h4', isHeading: true },
+  { key: 'h5', cssSelector: ':where(h5)', themeJsonKey: 'h5', isHeading: true },
+  { key: 'h6', cssSelector: ':where(h6)', themeJsonKey: 'h6', isHeading: true },
+  { key: 'caption', cssSelector: ':where(figcaption)', themeJsonKey: 'caption' },
+  { key: 'button', cssSelector: ':where(button)', themeJsonKey: 'button' },
+  { key: 'link', cssSelector: ':where(a)', themeJsonKey: 'link', hoverCssSelector: ':where(a:hover)' },
+];
+
+/** Heading levels in output order — derived from the registry */
+export const HEADING_KEYS = ELEMENT_REGISTRY.filter(e => e.isHeading).map(e => e.key) as Array<'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'>;
+
+/**
+ * Typography properties on BaseStyleElementDef, in canonical output order.
+ * Used by both the CSS generator (font-family/font-size/...) and the theme.json
+ * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
+ */
+export const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight'> = [
+  'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight',
+];
+
 /** Padding values for each side */
 export interface BaseStylesSpacingPadding {
   top?: string;

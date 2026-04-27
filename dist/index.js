@@ -7,7 +7,8 @@ import { generateTokensWpCss } from './generators/tokens-wp-css.js';
 import { generateThemeJson } from './generators/theme-json.js';
 import { generateIntegratePhp } from './generators/integrate-php.js';
 import { generateFontsCss } from './generators/fonts-css.js';
-import { generateContentScss } from './generators/content-scss.js';
+import { generateBaseStylesCss } from './generators/base-styles-css.js';
+import { generateLayoutCss } from './generators/layout-css.js';
 import { generateTypographyCss } from './generators/typography-css.js';
 import { copyFontFiles } from './generators/copy-fonts.js';
 export { loadConfig, validateConfig } from './config.js';
@@ -17,7 +18,8 @@ export { generateTokensWpCss } from './generators/tokens-wp-css.js';
 export { generateThemeJson } from './generators/theme-json.js';
 export { generateIntegratePhp } from './generators/integrate-php.js';
 export { generateFontsCss } from './generators/fonts-css.js';
-export { generateContentScss } from './generators/content-scss.js';
+export { generateBaseStylesCss } from './generators/base-styles-css.js';
+export { generateLayoutCss } from './generators/layout-css.js';
 export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
 export function generate(configPath, cwd) {
@@ -30,10 +32,21 @@ export function generate(configPath, cwd) {
         writeFileSync(fullPath, content, 'utf-8');
         files.push({ path: relativePath, size: content.length });
     };
-    // Generate tokens.css for local dev (Storybook)
-    write(join(config.srcDir, 'tokens.css'), generateTokensCss(config));
-    // Generate _variables.scss for compile-time SCSS contexts (e.g. @media queries).
-    // Opt-in per category via output.scssVars. Skipped when the list is empty.
+    // Dual-output helper: write the same CSS file into both srcDir (for the
+    // local build, e.g. Storybook / Next) and themeDir (for the WP context).
+    // Skips writing when the generator returns null/empty.
+    const writeDual = (filename, content) => {
+        if (!content)
+            return;
+        write(join(config.srcDir, filename), content);
+        write(`${config.themeDir}/${filename}`, content);
+    };
+    // CSS outputs that ship to both contexts
+    writeDual('tokens.css', generateTokensCss(config));
+    writeDual('base-styles.css', generateBaseStylesCss(config));
+    writeDual('layout.css', generateLayoutCss(config));
+    writeDual('typography.css', generateTypographyCss(config));
+    // SCSS variables — compile-time only, srcDir only. Opt-in per category.
     const tokensScss = generateTokensScss(config);
     if (tokensScss) {
         write(join(config.srcDir, '_variables.scss'), tokensScss);
@@ -51,11 +64,6 @@ export function generate(configPath, cwd) {
             write(join(config.srcDir, 'fonts.css'), fontsCss);
         }
     }
-    // Generate base-styles.scss if baseStyles are defined
-    const contentScss = generateContentScss(config);
-    if (contentScss) {
-        write(join(config.srcDir, 'base-styles.scss'), contentScss);
-    }
     // Bundle font files and generate dist-level fonts.css for published package
     if (config.fontsDir && config.bundleFonts) {
         const distFontsCss = generateFontsCss(config, './fonts');
@@ -66,20 +74,12 @@ export function generate(configPath, cwd) {
             files.push(...copied);
         }
     }
-    // Generate WordPress assets
-    write(`${config.themeDir}/tokens.css`, generateTokensCss(config));
+    // WP-only outputs
     if (config.themeable) {
         write(`${config.themeDir}/tokens.wp.css`, generateTokensWpCss(config));
     }
     write(`${config.themeDir}/theme-${config.prefix}.json`, generateThemeJson(config));
     write(`${config.themeDir}/integrate.php`, generateIntegratePhp(config.prefix));
-    // typography.css is generated alongside tokens.css but NOT enqueued by
-    // integrate.php — consumers import it manually if they want flow-spacing
-    // rules (per-heading top margin, after-heading, li + li) on the WP side.
-    const typographyCss = generateTypographyCss(config);
-    if (typographyCss) {
-        write(`${config.themeDir}/typography.css`, typographyCss);
-    }
     return { files };
 }
 //# sourceMappingURL=index.js.map

@@ -1,4 +1,31 @@
 /**
+ * Single source of truth for elements that get per-element styling. Adding a
+ * new element is a one-entry change here; validation and every generator loop
+ * over this registry rather than maintaining their own lists.
+ */
+export const ELEMENT_REGISTRY = [
+    { key: 'heading', cssSelector: ':where(h1, h2, h3, h4, h5, h6)', themeJsonKey: 'heading' },
+    { key: 'h1', cssSelector: ':where(h1)', themeJsonKey: 'h1', isHeading: true },
+    { key: 'h2', cssSelector: ':where(h2)', themeJsonKey: 'h2', isHeading: true },
+    { key: 'h3', cssSelector: ':where(h3)', themeJsonKey: 'h3', isHeading: true },
+    { key: 'h4', cssSelector: ':where(h4)', themeJsonKey: 'h4', isHeading: true },
+    { key: 'h5', cssSelector: ':where(h5)', themeJsonKey: 'h5', isHeading: true },
+    { key: 'h6', cssSelector: ':where(h6)', themeJsonKey: 'h6', isHeading: true },
+    { key: 'caption', cssSelector: ':where(figcaption)', themeJsonKey: 'caption' },
+    { key: 'button', cssSelector: ':where(button)', themeJsonKey: 'button' },
+    { key: 'link', cssSelector: ':where(a)', themeJsonKey: 'link', hoverCssSelector: ':where(a:hover)' },
+];
+/** Heading levels in output order — derived from the registry */
+export const HEADING_KEYS = ELEMENT_REGISTRY.filter(e => e.isHeading).map(e => e.key);
+/**
+ * Typography properties on BaseStyleElementDef, in canonical output order.
+ * Used by both the CSS generator (font-family/font-size/...) and the theme.json
+ * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
+ */
+export const TYPOGRAPHY_PROPERTIES = [
+    'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight',
+];
+/**
  * Central registry mapping token category names to their output behavior.
  * Adding a new category here is all that's needed to support it across all generators.
  */
