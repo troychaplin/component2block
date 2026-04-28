@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-28
+
 ### Changed
 
 - **Breaking:** Flow-spacing selectors in `typography.css` no longer wrap the parent class in `:where(...)`. Per-heading top-margin rules emit as `.is-layout-constrained > * + hN { ... }` (specificity `0,1,1`) and the after-heading rule emits as `.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * { ... }` (also `0,1,1` — `:is(...)` contributes the heading-element specificity). This lets the generated rules win against WordPress's auto-generated per-block layout rules (e.g. `.wp-container-...-is-layout-XXX > * + *`, specificity `0,1,0`) without `!important`. Consumer overrides previously matching the `0,0,1` / `0,0,0` selectors must now reach `0,1,1` to win — a normal class-scoped rule is enough.
