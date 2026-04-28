@@ -17,19 +17,27 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
-## [0.4.1] - 2026-04-27
-
 ### Changed
 
-- **Breaking:** `base-styles.scss` is now `base-styles.css` and contains **only** per-element typography and color rules. Layout utilities (block-gap rules, layout-constraint rules, `.has-global-padding`, `.alignfull` helpers) moved to a new `layout.css`; flow-spacing rules (`> * + hN`, after-heading, `li + li`) moved to `typography.css`. Each output now has a single, focused purpose.
-- **Breaking:** `base-styles.css`, `layout.css`, and `typography.css` are now dual-output — written to both `srcDir` and `themeDir` (matching the existing `tokens.css` pattern) so each file is available in both the React/local-build context and the WordPress context. Consumers choose what to import; nothing is auto-enqueued.
-- **Breaking:** `generateContentScss` is removed and replaced by `generateBaseStylesCss` and `generateLayoutCss`. The CLI (`c2b generate`) is unaffected; only direct programmatic API users need to update imports.
+- **Breaking:** Flow-spacing selectors in `typography.css` no longer wrap the parent class in `:where(...)`. Per-heading top-margin rules emit as `.is-layout-constrained > * + hN { ... }` (specificity `0,1,1`) and the after-heading rule emits as `.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * { ... }` (also `0,1,1` — `:is(...)` contributes the heading-element specificity). This lets the generated rules win against WordPress's auto-generated per-block layout rules (e.g. `.wp-container-...-is-layout-XXX > * + *`, specificity `0,1,0`) without `!important`. Consumer overrides previously matching the `0,0,1` / `0,0,0` selectors must now reach `0,1,1` to win — a normal class-scoped rule is enough.
+
+### Removed
+
+- **Breaking:** `baseStyles.spacing.listItem` and the corresponding `li + li { margin-block-start: ... }` rule in `typography.css`. The global `li + li` rule conflicted with consumer-side list styling. Configs setting `spacing.listItem` will throw at validation; remove the key. Consumers needing list-item rhythm can write `li + li` (or a more scoped variant) in their own stylesheet.
+
+## [0.4.1] - 2026-04-27
 
 ### Added
 
 - New `layout.css` output containing the `body { ... }` block with root-padding/block-gap CSS variables, the constrained/flex/grid block-gap rules, the layout-constraint rules (`contentSize` / `wideSize`), and the `.has-global-padding` / `.alignfull` helpers. Returns null when no relevant config is present (`spacing.padding`, `spacing.blockGap`, or `tokens.layout`).
 - The block-gap rules in `layout.css` now also emit `:where(.is-layout-constrained) > * { margin-block-start: 0; margin-block-end: 0 }`, matching WordPress's own block-gap reset. This kills browser default vertical margins on flow children and gives first-child elements `margin-block-start: 0` without a separate `:first-child` rule. Consumers can drop their hand-written equivalent.
 - `ELEMENT_REGISTRY` and `TYPOGRAPHY_PROPERTIES` exported from the public API as the single source of truth for the element list (`heading`, `h1`–`h6`, `caption`, `button`, `link`) and typography property order (`fontFamily`, `fontSize`, `fontStyle`, `fontWeight`, `lineHeight`). `validateBaseStyles`, the CSS generator, and the theme.json generator all loop over these registries — adding a new element or typography property is a one-entry change.
+
+### Changed
+
+- **Breaking:** `base-styles.scss` is now `base-styles.css` and contains **only** per-element typography and color rules. Layout utilities (block-gap rules, layout-constraint rules, `.has-global-padding`, `.alignfull` helpers) moved to a new `layout.css`; flow-spacing rules (`> * + hN`, after-heading, `li + li`) moved to `typography.css`. Each output now has a single, focused purpose.
+- **Breaking:** `base-styles.css`, `layout.css`, and `typography.css` are now dual-output — written to both `srcDir` and `themeDir` (matching the existing `tokens.css` pattern) so each file is available in both the React/local-build context and the WordPress context. Consumers choose what to import; nothing is auto-enqueued.
+- **Breaking:** `generateContentScss` is removed and replaced by `generateBaseStylesCss` and `generateLayoutCss`. The CLI (`c2b generate`) is unaffected; only direct programmatic API users need to update imports.
 
 ## [0.4.0] - 2026-04-27
 
