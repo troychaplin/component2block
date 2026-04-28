@@ -1072,7 +1072,6 @@ describe('generateThemeJson — flow-spacing on element headings', () => {
       h2: { marginBlockStart: 'large' },
       spacing: {
         afterHeading: 'small',
-        listItem: 'small',
       },
     },
   };
@@ -1093,11 +1092,10 @@ describe('generateThemeJson — flow-spacing on element headings', () => {
     expect(result.styles.elements.h4).toBeUndefined();
   });
 
-  it('does not emit afterHeading or listItem in theme.json (sibling-only rules live in typography.css)', () => {
+  it('does not emit afterHeading in theme.json (sibling-only rule lives in typography.css)', () => {
     const result = JSON.parse(generateThemeJson(spacingConfig));
     const json = JSON.stringify(result);
     expect(json).not.toMatch(/afterHeading/);
-    expect(json).not.toMatch(/listItem/);
   });
 
   it('does not emit spacing on heading group, caption, button, or link', () => {

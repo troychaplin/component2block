@@ -1,9 +1,15 @@
 import { resolveBaseStyleValueForScss } from '../config.js';
 const HEADING_LEVELS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 /**
- * Shared source of truth for flow-spacing CSS rules — per-heading top margin,
- * after-heading tightening, and list-item rhythm. Emitted identically into
- * both base-styles.scss (React-side) and typography.css (WP-side).
+ * Shared source of truth for flow-spacing CSS rules — per-heading top margin
+ * and after-heading tightening. Emitted identically into both base-styles.scss
+ * (React-side) and typography.css (WP-side).
+ *
+ * Selectors deliberately use `.is-layout-constrained` (not `:where(...)`) so
+ * the rules carry enough specificity to win against WordPress's auto-generated
+ * per-block layout rules (e.g. `.wp-container-...-is-layout-XXX > * + *`,
+ * specificity 0,1,0). The heading list inside the after-heading rule uses
+ * `:is(...)` so the element-name specificity (0,0,1) is added on top.
  *
  * Each rule is appended to the provided line buffer, prefixed with a blank
  * separator line. Sections without configured values are skipped silently.
@@ -18,7 +24,7 @@ export function appendFlowSpacingRules(lines, baseStyles, prefix, tokens) {
             continue;
         const resolved = resolveBaseStyleValueForScss(value, 'marginBlockStart', prefix, tokens);
         lines.push('');
-        lines.push(`:where(.is-layout-constrained) > * + ${level} {`);
+        lines.push(`.is-layout-constrained > * + ${level} {`);
         lines.push(`  margin-block-start: ${resolved};`);
         lines.push('}');
     }
@@ -27,16 +33,7 @@ export function appendFlowSpacingRules(lines, baseStyles, prefix, tokens) {
     if (baseStyles.spacing?.afterHeading !== undefined) {
         const resolved = resolveBaseStyleValueForScss(baseStyles.spacing.afterHeading, 'afterHeading', prefix, tokens);
         lines.push('');
-        lines.push(':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {');
-        lines.push(`  margin-block-start: ${resolved};`);
-        lines.push('}');
-    }
-    // List-item rhythm — <li> isn't a direct child of .is-layout-constrained,
-    // so the block-gap rule doesn't apply to it. Global by design.
-    if (baseStyles.spacing?.listItem !== undefined) {
-        const resolved = resolveBaseStyleValueForScss(baseStyles.spacing.listItem, 'listItem', prefix, tokens);
-        lines.push('');
-        lines.push('li + li {');
+        lines.push('.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * {');
         lines.push(`  margin-block-start: ${resolved};`);
         lines.push('}');
     }
@@ -49,8 +46,6 @@ export function hasFlowSpacing(baseStyles) {
     if (!baseStyles)
         return false;
     if (baseStyles.spacing?.afterHeading !== undefined)
-        return true;
-    if (baseStyles.spacing?.listItem !== undefined)
         return true;
     for (const level of HEADING_LEVELS) {
         if (baseStyles[level]?.marginBlockStart !== undefined)

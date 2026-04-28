@@ -250,7 +250,7 @@ function buildStylesBlock(
     }
 
     // Per-heading top margin → styles.elements.{hN}.spacing.margin.top
-    // Sibling-based rules (afterHeading, listItem) live in typography.css.
+    // Sibling-based rules (afterHeading) live in typography.css.
     if (elementDef.isHeading) {
       const spacing = buildSpacingObject(def, tokens);
       if (spacing) {

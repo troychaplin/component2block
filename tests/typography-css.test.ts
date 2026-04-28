@@ -60,9 +60,9 @@ describe('generateTypographyCss', () => {
       },
     };
     const result = generateTypographyCss(config)!;
-    expect(result).toContain(':where(.is-layout-constrained) > * + h1 {');
+    expect(result).toContain('.is-layout-constrained > * + h1 {');
     expect(result).toContain('  margin-block-start: var(--rds--spacing-2x-large);');
-    expect(result).toContain(':where(.is-layout-constrained) > * + h6 {');
+    expect(result).toContain('.is-layout-constrained > * + h6 {');
     expect(result).toContain('  margin-block-start: var(--rds--spacing-medium);');
   });
 
@@ -73,19 +73,21 @@ describe('generateTypographyCss', () => {
     };
     const result = generateTypographyCss(config)!;
     expect(result).toContain(
-      ':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {',
+      '.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * {',
     );
     expect(result).toContain('  margin-block-start: var(--rds--spacing-small);');
   });
 
-  it('emits the li + li rule when spacing.listItem is set', () => {
+  it('does not wrap parent selector in :where() — heading rules need specificity to win against WP layout rules', () => {
     const config: C2bConfig = {
       ...baseConfig,
-      baseStyles: { spacing: { listItem: 'x-small' } },
+      baseStyles: {
+        h2: { marginBlockStart: 'x-large' },
+        spacing: { afterHeading: 'small' },
+      },
     };
     const result = generateTypographyCss(config)!;
-    expect(result).toContain('li + li {');
-    expect(result).toContain('  margin-block-start: var(--rds--spacing-x-small);');
+    expect(result).not.toContain(':where(.is-layout-constrained)');
   });
 
   it('omits sections that are not configured', () => {
@@ -97,7 +99,6 @@ describe('generateTypographyCss', () => {
     expect(result).toContain('> * + h2 {');
     expect(result).not.toContain('> * + h3 {');
     expect(result).not.toContain('h1, h2, h3, h4, h5, h6) + *');
-    expect(result).not.toContain('li + li');
   });
 
   it('passes raw values through unchanged', () => {
@@ -105,13 +106,12 @@ describe('generateTypographyCss', () => {
       ...baseConfig,
       baseStyles: {
         h2: { marginBlockStart: '2.5rem' },
-        spacing: { afterHeading: '0.5rem', listItem: '0.25rem' },
+        spacing: { afterHeading: '0.5rem' },
       },
     };
     const result = generateTypographyCss(config)!;
     expect(result).toContain('  margin-block-start: 2.5rem;');
     expect(result).toContain('  margin-block-start: 0.5rem;');
-    expect(result).toContain('  margin-block-start: 0.25rem;');
   });
 
   it('output ends with a trailing newline', () => {
