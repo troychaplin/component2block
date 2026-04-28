@@ -3,8 +3,8 @@ import { resolveBaseStyleValueForScss, ensureFontStyle } from '../config.js';
 /**
  * Emit base-styles.css — per-element typography and color rules. Layout
  * utilities (block-gap, layout-constrained, has-global-padding, alignfull)
- * live in layout.css; flow-spacing rules (heading top margins, after-heading,
- * li + li) live in typography.css.
+ * live in layout.css; flow-spacing rules (heading top margins, after-heading)
+ * live in typography.css.
  *
  * Returns null when no element styling is configured.
  */

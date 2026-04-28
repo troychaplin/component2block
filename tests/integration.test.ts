@@ -441,7 +441,6 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
       spacing: {
         blockGap: 'medium',
         afterHeading: 'small',
-        listItem: 'x-small',
       },
     },
   };
@@ -462,14 +461,15 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     expect(paths).toContain('out/wp/typography.css');
   });
 
-  it('typography.css contains heading + after-heading + listItem rules (and srcDir matches themeDir)', () => {
+  it('typography.css contains heading + after-heading rules (and srcDir matches themeDir)', () => {
     generate(FS_CONFIG_PATH, FS_TEST_DIR);
     const wpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
     const srcContent = readFileSync(resolve(FS_TEST_DIR, 'src/typography.css'), 'utf-8');
-    expect(wpContent).toContain(':where(.is-layout-constrained) > * + h2 {');
+    expect(wpContent).toContain('.is-layout-constrained > * + h2 {');
     expect(wpContent).toContain('  margin-block-start: var(--rds--spacing-x-large);');
-    expect(wpContent).toContain(':where(.is-layout-constrained) > :where(h1, h2, h3, h4, h5, h6) + * {');
-    expect(wpContent).toContain('li + li {');
+    expect(wpContent).toContain('.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * {');
+    expect(wpContent).not.toContain(':where(.is-layout-constrained)');
+    expect(wpContent).not.toContain('li + li');
     expect(srcContent).toBe(wpContent);
   });
 
@@ -478,7 +478,6 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     const content = readFileSync(resolve(FS_TEST_DIR, 'src/base-styles.css'), 'utf-8');
     expect(content).not.toContain('* + h2');
     expect(content).not.toContain('h1, h2, h3, h4, h5, h6) + *');
-    expect(content).not.toContain('li + li');
   });
 
   it('theme.json carries per-heading margin via styles.elements.{hN}.spacing.margin.top', () => {

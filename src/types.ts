@@ -88,8 +88,6 @@ export interface BaseStylesSpacing {
   padding?: BaseStylesSpacingPadding;
   /** Tightened gap applied between a heading and the next sibling. Spacing token key or raw CSS value. */
   afterHeading?: string;
-  /** Gap between consecutive `<li>` siblings. Spacing token key or raw CSS value. */
-  listItem?: string;
 }
 
 /** The full baseStyles config section */

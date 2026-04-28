@@ -635,12 +635,12 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
     ).not.toThrow();
   });
 
-  it('accepts spacing.afterHeading and spacing.listItem', () => {
+  it('accepts spacing.afterHeading', () => {
     expect(() =>
       validateConfig({
         ...tokensWithSpacing,
         baseStyles: {
-          spacing: { afterHeading: 'small', listItem: 'small' },
+          spacing: { afterHeading: 'small' },
         },
       }),
     ).not.toThrow();
@@ -664,15 +664,6 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
     ).toThrow(/spacing\.afterHeading.*"huge"/);
   });
 
-  it('throws when listItem references an undefined spacing token', () => {
-    expect(() =>
-      validateConfig({
-        ...tokensWithSpacing,
-        baseStyles: { spacing: { listItem: 'huge' } },
-      }),
-    ).toThrow(/spacing\.listItem.*"huge"/);
-  });
-
   it('does not cross-resolve marginBlockStart against fontSize tokens', () => {
     // "small" exists in both spacing and fontSize — strict lookup must use spacing only.
     expect(() =>
@@ -690,7 +681,7 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
         ...tokensWithSpacing,
         baseStyles: {
           h2: { marginBlockStart: '2.5rem' },
-          spacing: { afterHeading: '0.75rem', listItem: '0.25rem' },
+          spacing: { afterHeading: '0.75rem' },
         },
       }),
     ).not.toThrow();

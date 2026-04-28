@@ -368,7 +368,6 @@ const PROPERTY_CATEGORY = {
     blockGap: 'spacing',
     marginBlockStart: 'spacing',
     afterHeading: 'spacing',
-    listItem: 'spacing',
 };
 /**
  * CSS keywords allowed per property. Values matching these pass through as
@@ -573,13 +572,6 @@ export function validateBaseStyles(baseStyles, tokens) {
         const c = classifyBaseStyleValue(baseStyles.spacing.afterHeading, 'afterHeading', tokens);
         if (c.kind === 'invalid') {
             throw new Error(buildBaseStyleValueError('spacing.afterHeading', baseStyles.spacing.afterHeading, 'afterHeading', c));
-        }
-    }
-    // Spacing listItem (li + li gap)
-    if (baseStyles.spacing?.listItem !== undefined) {
-        const c = classifyBaseStyleValue(baseStyles.spacing.listItem, 'listItem', tokens);
-        if (c.kind === 'invalid') {
-            throw new Error(buildBaseStyleValueError('spacing.listItem', baseStyles.spacing.listItem, 'listItem', c));
         }
     }
 }

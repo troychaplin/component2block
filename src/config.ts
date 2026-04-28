@@ -458,7 +458,6 @@ const PROPERTY_CATEGORY: Record<string, TokenCategory> = {
   blockGap: 'spacing',
   marginBlockStart: 'spacing',
   afterHeading: 'spacing',
-  listItem: 'spacing',
 };
 
 /**
@@ -698,14 +697,6 @@ export function validateBaseStyles(
     const c = classifyBaseStyleValue(baseStyles.spacing.afterHeading, 'afterHeading', tokens);
     if (c.kind === 'invalid') {
       throw new Error(buildBaseStyleValueError('spacing.afterHeading', baseStyles.spacing.afterHeading, 'afterHeading', c));
-    }
-  }
-
-  // Spacing listItem (li + li gap)
-  if (baseStyles.spacing?.listItem !== undefined) {
-    const c = classifyBaseStyleValue(baseStyles.spacing.listItem, 'listItem', tokens);
-    if (c.kind === 'invalid') {
-      throw new Error(buildBaseStyleValueError('spacing.listItem', baseStyles.spacing.listItem, 'listItem', c));
     }
   }
 }
