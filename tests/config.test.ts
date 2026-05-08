@@ -646,6 +646,26 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
     ).not.toThrow();
   });
 
+  it('accepts spacing.entryContent', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: {
+          spacing: { entryContent: 'large' },
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  it('throws when entryContent references an undefined spacing token', () => {
+    expect(() =>
+      validateConfig({
+        ...tokensWithSpacing,
+        baseStyles: { spacing: { entryContent: 'huge' } },
+      }),
+    ).toThrow(/spacing\.entryContent.*"huge"/);
+  });
+
   it('throws when marginBlockStart references an undefined spacing token', () => {
     expect(() =>
       validateConfig({
@@ -681,7 +701,7 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
         ...tokensWithSpacing,
         baseStyles: {
           h2: { marginBlockStart: '2.5rem' },
-          spacing: { afterHeading: '0.75rem' },
+          spacing: { afterHeading: '0.75rem', entryContent: '1.5rem' },
         },
       }),
     ).not.toThrow();

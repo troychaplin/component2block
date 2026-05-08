@@ -118,6 +118,7 @@
         "link": { "color": "primary", "hoverColor": "error" },
         "spacing": {
             "blockGap": "medium",
+            "entryContent": "large",
             "padding": {
                 "top": "0",
                 "right": "large",

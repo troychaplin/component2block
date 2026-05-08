@@ -210,4 +210,58 @@ describe('generateLayoutCss', () => {
     // But no body block
     expect(result).not.toContain('body {');
   });
+
+  it('emits the entry-content sibling rule with a resolved spacing token', () => {
+    const cfg: C2bConfig = {
+      ...layoutConfig,
+      baseStyles: {
+        spacing: { blockGap: 'medium', entryContent: 'large' },
+      },
+    };
+    const result = generateLayoutCss(cfg)!;
+    expect(result).toContain(':where(.entry-content) > * + * {');
+    expect(result).toContain('  margin-block-start: var(--design-system--spacing-large);');
+  });
+
+  it('passes raw entryContent values through unchanged', () => {
+    const cfg: C2bConfig = {
+      ...layoutConfig,
+      baseStyles: { spacing: { entryContent: '1.5rem' } },
+    };
+    const result = generateLayoutCss(cfg)!;
+    expect(result).toContain(':where(.entry-content) > * + * {');
+    expect(result).toContain('  margin-block-start: 1.5rem;');
+  });
+
+  it('does not emit entry-content rule when not configured', () => {
+    const result = generateLayoutCss(layoutConfig)!;
+    expect(result).not.toContain('.entry-content');
+  });
+
+  it('entry-content rule comes after block-gap rules and before layout-constraint rules', () => {
+    const cfg: C2bConfig = {
+      ...layoutConfig,
+      baseStyles: {
+        spacing: { blockGap: 'medium', entryContent: 'large' },
+      },
+    };
+    const result = generateLayoutCss(cfg)!;
+    const blockGapIdx = result.indexOf(':where(.is-layout-grid)');
+    const entryIdx = result.indexOf(':where(.entry-content)');
+    const constraintIdx = result.indexOf('.is-layout-constrained > .alignwide');
+    expect(blockGapIdx).toBeGreaterThan(-1);
+    expect(entryIdx).toBeGreaterThan(blockGapIdx);
+    expect(constraintIdx).toBeGreaterThan(entryIdx);
+  });
+
+  it('emits layout.css when only entryContent is configured', () => {
+    const cfg: C2bConfig = {
+      ...layoutConfig,
+      tokens: { spacing: layoutConfig.tokens.spacing! },
+      baseStyles: { spacing: { entryContent: 'large' } },
+    };
+    const result = generateLayoutCss(cfg);
+    expect(result).not.toBeNull();
+    expect(result!).toContain(':where(.entry-content) > * + *');
+  });
 });
