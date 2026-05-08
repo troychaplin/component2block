@@ -15,7 +15,8 @@ export function generateLayoutCss(config) {
     const hasSpacingPadding = !!baseStyles?.spacing?.padding;
     const hasBlockGap = !!baseStyles?.spacing?.blockGap;
     const hasLayoutTokens = !!tokens.layout;
-    if (!hasSpacingPadding && !hasBlockGap && !hasLayoutTokens) {
+    const hasEntryContent = !!baseStyles?.spacing?.entryContent;
+    if (!hasSpacingPadding && !hasBlockGap && !hasLayoutTokens && !hasEntryContent) {
         return null;
     }
     const lines = [
@@ -36,6 +37,9 @@ export function generateLayoutCss(config) {
     }
     if (hasBlockGap) {
         appendBlockGapRules(lines, prefix);
+    }
+    if (hasEntryContent) {
+        appendEntryContentRule(lines, baseStyles.spacing.entryContent, prefix, tokens);
     }
     if (hasLayoutTokens) {
         appendLayoutConstraintRules(lines, prefix, tokens);
@@ -103,6 +107,19 @@ function appendBlockGapRules(lines, prefix) {
     lines.push('');
     lines.push(`:where(.is-layout-grid) {`);
     lines.push(`  gap: var(--${prefix}--root-block-gap);`);
+    lines.push('}');
+}
+/**
+ * Sibling-rule for vertical rhythm inside `.entry-content` (the WordPress
+ * post-content wrapper). Resolves directly to the underlying spacing token —
+ * no body-level indirection variable, since this rule sits outside the
+ * constrained/flex/grid layout system.
+ */
+function appendEntryContentRule(lines, entryContent, prefix, tokens) {
+    const resolved = resolveBaseStyleValueForScss(entryContent, 'entryContent', prefix, tokens);
+    lines.push('');
+    lines.push(`:where(.entry-content) > * + * {`);
+    lines.push(`  margin-block-start: ${resolved};`);
     lines.push('}');
 }
 /**

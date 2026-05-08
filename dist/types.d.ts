@@ -66,6 +66,8 @@ export interface BaseStylesSpacing {
     padding?: BaseStylesSpacingPadding;
     /** Tightened gap applied between a heading and the next sibling. Spacing token key or raw CSS value. */
     afterHeading?: string;
+    /** Vertical gap between siblings inside `.entry-content`. Spacing token key or raw CSS value. */
+    entryContent?: string;
 }
 /** The full baseStyles config section */
 export type BaseStylesConfig = Partial<Record<BaseStyleElement, BaseStyleElementDef>> & {

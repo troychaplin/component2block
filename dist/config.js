@@ -368,6 +368,7 @@ const PROPERTY_CATEGORY = {
     blockGap: 'spacing',
     marginBlockStart: 'spacing',
     afterHeading: 'spacing',
+    entryContent: 'spacing',
 };
 /**
  * CSS keywords allowed per property. Values matching these pass through as
@@ -572,6 +573,13 @@ export function validateBaseStyles(baseStyles, tokens) {
         const c = classifyBaseStyleValue(baseStyles.spacing.afterHeading, 'afterHeading', tokens);
         if (c.kind === 'invalid') {
             throw new Error(buildBaseStyleValueError('spacing.afterHeading', baseStyles.spacing.afterHeading, 'afterHeading', c));
+        }
+    }
+    // Spacing entryContent (.entry-content sibling rule)
+    if (baseStyles.spacing?.entryContent !== undefined) {
+        const c = classifyBaseStyleValue(baseStyles.spacing.entryContent, 'entryContent', tokens);
+        if (c.kind === 'invalid') {
+            throw new Error(buildBaseStyleValueError('spacing.entryContent', baseStyles.spacing.entryContent, 'entryContent', c));
         }
     }
 }

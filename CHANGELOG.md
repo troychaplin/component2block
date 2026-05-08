@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-08
+
 ### Added
 
 - New `baseStyles.spacing.entryContent` property setting vertical rhythm between siblings inside `.entry-content` (the WordPress post-content wrapper), emitted as `:where(.entry-content) > * + * { margin-block-start: ... }` in `layout.css`. Resolves against `tokens.spacing` (or accepts a raw CSS value). The rule resolves directly to the underlying spacing token — no body-level indirection variable, since `.entry-content` sits outside the constrained/flex/grid layout system. Sibling-selector — not expressible in `theme.json`, so lives in CSS only. Source-order-emitted after the block-gap rules and before the layout-constraint rules.
