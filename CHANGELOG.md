@@ -17,6 +17,10 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- New `tokens.js` generator (`generateTokensJs`) that produces a JavaScript module exporting all design tokens as `var()` references. Each token key is camelCased (e.g. `primary-dark` → `primaryDark`), category keys map to the CSS segment in camelCase (e.g. `colorPalette` → `color`, `colorGradient` → `gradient`, `font-family` → `fontFamily`). Written to `srcDir/tokens.js` for use in React and Next.js apps via inline style objects or CSS-in-JS. Exports both a named const (e.g. `export const rdsTokens = { ... }`) and a default export. The `mediaQuery` category is excluded (SCSS-only).
+
 ## [0.5.1] - 2026-05-08
 
 ### Added

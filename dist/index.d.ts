@@ -9,6 +9,7 @@ export { generateBaseStylesCss } from './generators/base-styles-css.js';
 export { generateLayoutCss } from './generators/layout-css.js';
 export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
+export { generateTokensJs } from './generators/tokens-js.js';
 export type { C2bConfig, C2bConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig, BaseElementDef } from './types.js';
 export interface GenerateResult {
     files: Array<{

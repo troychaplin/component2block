@@ -11,6 +11,7 @@ import { generateBaseStylesCss } from './generators/base-styles-css.js';
 import { generateLayoutCss } from './generators/layout-css.js';
 import { generateTypographyCss } from './generators/typography-css.js';
 import { copyFontFiles } from './generators/copy-fonts.js';
+import { generateTokensJs } from './generators/tokens-js.js';
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
 export { generateTokensScss } from './generators/tokens-scss.js';
@@ -22,6 +23,7 @@ export { generateBaseStylesCss } from './generators/base-styles-css.js';
 export { generateLayoutCss } from './generators/layout-css.js';
 export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
+export { generateTokensJs } from './generators/tokens-js.js';
 export function generate(configPath, cwd) {
     const config = loadConfig(configPath);
     const baseDir = cwd ?? process.cwd();
@@ -46,6 +48,8 @@ export function generate(configPath, cwd) {
     writeDual('base-styles.css', generateBaseStylesCss(config));
     writeDual('layout.css', generateLayoutCss(config));
     writeDual('typography.css', generateTypographyCss(config));
+    // JS tokens — for React/Next consumers, srcDir only
+    write(join(config.srcDir, 'tokens.js'), generateTokensJs(config));
     // SCSS variables — compile-time only, srcDir only. Opt-in per category.
     const tokensScss = generateTokensScss(config);
     if (tokensScss) {
