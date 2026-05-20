@@ -5,7 +5,7 @@ export function generateTokensJs(config) {
         '',
         'const v = (name) => `var(${name})`;',
         '',
-        `export const ${config.prefix} = {`,
+        `export const ${config.prefix}Tokens = {`,
     ];
     const populated = [];
     for (const category of CATEGORY_ORDER) {
@@ -39,7 +39,7 @@ export function generateTokensJs(config) {
     });
     lines.push('};');
     lines.push('');
-    lines.push(`export default ${config.prefix};`);
+    lines.push(`export default ${config.prefix}Tokens;`);
     lines.push('');
     return lines.join('\n');
 }
