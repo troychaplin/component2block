@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-05-20
+
 ### Changed
 
 - `tokens.js` now emits hardcoded values instead of `var()` references. Fluid tokens emit their full `clamp()` expression; all other tokens emit the raw value string. The `v()` helper is no longer included in the output.
