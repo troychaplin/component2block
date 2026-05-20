@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-05-20
+
 ### Fixed
 
 - `tokens.js` no longer emits invalid JS identifiers for token keys that start with a digit (e.g. `2-x-small`). Leading digits are moved after the first letter — `2XSmall` → `x2Small`, `3XLarge` → `x3Large` — producing valid camelCase identifiers that can be used with dot notation.
