@@ -5,7 +5,7 @@ import type { C2bConfig } from '../src/types.js';
 const config: C2bConfig = {
   prefix: 'test',
   srcDir: 'src/styles',
-  themeDir: 'dist/wp',
+  outputDir: 'dist/wp',
   bundleFonts: false,
   tokens: {
     colorPalette: {
@@ -101,7 +101,7 @@ describe('generateTokensJs — mediaQuery excluded', () => {
   const mqConfig: C2bConfig = {
     prefix: 'test',
     srcDir: 'src/styles',
-    themeDir: 'dist/wp',
+    outputDir: 'dist/wp',
     bundleFonts: false,
     tokens: {
       colorPalette: {
@@ -120,11 +120,42 @@ describe('generateTokensJs — mediaQuery excluded', () => {
   });
 });
 
+describe('generateTokensJs — digit-leading keys produce valid identifiers', () => {
+  const digitConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      spacing: {
+        'x-small': { value: '0.5rem' },
+        '2-x-small': { value: '0.25rem' },
+        '3-x-large': { value: '4rem' },
+      },
+    },
+  };
+
+  const output = generateTokensJs(digitConfig);
+
+  it('leaves non-digit keys unchanged', () => {
+    expect(output).toContain("        xSmall: v('--test--spacing-x-small')");
+  });
+
+  it('moves leading digit after the first letter', () => {
+    expect(output).toContain("        x2Small: v('--test--spacing-2-x-small')");
+    expect(output).toContain("        x3Large: v('--test--spacing-3-x-large')");
+  });
+
+  it('does not produce identifiers starting with a digit', () => {
+    expect(output).not.toMatch(/^\s+\d\w+:/m);
+  });
+});
+
 describe('generateTokensJs — colorGradient uses gradient key', () => {
   const gradientConfig: C2bConfig = {
     prefix: 'ds',
     srcDir: 'src/styles',
-    themeDir: 'dist/wp',
+    outputDir: 'dist/wp',
     bundleFonts: false,
     tokens: {
       colorGradient: {
@@ -148,7 +179,7 @@ describe('generateTokensJs — prefix used in export name and var names', () => 
   const prefixConfig: C2bConfig = {
     prefix: 'rds',
     srcDir: 'src/styles',
-    themeDir: 'dist/wp',
+    outputDir: 'dist/wp',
     bundleFonts: false,
     tokens: {
       colorPalette: {
