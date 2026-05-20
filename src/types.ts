@@ -290,7 +290,7 @@ export const DEFAULT_FLUID: FluidConfig = {
 export interface C2bConfig {
   prefix: string;
   srcDir: string;
-  themeDir: string;
+  outputDir: string;
   themeable: boolean;
   /** Directory containing font source files organized by family slug (e.g. public/fonts). When set, enables font file copying to dist. */
   fontsDir?: string;
@@ -313,7 +313,7 @@ export interface C2bConfig {
 /** Output configuration group */
 export interface OutputConfig {
   srcDir?: string;
-  themeDir?: string;
+  outputDir?: string;
   themeable?: boolean;
   /** Directory containing font source files organized by family slug (e.g. public/fonts) */
   fontsDir?: string;

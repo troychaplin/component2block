@@ -44,12 +44,12 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   };
 
   // Dual-output helper: write the same CSS file into both srcDir (for the
-  // local build, e.g. Storybook / Next) and themeDir (for the WP context).
+  // local build, e.g. Storybook / Next) and outputDir (for the WP context).
   // Skips writing when the generator returns null/empty.
   const writeDual = (filename: string, content: string | null) => {
     if (!content) return;
     write(join(config.srcDir, filename), content);
-    write(`${config.themeDir}/${filename}`, content);
+    write(`${config.outputDir}/${filename}`, content);
   };
 
   // CSS outputs that ship to both contexts
@@ -58,10 +58,10 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   writeDual('layout.css', generateLayoutCss(config));
   writeDual('typography.css', generateTypographyCss(config));
 
-  // JS tokens — srcDir for local dev, dist root for package consumers
+  // JS tokens — srcDir for local dev, outputDir for package consumers
   const tokensJs = generateTokensJs(config);
   write(join(config.srcDir, 'tokens.js'), tokensJs);
-  write(join(dirname(config.themeDir), 'tokens.js'), tokensJs);
+  write(`${config.outputDir}/tokens.js`, tokensJs);
 
   // SCSS variables — compile-time only, srcDir only. Opt-in per category.
   const tokensScss = generateTokensScss(config);
@@ -82,11 +82,11 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
     }
   }
 
-  // Bundle font files and generate dist-level fonts.css for published package
+  // Bundle font files and generate outputDir-level fonts.css for published package
   if (config.fontsDir && config.bundleFonts) {
     const distFontsCss = generateFontsCss(config, './fonts');
     if (distFontsCss) {
-      const distRoot = dirname(config.themeDir);
+      const distRoot = dirname(config.outputDir);
       write(join(distRoot, 'fonts.css'), distFontsCss);
       const copied = copyFontFiles(config, resolve(baseDir, distRoot), baseDir);
       files.push(...copied);
@@ -95,10 +95,10 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
 
   // WP-only outputs
   if (config.themeable) {
-    write(`${config.themeDir}/tokens.wp.css`, generateTokensWpCss(config));
+    write(`${config.outputDir}/tokens.wp.css`, generateTokensWpCss(config));
   }
-  write(`${config.themeDir}/theme-${config.prefix}.json`, generateThemeJson(config));
-  write(`${config.themeDir}/integrate.php`, generateIntegratePhp(config.prefix));
+  write(`${config.outputDir}/theme-${config.prefix}.json`, generateThemeJson(config));
+  write(`${config.outputDir}/integrate.php`, generateIntegratePhp(config.prefix));
 
   return { files };
 }

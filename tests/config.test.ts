@@ -14,19 +14,19 @@ describe('validateConfig', () => {
     const result = validateConfig(minimalConfig);
     expect(result.prefix).toBe('test');
     expect(result.srcDir).toBe('src/styles');
-    expect(result.themeDir).toBe('dist/wp');
+    expect(result.outputDir).toBe('dist/wp');
   });
 
-  it('applies custom srcDir and themeDir via output wrapper', () => {
+  it('applies custom srcDir and outputDir via output wrapper', () => {
     const result = validateConfig({
       ...minimalConfig,
       output: {
         srcDir: 'custom/styles',
-        themeDir: 'build/wp',
+        outputDir: 'build/wp',
       },
     });
     expect(result.srcDir).toBe('custom/styles');
-    expect(result.themeDir).toBe('build/wp');
+    expect(result.outputDir).toBe('build/wp');
   });
 
   it('throws if prefix is missing', () => {
@@ -490,12 +490,12 @@ describe('validateConfig — output wrapper format', () => {
       color: { primary: { value: '#000' } },
       output: {
         srcDir: 'custom/styles',
-        themeDir: 'custom/wp',
+        outputDir: 'custom/wp',
         themeable: true,
       },
     });
     expect(result.srcDir).toBe('custom/styles');
-    expect(result.themeDir).toBe('custom/wp');
+    expect(result.outputDir).toBe('custom/wp');
     expect(result.themeable).toBe(true);
   });
 });

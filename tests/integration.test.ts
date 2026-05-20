@@ -11,7 +11,7 @@ const testConfig = {
   prefix: 'inttest',
   output: {
     srcDir: 'src',
-    themeDir: 'out/wp',
+    outputDir: 'out/wp',
   },
   tokens: {
     color: {
@@ -48,7 +48,7 @@ describe('integration: generate() — default (locked)', () => {
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
     expect(paths).toContain('src/tokens.js');
-    expect(paths).toContain('out/tokens.js');
+    expect(paths).toContain('out/wp/tokens.js');
     expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).not.toContain('out/wp/tokens.wp.css');
@@ -140,7 +140,7 @@ describe('integration: generate() — baseStyles', () => {
     expect(result.files.length).toBeGreaterThanOrEqual(6);
   });
 
-  it('base-styles.css has :where() selectors and matches across srcDir/themeDir', () => {
+  it('base-styles.css has :where() selectors and matches across srcDir/outputDir', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
     const srcContent = readFileSync(
       resolve(BS_TEST_DIR, 'src/base-styles.css'),
@@ -316,7 +316,7 @@ describe('integration: generate() — themeable', () => {
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
     expect(paths).toContain('src/tokens.js');
-    expect(paths).toContain('out/tokens.js');
+    expect(paths).toContain('out/wp/tokens.js');
     expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).toContain('out/wp/tokens.wp.css');
@@ -350,7 +350,7 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
     prefix: 'sv',
     output: {
       srcDir: 'src',
-      themeDir: 'out/wp',
+      outputDir: 'out/wp',
       scssVars: ['mediaQuery', 'spacing'],
     },
     tokens: {
@@ -428,7 +428,7 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     prefix: 'rds',
     output: {
       srcDir: 'src',
-      themeDir: 'out/wp',
+      outputDir: 'out/wp',
     },
     tokens: {
       spacing: {
@@ -458,14 +458,14 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
     rmSync(FS_TEST_DIR, { recursive: true, force: true });
   });
 
-  it('writes typography.css to BOTH srcDir and themeDir (dual output)', () => {
+  it('writes typography.css to BOTH srcDir and outputDir (dual output)', () => {
     const result = generate(FS_CONFIG_PATH, FS_TEST_DIR);
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/typography.css');
     expect(paths).toContain('out/wp/typography.css');
   });
 
-  it('typography.css contains heading + after-heading rules (and srcDir matches themeDir)', () => {
+  it('typography.css contains heading + after-heading rules (and srcDir matches outputDir)', () => {
     generate(FS_CONFIG_PATH, FS_TEST_DIR);
     const wpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
     const srcContent = readFileSync(resolve(FS_TEST_DIR, 'src/typography.css'), 'utf-8');
@@ -511,7 +511,7 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
       noFlowPath,
       JSON.stringify({
         prefix: 'noflow',
-        output: { srcDir: 'src', themeDir: 'out/wp' },
+        output: { srcDir: 'src', outputDir: 'out/wp' },
         tokens: {
           spacing: {
             md: { value: '1rem', slug: '40', name: 'Medium' },

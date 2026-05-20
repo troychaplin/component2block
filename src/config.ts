@@ -5,7 +5,7 @@ import { CATEGORY_REGISTRY, DEFAULT_FLUID, ELEMENT_REGISTRY, INPUT_CATEGORY_MAP,
 
 const DEFAULTS = {
   srcDir: 'src/styles',
-  themeDir: 'dist/wp',
+  outputDir: 'dist/wp',
 } as const;
 
 /** Reserved config keys that are not token categories (legacy flat format) */
@@ -192,7 +192,7 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   // Resolve output settings
   const output = input.output ?? {};
   const srcDir = output.srcDir ?? DEFAULTS.srcDir;
-  const themeDir = output.themeDir ?? DEFAULTS.themeDir;
+  const outputDir = output.outputDir ?? DEFAULTS.outputDir;
   const themeable = output.themeable ?? false;
   const fontsDir = output.fontsDir;
   const bundleFonts = output.bundleFonts ?? (fontsDir != null);
@@ -215,7 +215,7 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   return {
     prefix: input.prefix,
     srcDir,
-    themeDir,
+    outputDir,
     themeable: themeable === true,
     fontsDir,
     bundleFonts,

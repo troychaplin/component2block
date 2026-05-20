@@ -3,7 +3,7 @@
 
     "output": {
         "srcDir": "src/styles",
-        "themeDir": "dist/c2b",
+        "outputDir": "dist/c2b",
         "themeable": false,
         "fontsDir": "public/fonts",
         "bundleFonts": true,
