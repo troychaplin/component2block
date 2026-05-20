@@ -43,10 +43,11 @@ describe('integration: generate() — default (locked)', () => {
   it('generates expected files without tokens.wp.css', () => {
     const result = generate(CONFIG_PATH, TEST_DIR);
 
-    expect(result.files).toHaveLength(4);
+    expect(result.files).toHaveLength(5);
 
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
+    expect(paths).toContain('src/tokens.js');
     expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).not.toContain('out/wp/tokens.wp.css');
@@ -309,10 +310,11 @@ describe('integration: generate() — themeable', () => {
   it('generates tokens.wp.css when themeable is true', () => {
     const result = generate(WP_CONFIG_PATH, WP_TEST_DIR);
 
-    expect(result.files).toHaveLength(5);
+    expect(result.files).toHaveLength(6);
 
     const paths = result.files.map((f) => f.path);
     expect(paths).toContain('src/tokens.css');
+    expect(paths).toContain('src/tokens.js');
     expect(paths).not.toContain('src/_variables.scss');
     expect(paths).toContain('out/wp/tokens.css');
     expect(paths).toContain('out/wp/tokens.wp.css');
