@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-05-20
+
 ### Fixed
 
 - `tokens.js` was only written to `srcDir` and not included in the published package output. It now also writes to `dist/tokens.js` (i.e. `dirname(themeDir)`) so npm package consumers can import it directly.
