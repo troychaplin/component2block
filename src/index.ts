@@ -58,8 +58,10 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   writeDual('layout.css', generateLayoutCss(config));
   writeDual('typography.css', generateTypographyCss(config));
 
-  // JS tokens — for React/Next consumers, srcDir only
-  write(join(config.srcDir, 'tokens.js'), generateTokensJs(config));
+  // JS tokens — srcDir for local dev, dist root for package consumers
+  const tokensJs = generateTokensJs(config);
+  write(join(config.srcDir, 'tokens.js'), tokensJs);
+  write(join(dirname(config.themeDir), 'tokens.js'), tokensJs);
 
   // SCSS variables — compile-time only, srcDir only. Opt-in per category.
   const tokensScss = generateTokensScss(config);

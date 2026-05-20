@@ -17,11 +17,15 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Fixed
+
+- `tokens.js` was only written to `srcDir` and not included in the published package output. It now also writes to `dist/tokens.js` (i.e. `dirname(themeDir)`) so npm package consumers can import it directly.
+
 ## [0.5.2] - 2026-05-20
 
 ### Added
 
-- New `tokens.js` generator (`generateTokensJs`) that produces a JavaScript module exporting all design tokens as `var()` references. Each token key is camelCased (e.g. `primary-dark` → `primaryDark`), category keys map to the CSS segment in camelCase (e.g. `colorPalette` → `color`, `colorGradient` → `gradient`, `font-family` → `fontFamily`). Written to `srcDir/tokens.js` for use in React and Next.js apps via inline style objects or CSS-in-JS. Exports both a named const (e.g. `export const rdsTokens = { ... }`) and a default export. The `mediaQuery` category is excluded (SCSS-only).
+- New `tokens.js` generator (`generateTokensJs`) that produces a JavaScript module exporting all design tokens as `var()` references. Each token key is camelCased (e.g. `primary-dark` → `primaryDark`), category keys map to the CSS segment in camelCase (e.g. `colorPalette` → `color`, `colorGradient` → `gradient`, `font-family` → `fontFamily`). Written to both `srcDir/tokens.js` (for local dev/Storybook) and `dist/tokens.js` (for npm package consumers) for use in React and Next.js apps via inline style objects or CSS-in-JS. Exports both a named const (e.g. `export const rdsTokens = { ... }`) and a default export. The `mediaQuery` category is excluded (SCSS-only).
 
 ## [0.5.1] - 2026-05-08
 
