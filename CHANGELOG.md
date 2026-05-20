@@ -17,11 +17,11 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
-## [0.5.3] - 2026-05-20
-
 ### Changed
 
 - **Breaking:** `themeDir` config key and `C2bConfig.themeDir` property renamed to `outputDir` to better reflect its role as the general output directory (not WordPress-specific). Update `c2b.config.json` output blocks: `"themeDir"` → `"outputDir"`. Default value is unchanged (`dist/wp`).
+
+## [0.5.3] - 2026-05-20
 
 ### Added
 
