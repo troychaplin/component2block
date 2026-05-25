@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-05-25
+
 ### Added
 
 - `letterSpacing` property support for all `baseStyles` elements. Accepted on `body`, `heading`, `h1`–`h6`, `caption`, `button`, and `link`. Accepts any raw CSS value (e.g. `"-0.02em"`, `"12px"`) or the keyword `normal`. Emits `letter-spacing` in `base-styles.css` and `typography.letterSpacing` in `theme.json` element styles.
