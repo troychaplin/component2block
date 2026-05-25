@@ -17,6 +17,11 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- `letterSpacing` property support for all `baseStyles` elements. Accepted on `body`, `heading`, `h1`–`h6`, `caption`, `button`, and `link`. Accepts any raw CSS value (e.g. `"-0.02em"`, `"12px"`) or the keyword `normal`. Emits `letter-spacing` in `base-styles.css` and `typography.letterSpacing` in `theme.json` element styles.
+- `cssOnly: true` support for `layout` tokens. Layout entries marked `cssOnly` emit a CSS variable in `tokens.css` but are excluded from `settings.layout` in `theme.json`, allowing extra layout sizes (e.g. `narrowSize`) to be used in component CSS without exposing them as WordPress layout settings.
+
 ## [0.5.6] - 2026-05-20
 
 ### Changed

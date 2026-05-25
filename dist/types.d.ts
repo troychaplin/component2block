@@ -4,7 +4,7 @@ export interface FontFaceEntry {
     src: string;
 }
 /** Valid typography CSS properties for baseStyles element definitions */
-export type BaseStyleProperty = 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'fontStyle';
+export type BaseStyleProperty = 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'fontStyle' | 'letterSpacing';
 /** A single element definition within baseStyles */
 export interface BaseStyleElementDef {
     fontFamily?: string;
@@ -12,6 +12,7 @@ export interface BaseStyleElementDef {
     fontWeight?: string;
     lineHeight?: string;
     fontStyle?: string;
+    letterSpacing?: string;
     color?: string;
     background?: string;
     hoverColor?: string;
@@ -52,7 +53,7 @@ export declare const HEADING_KEYS: Array<"h1" | "h2" | "h3" | "h4" | "h5" | "h6"
  * Used by both the CSS generator (font-family/font-size/...) and the theme.json
  * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
  */
-export declare const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight'>;
+export declare const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight' | 'letterSpacing'>;
 /** Padding values for each side */
 export interface BaseStylesSpacingPadding {
     top?: string;

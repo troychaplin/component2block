@@ -13,7 +13,8 @@
     "tokens": {
         "layout": {
             "contentSize": "768px",
-            "wideSize": "1280px"
+            "wideSize": "1280px",
+            "narrowSize": { "value": "600px", "cssOnly": true }
         },
 
         "mediaQuery": {
@@ -100,19 +101,26 @@
             "fontSize": "medium",
             "fontWeight": "400",
             "lineHeight": "1.6",
+            "fontStyle": "normal",
+            "letterSpacing": "normal",
             "color": "text-black",
             "background": "off-white"
         },
         "heading": {
             "fontFamily": "inter",
-            "color": "primary"
+            "fontWeight": "600",
+            "lineHeight": "1.2",
+            "fontStyle": "normal",
+            "letterSpacing": "-0.02em",
+            "color": "primary",
+            "background": "transparent"
         },
-        "h1": { "fontSize": "4.5rem", "fontWeight": "500" },
-        "h2": { "fontSize": "3rem", "fontWeight": "500" },
-        "h3": { "fontSize": "2.5rem", "fontWeight": "500" },
-        "h4": { "fontSize": "2rem", "fontWeight": "500" },
-        "h5": { "fontSize": "1.5rem", "fontWeight": "500" },
-        "h6": { "fontSize": "1.45rem", "fontWeight": "500", "fontStyle": "italic" },
+        "h1": { "fontSize": "4.5rem", "fontWeight": "700", "lineHeight": "1.1", "letterSpacing": "-0.03em" },
+        "h2": { "fontSize": "3rem",   "fontWeight": "700", "lineHeight": "1.15", "letterSpacing": "-0.02em" },
+        "h3": { "fontSize": "2.5rem", "fontWeight": "600", "lineHeight": "1.2",  "letterSpacing": "-0.01em" },
+        "h4": { "fontSize": "2rem",   "fontWeight": "600", "lineHeight": "1.25" },
+        "h5": { "fontSize": "1.5rem", "fontWeight": "500", "lineHeight": "1.3" },
+        "h6": { "fontSize": "1.45rem","fontWeight": "500", "lineHeight": "1.4",  "fontStyle": "italic" },
         "caption": { "fontSize": "small", "fontStyle": "italic", "fontWeight": "300", "color": "warning" },
         "button": { "color": "off-white", "background": "primary" },
         "link": { "color": "primary", "hoverColor": "error" },

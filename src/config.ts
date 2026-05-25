@@ -476,6 +476,7 @@ const CSS_KEYWORDS: Record<string, Set<string>> = {
     'inherit', 'initial', 'unset',
   ]),
   lineHeight: new Set(['normal', 'inherit', 'initial', 'unset']),
+  letterSpacing: new Set(['normal', 'inherit', 'initial', 'unset']),
   color: new Set(['inherit', 'transparent', 'currentColor', 'initial', 'unset']),
   background: new Set(['inherit', 'transparent', 'currentColor', 'initial', 'unset']),
   hoverColor: new Set(['inherit', 'transparent', 'currentColor', 'initial', 'unset']),
