@@ -5,7 +5,7 @@ export interface FontFaceEntry {
 }
 
 /** Valid typography CSS properties for baseStyles element definitions */
-export type BaseStyleProperty = 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'fontStyle';
+export type BaseStyleProperty = 'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'fontStyle' | 'letterSpacing';
 
 /** A single element definition within baseStyles */
 export interface BaseStyleElementDef {
@@ -14,6 +14,7 @@ export interface BaseStyleElementDef {
   fontWeight?: string;
   lineHeight?: string;
   fontStyle?: string;
+  letterSpacing?: string;
   color?: string;
   background?: string;
   hoverColor?: string;
@@ -70,8 +71,8 @@ export const HEADING_KEYS = ELEMENT_REGISTRY.filter(e => e.isHeading).map(e => e
  * Used by both the CSS generator (font-family/font-size/...) and the theme.json
  * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
  */
-export const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight'> = [
-  'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight',
+export const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight' | 'letterSpacing'> = [
+  'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight', 'letterSpacing',
 ];
 
 /** Padding values for each side */

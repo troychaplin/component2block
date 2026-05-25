@@ -39,6 +39,8 @@ export function generateThemeJson(config) {
         if (def.directMap && def.themeJson) {
             const obj = {};
             for (const [key, entry] of Object.entries(group)) {
+                if (entry.cssOnly)
+                    continue;
                 obj[key] = entry.value;
             }
             if (Object.keys(obj).length > 0) {

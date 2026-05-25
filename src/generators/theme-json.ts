@@ -47,6 +47,7 @@ export function generateThemeJson(config: C2bConfig): string {
     if (def.directMap && def.themeJson) {
       const obj: Record<string, string> = {};
       for (const [key, entry] of Object.entries(group)) {
+        if (entry.cssOnly) continue;
         obj[key] = entry.value;
       }
       if (Object.keys(obj).length > 0) {

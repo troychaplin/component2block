@@ -23,7 +23,7 @@ export const HEADING_KEYS = ELEMENT_REGISTRY.filter(e => e.isHeading).map(e => e
  * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
  */
 export const TYPOGRAPHY_PROPERTIES = [
-    'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight',
+    'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'lineHeight', 'letterSpacing',
 ];
 /**
  * Central registry mapping token category names to their output behavior.
