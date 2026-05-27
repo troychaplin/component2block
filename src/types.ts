@@ -311,6 +311,10 @@ export interface C2bConfig {
   fluid?: FluidConfig;
   /** When true, emit a .scss copy of each generated .css file alongside it. */
   emitScssAlongside: boolean;
+  /** When set, WordPress-specific files (theme.json, integrate.php, tokens.wp.css) are written here instead of outputDir. */
+  wpTheme?: string;
+  /** When true, emit a combined styles.css (and styles.scss when emitScssAlongside is true) containing all CSS outputs in source order. */
+  emitAggregate: boolean;
 }
 
 /** Output configuration group */
@@ -331,6 +335,10 @@ export interface OutputConfig {
   scssVars?: string[];
   /** When true, emit a .scss copy of each generated .css file alongside it. */
   emitScssAlongside?: boolean;
+  /** When set, WordPress-specific files (theme.json, integrate.php, tokens.wp.css) are written here instead of outputDir. */
+  wpTheme?: string;
+  /** When true, emit a combined styles.css (and styles.scss when emitScssAlongside is true) containing all CSS outputs in source order. */
+  emitAggregate?: boolean;
 }
 
 /**

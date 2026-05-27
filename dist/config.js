@@ -159,6 +159,8 @@ export function validateConfig(input) {
     const bundleFonts = output.bundleFonts ?? (fontsDir != null);
     const scssVars = normalizeScssVars(output.scssVars);
     const emitScssAlongside = output.emitScssAlongside ?? false;
+    const wpTheme = output.wpTheme;
+    const emitAggregate = output.emitAggregate ?? false;
     // Validate fontsDir exists when specified
     if (fontsDir != null) {
         const resolvedFontsDir = resolve(fontsDir);
@@ -178,6 +180,8 @@ export function validateConfig(input) {
         bundleFonts,
         scssVars,
         emitScssAlongside,
+        wpTheme,
+        emitAggregate,
         tokens,
         baseStyles: input.baseStyles,
         fluid,

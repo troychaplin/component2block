@@ -43,6 +43,9 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
     files.push({ path: relativePath, size: content.length });
   };
 
+  // Aggregate CSS parts collected in source order for emitAggregate.
+  const aggregateParts: string[] = [];
+
   // Dual-output helper: write the same CSS file into both srcDir (for the
   // local build, e.g. Storybook / Next) and outputDir (for the WP context).
   // Skips writing when the generator returns null/empty.
@@ -55,6 +58,9 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
       write(join(config.srcDir, scssFilename), content);
       write(`${config.outputDir}/${scssFilename}`, content);
     }
+    if (config.emitAggregate && filename.endsWith('.css')) {
+      aggregateParts.push(content.trimEnd());
+    }
   };
 
   // CSS outputs that ship to both contexts
@@ -62,6 +68,17 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
   writeDual('base-styles.css', generateBaseStylesCss(config));
   writeDual('layout.css', generateLayoutCss(config));
   writeDual('typography.css', generateTypographyCss(config));
+
+  // Aggregate stylesheet — all CSS outputs combined in source order
+  if (config.emitAggregate && aggregateParts.length > 0) {
+    const aggregate = aggregateParts.join('\n\n') + '\n';
+    write(join(config.srcDir, 'styles.css'), aggregate);
+    write(`${config.outputDir}/styles.css`, aggregate);
+    if (config.emitScssAlongside) {
+      write(join(config.srcDir, 'styles.scss'), aggregate);
+      write(`${config.outputDir}/styles.scss`, aggregate);
+    }
+  }
 
   // JS tokens — srcDir for local dev, outputDir for package consumers
   const tokensJs = generateTokensJs(config);
@@ -101,12 +118,13 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
     }
   }
 
-  // WP-only outputs
+  // WP-only outputs — routed to wpTheme when set, otherwise outputDir
+  const wpOut = config.wpTheme ?? config.outputDir;
   if (config.themeable) {
-    write(`${config.outputDir}/tokens.wp.css`, generateTokensWpCss(config));
+    write(`${wpOut}/tokens.wp.css`, generateTokensWpCss(config));
   }
-  write(`${config.outputDir}/theme-${config.prefix}.json`, generateThemeJson(config));
-  write(`${config.outputDir}/integrate.php`, generateIntegratePhp(config.prefix));
+  write(`${wpOut}/theme-${config.prefix}.json`, generateThemeJson(config));
+  write(`${wpOut}/integrate.php`, generateIntegratePhp(config.prefix));
 
   return { files };
 }

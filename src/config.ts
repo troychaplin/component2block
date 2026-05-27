@@ -198,6 +198,8 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   const bundleFonts = output.bundleFonts ?? (fontsDir != null);
   const scssVars = normalizeScssVars(output.scssVars);
   const emitScssAlongside = output.emitScssAlongside ?? false;
+  const wpTheme = output.wpTheme;
+  const emitAggregate = output.emitAggregate ?? false;
 
   // Validate fontsDir exists when specified
   if (fontsDir != null) {
@@ -222,6 +224,8 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
     bundleFonts,
     scssVars,
     emitScssAlongside,
+    wpTheme,
+    emitAggregate,
     tokens,
     baseStyles: input.baseStyles,
     fluid,

@@ -17,6 +17,11 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- New `output.wpTheme` option. When set, WordPress-specific outputs (`theme-{prefix}.json`, `integrate.php`, `tokens.wp.css`) are written to this directory instead of `outputDir`. CSS/SCSS/JS files continue to go to `outputDir`. This lets projects separate general design-system assets (e.g. `dist/styles/`) from WordPress integration artifacts (e.g. `dist/wordpress/`), so non-WordPress consumers never need to look past the styles directory.
+- New `output.emitAggregate` boolean option (default `false`). When `true`, a `styles.css` file — and a matching `styles.scss` when `emitScssAlongside` is also enabled — is written to both `srcDir` and `outputDir` after all individual CSS outputs. It contains `tokens.css`, `base-styles.css`, `layout.css`, and `typography.css` concatenated in source order, which is the correct specificity order for these files. Consumers that want everything in one import can use this file instead of importing the four individually.
+
 ## [0.5.9] - 2026-05-27
 
 ### Added
@@ -146,7 +151,7 @@ Prefix the change with one of these keywords:
 ### Changed
 
 - Renamed `output.tokensPath` to `output.srcDir` — now accepts a directory path (default: `src/styles`) instead of a file path. The `tokens.css` filename is hardcoded internally, consistent with how `fonts.css` and `base-styles.scss` are handled.
-- Renamed `output.wpDir` to `output.themeDir`.
+- Renamed `output.wpTheme` to `output.themeDir`.
 - Renamed `output.wpThemeable` to `output.themeable`.
 - `generateFontsCss()` now accepts an optional `basePath` parameter to control the URL prefix in `@font-face` declarations.
 - When `fontsDir` is set, the dev-facing `fonts.css` is written to the parent of `fontsDir` (e.g. `public/fonts.css`) for static serving, instead of `srcDir`. This avoids Vite mangling font URLs during CSS processing. Without `fontsDir`, `fonts.css` is still written to `srcDir` as before.
