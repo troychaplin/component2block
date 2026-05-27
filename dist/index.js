@@ -58,14 +58,17 @@ export function generate(configPath, cwd) {
     writeDual('base-styles.css', generateBaseStylesCss(config));
     writeDual('layout.css', generateLayoutCss(config));
     writeDual('typography.css', generateTypographyCss(config));
-    // Aggregate stylesheet — all CSS outputs combined in source order
+    // Aggregate stylesheet — all CSS outputs combined in source order.
+    // Routed to wpTheme when set (lives alongside theme-rds.json / integrate.php),
+    // otherwise falls back to outputDir.
     if (config.emitAggregate && aggregateParts.length > 0) {
         const aggregate = aggregateParts.join('\n\n') + '\n';
+        const aggregateOut = config.wpTheme ?? config.outputDir;
         write(join(config.srcDir, 'styles.css'), aggregate);
-        write(`${config.outputDir}/styles.css`, aggregate);
+        write(`${aggregateOut}/styles.css`, aggregate);
         if (config.emitScssAlongside) {
             write(join(config.srcDir, 'styles.scss'), aggregate);
-            write(`${config.outputDir}/styles.scss`, aggregate);
+            write(`${aggregateOut}/styles.scss`, aggregate);
         }
     }
     // JS tokens — srcDir for local dev, outputDir for package consumers
