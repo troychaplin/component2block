@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.11] - 2026-05-27
+
 ### Added
 
 - New `output.wpTheme` option. When set, WordPress-specific outputs (`theme-{prefix}.json`, `integrate.php`, `tokens.wp.css`) are written to this directory instead of `outputDir`. CSS/SCSS/JS files continue to go to `outputDir`. This lets projects separate general design-system assets (e.g. `dist/styles/`) from WordPress integration artifacts (e.g. `dist/wordpress/`), so non-WordPress consumers never need to look past the styles directory.
