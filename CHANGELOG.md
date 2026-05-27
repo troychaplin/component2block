@@ -17,8 +17,6 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
-## [0.5.9] - 2026-05-27
-
 ### Added
 
 - `generateTokensDts()` now emits a `tokens.d.ts` declaration file alongside `tokens.js` in both `srcDir` and `outputDir`. This resolves a TypeScript TS7016 error when a consuming project imports the auto-generated `tokens.js` via a `.ts` file — without the declaration, `tsc` treats the module as implicitly `any` and fails strict type checking.
