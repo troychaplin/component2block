@@ -1,1 +1,1 @@
-{"version":3,"file":"tokens-js.d.ts","sourceRoot":"","sources":["../../src/generators/tokens-js.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAY7C,wBAAgB,gBAAgB,CAAC,MAAM,EAAE,SAAS,GAAG,MAAM,CAmD1D"}
+{"version":3,"file":"tokens-js.d.ts","sourceRoot":"","sources":["../../src/generators/tokens-js.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAY7C,wBAAgB,iBAAiB,CAAC,MAAM,EAAE,SAAS,GAAG,MAAM,CAQ3D;AAED,wBAAgB,gBAAgB,CAAC,MAAM,EAAE,SAAS,GAAG,MAAM,CAmD1D"}

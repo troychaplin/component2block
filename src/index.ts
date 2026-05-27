@@ -11,7 +11,7 @@ import { generateBaseStylesCss } from './generators/base-styles-css.js';
 import { generateLayoutCss } from './generators/layout-css.js';
 import { generateTypographyCss } from './generators/typography-css.js';
 import { copyFontFiles } from './generators/copy-fonts.js';
-import { generateTokensJs } from './generators/tokens-js.js';
+import { generateTokensJs, generateTokensDts } from './generators/tokens-js.js';
 
 export { loadConfig, validateConfig } from './config.js';
 export { generateTokensCss } from './generators/tokens-css.js';
@@ -24,7 +24,7 @@ export { generateBaseStylesCss } from './generators/base-styles-css.js';
 export { generateLayoutCss } from './generators/layout-css.js';
 export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
-export { generateTokensJs } from './generators/tokens-js.js';
+export { generateTokensJs, generateTokensDts } from './generators/tokens-js.js';
 export type { C2bConfig, C2bConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig, BaseElementDef } from './types.js';
 
 export interface GenerateResult {
@@ -65,8 +65,11 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
 
   // JS tokens — srcDir for local dev, outputDir for package consumers
   const tokensJs = generateTokensJs(config);
+  const tokensDts = generateTokensDts(config);
   write(join(config.srcDir, 'tokens.js'), tokensJs);
+  write(join(config.srcDir, 'tokens.d.ts'), tokensDts);
   write(`${config.outputDir}/tokens.js`, tokensJs);
+  write(`${config.outputDir}/tokens.d.ts`, tokensDts);
 
   // SCSS variables — compile-time only, srcDir only. Opt-in per category.
   const tokensScss = generateTokensScss(config);
