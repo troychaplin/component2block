@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.5.8] - 2026-05-27
+
 ### Added
 
 - New `output.emitScssAlongside` boolean option (default `false`). When `true`, a `.scss` copy of each dual-output CSS file (`tokens.css`, `base-styles.css`, `layout.css`, `typography.css`) is written alongside the `.css` file in both `srcDir` and `outputDir`. The `.scss` files have identical content — CSS custom properties are valid SCSS — and exist solely to satisfy Dart Sass `@use` resolution. Without them, Dart Sass treats any `@use` pointing at a `.css` file as a plain CSS passthrough rather than inlining the file, causing the import to fail at runtime. Enable this when the generated output will be consumed via Dart Sass `@use` from an npm package (e.g. `@use "@scope/pkg/dist/cutheme/tokens"`).
