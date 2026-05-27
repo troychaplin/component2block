@@ -158,6 +158,7 @@ export function validateConfig(input) {
     const fontsDir = output.fontsDir;
     const bundleFonts = output.bundleFonts ?? (fontsDir != null);
     const scssVars = normalizeScssVars(output.scssVars);
+    const emitScssAlongside = output.emitScssAlongside ?? false;
     // Validate fontsDir exists when specified
     if (fontsDir != null) {
         const resolvedFontsDir = resolve(fontsDir);
@@ -176,6 +177,7 @@ export function validateConfig(input) {
         fontsDir,
         bundleFonts,
         scssVars,
+        emitScssAlongside,
         tokens,
         baseStyles: input.baseStyles,
         fluid,

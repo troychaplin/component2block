@@ -197,6 +197,7 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
   const fontsDir = output.fontsDir;
   const bundleFonts = output.bundleFonts ?? (fontsDir != null);
   const scssVars = normalizeScssVars(output.scssVars);
+  const emitScssAlongside = output.emitScssAlongside ?? false;
 
   // Validate fontsDir exists when specified
   if (fontsDir != null) {
@@ -220,6 +221,7 @@ export function validateConfig(input: C2bConfigInput): C2bConfig {
     fontsDir,
     bundleFonts,
     scssVars,
+    emitScssAlongside,
     tokens,
     baseStyles: input.baseStyles,
     fluid,

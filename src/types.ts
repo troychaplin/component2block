@@ -309,6 +309,8 @@ export interface C2bConfig {
   baseStyles?: BaseStylesConfig;
   /** Fluid typography viewport anchors. Always populated by the validator; optional here so hand-written test fixtures can omit it. */
   fluid?: FluidConfig;
+  /** When true, emit a .scss copy of each generated .css file alongside it. */
+  emitScssAlongside: boolean;
 }
 
 /** Output configuration group */
@@ -327,6 +329,8 @@ export interface OutputConfig {
    * throw at config load time.
    */
   scssVars?: string[];
+  /** When true, emit a .scss copy of each generated .css file alongside it. */
+  emitScssAlongside?: boolean;
 }
 
 /**

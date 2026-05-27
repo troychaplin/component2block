@@ -50,6 +50,11 @@ export function generate(configPath?: string, cwd?: string): GenerateResult {
     if (!content) return;
     write(join(config.srcDir, filename), content);
     write(`${config.outputDir}/${filename}`, content);
+    if (config.emitScssAlongside && filename.endsWith('.css')) {
+      const scssFilename = filename.replace('.css', '.scss');
+      write(join(config.srcDir, scssFilename), content);
+      write(`${config.outputDir}/${scssFilename}`, content);
+    }
   };
 
   // CSS outputs that ship to both contexts

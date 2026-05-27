@@ -7,6 +7,7 @@
         "themeable": false,
         "fontsDir": "public/fonts",
         "bundleFonts": true,
+        "emitScssAlongside": true,
         "scssVars": ["mediaQuery", "spacing"]
     },
 
