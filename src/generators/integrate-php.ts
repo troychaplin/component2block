@@ -7,5 +7,7 @@ const TEMPLATE_PATH = resolve(__dirname, '../../templates/integrate.php.tpl');
 
 export function generateIntegratePhp(prefix: string): string {
   const template = readFileSync(TEMPLATE_PATH, 'utf-8');
-  return template.replace(/theme\.json/g, `theme-${prefix}.json`);
+  return template
+    .replace(/theme\.json/g, `theme-${prefix}.json`)
+    .replace(/tokens\.css/g, `${prefix}-tokens.css`);
 }

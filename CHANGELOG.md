@@ -17,6 +17,15 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- Every file `generate()` writes into `srcDir` is now prefixed with the config's `prefix` (e.g. `tokens.css` → `{prefix}-tokens.css`, `_variables.scss` → `_{prefix}-variables.scss`), so generated files are visually distinguishable from any hand-maintained files placed in the same directory. This is a breaking rename of all `srcDir`/`outputDir` output filenames — update any `@use`/import paths that reference the old unprefixed names.
+- `outputDir` is no longer populated by individual flat writes. Instead, a new `exportSourceDir()` step recursively mirrors the entire contents of `srcDir` — generated files and hand-maintained files alike — into `outputDir` after generation completes, preserving relative paths.
+
+### Fixed
+
+- `integrate.php`'s token-enqueue logic now references the prefixed `{prefix}-tokens.css` filename instead of the old hardcoded `tokens.css`, so it correctly finds the generated file now that filenames carry the config prefix.
+
 ## [0.5.11] - 2026-05-27
 
 ### Added

@@ -19,6 +19,12 @@ c2b.config.json → loadConfig() → C2bConfig (normalized)
   → copyFontFiles()          → dist/fonts/{slug}/ (copies .woff2 files when fontsDir + bundleFonts)
 ```
 
+### srcDir Export & Filename Prefixing
+
+Every file c2b writes into `output.srcDir` (e.g. `tokens.css`, `base-styles.css`, `layout.css`, `typography.css`, the `emitAggregate` output, `tokens.js`, `tokens.d.ts`, `_variables.scss`) is prefixed with the config's top-level `prefix` — `tokens.css` → `{prefix}-tokens.css`, `_variables.scss` → `_{prefix}-variables.scss` (leading underscore preserved so it stays a valid Sass partial). This keeps generated files visually distinct from any hand-maintained files the user places directly in `srcDir`.
+
+After all `srcDir` writes complete, `exportSourceDir()` (`src/export-src-dir.ts`) recursively copies **every file** in `srcDir` — generated and hand-maintained alike — into `output.outputDir`, preserving relative paths. This is how `outputDir` is populated; there are no separate flat writes into it. `wpTheme`-routed files (`theme-{prefix}.json`, `integrate.php`, `tokens.wp.css`) and the `fontsDir`-routed `fonts.css` are untouched by this — they never live in `srcDir` and are written directly to their own destinations.
+
 ### Token Resolution
 
 Two kinds of resolver live in `src/config.ts`:

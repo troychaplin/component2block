@@ -10,6 +10,7 @@ export { generateLayoutCss } from './generators/layout-css.js';
 export { generateTypographyCss } from './generators/typography-css.js';
 export { copyFontFiles } from './generators/copy-fonts.js';
 export { generateTokensJs, generateTokensDts } from './generators/tokens-js.js';
+export { exportSourceDir } from './export-src-dir.js';
 export type { C2bConfig, C2bConfigInput, TokenEntry, TokenGroup, TokenCategory, FontFaceEntry, BaseStylesConfig, BaseElementDef } from './types.js';
 export interface GenerateResult {
     files: Array<{

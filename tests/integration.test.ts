@@ -46,20 +46,20 @@ describe('integration: generate() — default (locked)', () => {
     expect(result.files).toHaveLength(8);
 
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/tokens.css');
-    expect(paths).toContain('src/tokens.js');
-    expect(paths).toContain('src/tokens.d.ts');
-    expect(paths).toContain('out/wp/tokens.js');
-    expect(paths).toContain('out/wp/tokens.d.ts');
-    expect(paths).not.toContain('src/_variables.scss');
-    expect(paths).toContain('out/wp/tokens.css');
+    expect(paths).toContain('src/inttest-tokens.css');
+    expect(paths).toContain('src/inttest-tokens.js');
+    expect(paths).toContain('src/inttest-tokens.d.ts');
+    expect(paths).toContain('out/wp/inttest-tokens.js');
+    expect(paths).toContain('out/wp/inttest-tokens.d.ts');
+    expect(paths).not.toContain('src/_inttest-variables.scss');
+    expect(paths).toContain('out/wp/inttest-tokens.css');
     expect(paths).not.toContain('out/wp/tokens.wp.css');
     expect(paths).toContain('out/wp/theme-inttest.json');
     expect(paths).toContain('out/wp/integrate.php');
   });
 
   it('writes tokens.css with correct content', () => {
-    const content = readFileSync(resolve(TEST_DIR, 'src/tokens.css'), 'utf-8');
+    const content = readFileSync(resolve(TEST_DIR, 'src/inttest-tokens.css'), 'utf-8');
     expect(content).toContain('--inttest--color-primary: #ff0000;');
     expect(content).toContain('--inttest--color-muted: #999999;');
     expect(content).toContain('--inttest--spacing-md: 1rem;');
@@ -136,8 +136,8 @@ describe('integration: generate() — baseStyles', () => {
     const result = generate(BS_CONFIG_PATH, BS_TEST_DIR);
 
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/base-styles.css');
-    expect(paths).toContain('out/wp/base-styles.css');
+    expect(paths).toContain('src/inttest-base-styles.css');
+    expect(paths).toContain('out/wp/inttest-base-styles.css');
     // base files: src/tokens.css, out/wp/tokens.css, theme.json, integrate.php + base-styles.css ×2 = 6
     expect(result.files.length).toBeGreaterThanOrEqual(6);
   });
@@ -145,11 +145,11 @@ describe('integration: generate() — baseStyles', () => {
   it('base-styles.css has :where() selectors and matches across srcDir/outputDir', () => {
     generate(BS_CONFIG_PATH, BS_TEST_DIR);
     const srcContent = readFileSync(
-      resolve(BS_TEST_DIR, 'src/base-styles.css'),
+      resolve(BS_TEST_DIR, 'src/inttest-base-styles.css'),
       'utf-8',
     );
     const wpContent = readFileSync(
-      resolve(BS_TEST_DIR, 'out/wp/base-styles.css'),
+      resolve(BS_TEST_DIR, 'out/wp/inttest-base-styles.css'),
       'utf-8',
     );
 
@@ -264,11 +264,11 @@ describe('integration: generate() — baseStyles spacing', () => {
   it('layout.css includes root padding and alignfull rules (dual-output)', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
     const srcContent = readFileSync(
-      resolve(SP_TEST_DIR, 'src/layout.css'),
+      resolve(SP_TEST_DIR, 'src/inttest-layout.css'),
       'utf-8',
     );
     const wpContent = readFileSync(
-      resolve(SP_TEST_DIR, 'out/wp/layout.css'),
+      resolve(SP_TEST_DIR, 'out/wp/inttest-layout.css'),
       'utf-8',
     );
 
@@ -281,7 +281,7 @@ describe('integration: generate() — baseStyles spacing', () => {
   it('base-styles.css does NOT contain layout utilities', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
     const content = readFileSync(
-      resolve(SP_TEST_DIR, 'src/base-styles.css'),
+      resolve(SP_TEST_DIR, 'src/inttest-base-styles.css'),
       'utf-8',
     );
     expect(content).not.toContain('.has-global-padding');
@@ -316,13 +316,13 @@ describe('integration: generate() — themeable', () => {
     expect(result.files).toHaveLength(9);
 
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/tokens.css');
-    expect(paths).toContain('src/tokens.js');
-    expect(paths).toContain('src/tokens.d.ts');
-    expect(paths).toContain('out/wp/tokens.js');
-    expect(paths).toContain('out/wp/tokens.d.ts');
-    expect(paths).not.toContain('src/_variables.scss');
-    expect(paths).toContain('out/wp/tokens.css');
+    expect(paths).toContain('src/inttest-tokens.css');
+    expect(paths).toContain('src/inttest-tokens.js');
+    expect(paths).toContain('src/inttest-tokens.d.ts');
+    expect(paths).toContain('out/wp/inttest-tokens.js');
+    expect(paths).toContain('out/wp/inttest-tokens.d.ts');
+    expect(paths).not.toContain('src/_inttest-variables.scss');
+    expect(paths).toContain('out/wp/inttest-tokens.css');
     expect(paths).toContain('out/wp/tokens.wp.css');
     expect(paths).toContain('out/wp/theme-inttest.json');
     expect(paths).toContain('out/wp/integrate.php');
@@ -385,9 +385,9 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
   it('emits _variables.scss only for opted-in categories', () => {
     const result = generate(SV_CONFIG_PATH, SV_TEST_DIR);
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/_variables.scss');
+    expect(paths).toContain('src/_sv-variables.scss');
 
-    const content = readFileSync(resolve(SV_TEST_DIR, 'src/_variables.scss'), 'utf-8');
+    const content = readFileSync(resolve(SV_TEST_DIR, 'src/_sv-variables.scss'), 'utf-8');
     expect(content).toContain('$sv-media-query-sm: 600px;');
     expect(content).toContain('$sv-media-query-md: 784px;');
     expect(content).toContain('$sv-media-query-lg: 1024px;');
@@ -398,7 +398,7 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
 
   it('keeps mediaQuery tokens out of tokens.css, tokens.wp.css, and theme.json', () => {
     generate(SV_CONFIG_PATH, SV_TEST_DIR);
-    const tokensCss = readFileSync(resolve(SV_TEST_DIR, 'src/tokens.css'), 'utf-8');
+    const tokensCss = readFileSync(resolve(SV_TEST_DIR, 'src/sv-tokens.css'), 'utf-8');
     expect(tokensCss).not.toContain('media-query');
 
     const themeJson = JSON.parse(
@@ -465,14 +465,14 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
   it('writes typography.css to BOTH srcDir and outputDir (dual output)', () => {
     const result = generate(FS_CONFIG_PATH, FS_TEST_DIR);
     const paths = result.files.map((f) => f.path);
-    expect(paths).toContain('src/typography.css');
-    expect(paths).toContain('out/wp/typography.css');
+    expect(paths).toContain('src/rds-typography.css');
+    expect(paths).toContain('out/wp/rds-typography.css');
   });
 
   it('typography.css contains heading + after-heading rules (and srcDir matches outputDir)', () => {
     generate(FS_CONFIG_PATH, FS_TEST_DIR);
-    const wpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/typography.css'), 'utf-8');
-    const srcContent = readFileSync(resolve(FS_TEST_DIR, 'src/typography.css'), 'utf-8');
+    const wpContent = readFileSync(resolve(FS_TEST_DIR, 'out/wp/rds-typography.css'), 'utf-8');
+    const srcContent = readFileSync(resolve(FS_TEST_DIR, 'src/rds-typography.css'), 'utf-8');
     expect(wpContent).toContain('.is-layout-constrained > * + h2 {');
     expect(wpContent).toContain('  margin-block-start: var(--rds--spacing-x-large);');
     expect(wpContent).toContain('.is-layout-constrained > :is(h1, h2, h3, h4, h5, h6) + * {');
@@ -483,7 +483,7 @@ describe('integration: generate() — flow-spacing emits typography.css', () => 
 
   it('flow-spacing rules do NOT leak into base-styles.css', () => {
     generate(FS_CONFIG_PATH, FS_TEST_DIR);
-    const content = readFileSync(resolve(FS_TEST_DIR, 'src/base-styles.css'), 'utf-8');
+    const content = readFileSync(resolve(FS_TEST_DIR, 'src/rds-base-styles.css'), 'utf-8');
     expect(content).not.toContain('* + h2');
     expect(content).not.toContain('h1, h2, h3, h4, h5, h6) + *');
   });
