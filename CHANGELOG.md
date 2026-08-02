@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-02
+
 ### Changed
 
 - Every file `generate()` writes into `srcDir` is now prefixed with the config's `prefix` (e.g. `tokens.css` → `{prefix}-tokens.css`, `_variables.scss` → `_{prefix}-variables.scss`), so generated files are visually distinguishable from any hand-maintained files placed in the same directory. This is a breaking rename of all `srcDir`/`outputDir` output filenames — update any `@use`/import paths that reference the old unprefixed names.
