@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-07
+
 ### Changed
 
 - **Breaking:** the viewport SCSS mixins are renamed and reshaped. `mobile`, `tablet` and `tablet-down` are replaced by four mixins forming two complementary pairs:
