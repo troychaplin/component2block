@@ -100,6 +100,32 @@ describe('generateTokensCss — layout tokens', () => {
   });
 });
 
+describe('generateTokensCss — viewport tokens', () => {
+  const viewportConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+  bundleFonts: false,
+    tokens: {
+      viewport: {
+        mobile: { value: '500px' },
+        tablet: { value: '800px' },
+      },
+    },
+  };
+
+  const output = generateTokensCss(viewportConfig);
+
+  it('generates viewport CSS variables', () => {
+    expect(output).toContain('--test--viewport-mobile: 500px;');
+    expect(output).toContain('--test--viewport-tablet: 800px;');
+  });
+
+  it('groups viewport tokens with a comment', () => {
+    expect(output).toContain('/* Viewport */');
+  });
+});
+
 describe('generateTokensCss — fluid font sizes', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',

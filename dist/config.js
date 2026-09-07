@@ -132,7 +132,10 @@ function extractTokens(input) {
         const internalCategory = INPUT_CATEGORY_MAP[key] ?? key;
         // Validate category name
         if (!VALID_CATEGORIES.includes(internalCategory)) {
-            throw new Error(`Config error: Unknown token category "${key}". Valid categories: ${validInputCategories.filter(c => VALID_CATEGORIES.includes((INPUT_CATEGORY_MAP[c] ?? c))).join(', ')}`);
+            const removed = REMOVED_CATEGORIES[key];
+            throw new Error(`Config error: Unknown token category "${key}". ` +
+                (removed ? `${removed} ` : '') +
+                `Valid categories: ${validInputCategories.filter(c => VALID_CATEGORIES.includes((INPUT_CATEGORY_MAP[c] ?? c))).join(', ')}`);
         }
         const def = CATEGORY_REGISTRY[internalCategory];
         tokens[internalCategory] = normalizeTokenGroup(value, def.directMap, internalCategory);
@@ -150,6 +153,8 @@ export function validateConfig(input) {
     }
     // Validate baseStyles references against the token table
     validateBaseStyles(input.baseStyles, tokens);
+    // Validate the viewport breakpoints relative to each other
+    validateViewport(tokens.viewport);
     // Resolve output settings
     const output = input.output ?? {};
     const srcDir = output.srcDir ?? DEFAULTS.srcDir;
@@ -188,8 +193,18 @@ export function validateConfig(input) {
     };
 }
 /**
+ * Categories that used to exist and the guidance to hand back when a config
+ * still references one, so a breaking removal reads as a migration note rather
+ * than a typo. Keyed by the user-facing name.
+ */
+const REMOVED_CATEGORIES = {
+    mediaQuery: 'The "mediaQuery" category was removed. Use "viewport" for the mobile and tablet ' +
+        'breakpoints (they also reach WordPress via settings.viewport), and declare any ' +
+        'additional breakpoints directly in your own SCSS.',
+};
+/**
  * Normalize `output.scssVars` — a list of user-facing category names (e.g.
- * "color", "mediaQuery") — into internal category names. Validates each entry
+ * "color", "viewport") — into internal category names. Validates each entry
  * against the registry so typos fail loudly at config load, the same way
  * unknown token categories do.
  */
@@ -210,7 +225,9 @@ function normalizeScssVars(input) {
         }
         const internal = INPUT_CATEGORY_MAP[name] ?? name;
         if (!VALID_CATEGORIES.includes(internal)) {
+            const removed = REMOVED_CATEGORIES[name];
             throw new Error(`Config error: output.scssVars contains unknown category "${name}". ` +
+                (removed ? `${removed} ` : '') +
                 `Valid categories: ${validInputNames.join(', ')}.`);
         }
         if (!result.includes(internal)) {
@@ -327,8 +344,55 @@ export function ensureFontStyle(def) {
         return def;
     return { ...def, fontStyle: 'normal' };
 }
+/**
+ * Keys WordPress recognizes under `settings.viewport`. Anything else is silently
+ * dropped by core, so c2b rejects it at config load instead of writing dead output.
+ */
+const VIEWPORT_KEYS = ['mobile', 'tablet'];
+/**
+ * Parse a non-negative CSS length in the units WordPress accepts for viewport
+ * breakpoints. Returns null for anything else, including CSS functions and
+ * unitless values — which core ignores in favour of its own defaults.
+ */
+function parseLength(value) {
+    if (!value)
+        return null;
+    const match = /^(\d+|\d*\.\d+)(px|em|rem)$/.exec(value.trim());
+    if (!match)
+        return null;
+    return { value: parseFloat(match[1]), unit: match[2] };
+}
+/**
+ * Cross-key validation for the viewport breakpoints. WordPress builds `@tablet`
+ * as the band between the two values, so a tablet no larger than mobile yields a
+ * query that matches nothing. Core silently discards it; c2b throws instead, the
+ * same way it rejects unsupported viewport keys rather than letting them vanish.
+ *
+ * Only comparable when both use the same unit — px against rem needs a root font
+ * size, which is why core leaves mixed units to the theme author too.
+ */
+function validateViewport(group) {
+    if (!group)
+        return;
+    const mobile = parseLength(group.mobile?.value);
+    const tablet = parseLength(group.tablet?.value);
+    if (!mobile || !tablet)
+        return;
+    if (mobile.unit !== tablet.unit)
+        return;
+    if (tablet.value > mobile.value)
+        return;
+    throw new Error(`Config error: viewport.tablet (${group.tablet.value}) must be larger than ` +
+        `viewport.mobile (${group.mobile.value}).\n` +
+        `  WordPress builds the @tablet breakpoint as the band between them ` +
+        `(${group.mobile.value} < width <= ${group.tablet.value}), which matches no viewport as written.`);
+}
 function validateTokenGroup(category, group) {
     for (const [key, entry] of Object.entries(group)) {
+        if (category === 'viewport' && !VIEWPORT_KEYS.includes(key)) {
+            throw new Error(`Config error: Token "viewport.${key}" is not a supported viewport key.\n` +
+                `  WordPress only recognizes ${VIEWPORT_KEYS.map(k => `"${k}"`).join(' and ')} under settings.viewport.`);
+        }
         if (!entry.value && entry.value !== '0') {
             throw new Error(`Config error: Token "${category}.${key}" is missing a "value".`);
         }

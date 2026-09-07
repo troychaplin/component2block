@@ -146,14 +146,8 @@ export interface CategoryDef {
   custom?: string;
   /** If true, category is excluded from theme.json entirely (e.g. zIndex) */
   exclude?: boolean;
-  /** If true, tokens map directly to a settings object (not a preset array). Used by layout. */
+  /** If true, tokens map directly to a settings object (not a preset array). Used by layout and viewport. */
   directMap?: boolean;
-  /**
-   * If true, category is SCSS-only — skipped by the CSS, WP CSS, and theme.json
-   * generators. Exists solely to be opted into `output.scssVars`. Used by
-   * `mediaQuery`, where breakpoints only make sense inside SCSS `@media` rules.
-   */
-  scssOnly?: boolean;
 }
 
 /**
@@ -250,18 +244,19 @@ export const CATEGORY_REGISTRY: Record<string, CategoryDef> = {
     directMap: true,
     themeJson: { path: 'layout', valueKey: 'direct' },
   },
-  mediaQuery: {
-    cssSegment: 'media-query',
-    label: 'Media Queries',
+  viewport: {
+    cssSegment: 'viewport',
+    label: 'Viewport',
     order: 12,
-    scssOnly: true,
+    directMap: true,
+    themeJson: { path: 'viewport', valueKey: 'direct' },
   },
 };
 
 export type TokenCategory =
   | 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize'
   | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex'
-  | 'layout' | 'mediaQuery';
+  | 'layout' | 'viewport';
 
 /** All valid category names, derived from the registry */
 export const VALID_CATEGORIES = Object.keys(CATEGORY_REGISTRY) as TokenCategory[];
@@ -328,7 +323,7 @@ export interface OutputConfig {
   bundleFonts?: boolean;
   /**
    * List of token categories to emit as SCSS variables in `_variables.scss`.
-   * Accepts user-facing category names (e.g. "color", "mediaQuery"). Omit or set
+   * Accepts user-facing category names (e.g. "color", "viewport"). Omit or set
    * to an empty array to skip SCSS output entirely. Unknown category names
    * throw at config load time.
    */

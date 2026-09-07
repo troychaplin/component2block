@@ -154,9 +154,10 @@ Categories without a WordPress preset instead appear under `settings.custom` in 
 | radius | ✓ | | ✓ |
 | transition | ✓ | | ✓ |
 | layout | ✓ | | |
+| viewport | ✓ | | |
 | zIndex | ✓ | | |
 
-`layout` maps directly to `settings.layout` in theme.json rather than a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely.
+`layout` and `viewport` map directly to `settings.layout` / `settings.viewport` in theme.json rather than to a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely.
 
 ## Token Categories
 
@@ -172,7 +173,15 @@ These appear in the WordPress Site Editor controls:
 | `fontFamily` | `--prefix--font-family-*` | `settings.typography.fontFamilies` | Font picker |
 | `fontSize` | `--prefix--font-size-*` | `settings.typography.fontSizes` | Size picker |
 | `shadow` | `--prefix--shadow-*` | `settings.shadow.presets` | Shadow picker |
-| `layout` | `--prefix--layout-*` | `settings.layout` | Layout controls |
+
+### Direct-Map Categories
+
+These map their keys straight onto a theme.json settings object rather than into a preset array:
+
+| Category | CSS Variable | WordPress Mapping | Keys |
+|----------|-------------|-------------------|------|
+| `layout` | `--prefix--layout-*` | `settings.layout` | `contentSize`, `wideSize` (plus your own, `cssOnly`) |
+| `viewport` | `--prefix--viewport-*` | `settings.viewport` | `mobile`, `tablet` only |
 
 ### Custom Categories
 
@@ -207,6 +216,9 @@ Every token becomes a CSS custom property with static values:
 
   /* Layout */
   --mylib--layout-content-size: 768px;
+
+  /* Viewport */
+  --mylib--viewport-mobile: 500px;
 }
 ```
 
@@ -253,6 +265,23 @@ Reference the generated CSS variables in component SCSS:
 ```
 
 The variable pattern is always `--{prefix}--{css-segment}-{key}`.
+
+### Media queries
+
+CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and `mobile` / `tablet` / `tablet-down` mixins that match the queries WordPress generates for `@mobile` / `@tablet` block styles:
+
+```scss
+@use '../styles/mylib-variables' as ds;
+
+.mylib-card {
+  padding: var(--mylib--spacing-lg);
+
+  @include ds.tablet { padding: var(--mylib--spacing-md); }
+  @include ds.mobile { padding: var(--mylib--spacing-sm); }
+}
+```
+
+`tablet` is a band (`mobile < width <= tablet`), not a max-width — see [viewport](../config/README.md#viewport) for why that matters and what the mixins handle for you. `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic.
 
 ## Updating Tokens
 

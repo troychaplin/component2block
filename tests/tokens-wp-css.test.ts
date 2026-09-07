@@ -138,6 +138,29 @@ describe('generateTokensWpCss — layout tokens', () => {
   });
 });
 
+describe('generateTokensWpCss — viewport tokens', () => {
+  const viewportConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+  bundleFonts: false,
+    tokens: {
+      viewport: {
+        mobile: { value: '500px' },
+        tablet: { value: '800px' },
+      },
+    },
+  };
+
+  const output = generateTokensWpCss(viewportConfig);
+
+  it('uses hardcoded values for viewport (no wp preset)', () => {
+    expect(output).toContain('--test--viewport-mobile: 500px;');
+    expect(output).toContain('--test--viewport-tablet: 800px;');
+    expect(output).not.toContain('--wp--preset--viewport');
+  });
+});
+
 describe('generateTokensWpCss — fluid font size fallbacks', () => {
   const fluidConfig: C2bConfig = {
     prefix: 'test',

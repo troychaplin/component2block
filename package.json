@@ -55,8 +55,8 @@
   },
   "devDependencies": {
     "@rolldown/binding-darwin-arm64": "1.0.0-rc.13",
-    "@types/node": "^25.1.0",
+    "@types/node": "^26.5.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^5.0.0"
   }
 }

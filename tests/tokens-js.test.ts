@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateTokensJs } from '../src/generators/tokens-js.js';
+import { generateTokensJs, generateTokensDts } from '../src/generators/tokens-js.js';
 import type { C2bConfig } from '../src/types.js';
 
 const config: C2bConfig = {
@@ -26,6 +26,10 @@ const config: C2bConfig = {
     layout: {
       contentSize: { value: '645px' },
       wideSize: { value: '1340px' },
+    },
+    viewport: {
+      mobile: { value: '500px' },
+      tablet: { value: '800px' },
     },
   },
 };
@@ -83,6 +87,11 @@ describe('generateTokensJs', () => {
     expect(output).toContain("        wideSize: '1340px'");
   });
 
+  it('emits viewport tokens', () => {
+    expect(output).toContain("        mobile: '500px'");
+    expect(output).toContain("        tablet: '800px'");
+  });
+
   it('has no trailing comma on the last token in each category', () => {
     expect(output).toContain("        primaryDark: '#005a87'\n    }");
   });
@@ -119,29 +128,6 @@ describe('generateTokensJs — fluid font sizes emit clamp() values', () => {
 
   it('emits raw value for non-fluid tokens', () => {
     expect(output).toContain("        static: '0.75rem'");
-  });
-});
-
-describe('generateTokensJs — mediaQuery excluded', () => {
-  const mqConfig: C2bConfig = {
-    prefix: 'test',
-    srcDir: 'src/styles',
-    outputDir: 'dist/wp',
-    bundleFonts: false,
-    tokens: {
-      colorPalette: {
-        white: { value: '#fff' },
-      },
-      mediaQuery: {
-        sm: { value: '640px' },
-      },
-    },
-  };
-
-  it('does not emit a mediaQuery category (scssOnly)', () => {
-    const output = generateTokensJs(mqConfig);
-    expect(output).not.toContain('mediaQuery');
-    expect(output).not.toContain('media-query');
   });
 });
 
@@ -222,5 +208,37 @@ describe('generateTokensJs — prefix used in export name', () => {
 
   it('emits the hardcoded value', () => {
     expect(output).toContain("        primary: '#cc0000'");
+  });
+});
+
+describe('generateTokensJs — hyphenated prefixes produce valid identifiers', () => {
+  const hyphenConfig: C2bConfig = {
+    prefix: 'design-system',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      colorPalette: { primary: { value: '#0073aa' } },
+    },
+  };
+
+  it('camelCases the prefix in the named export', () => {
+    const output = generateTokensJs(hyphenConfig);
+    expect(output).toContain('export const designSystemTokens = {');
+    expect(output).toContain('export default designSystemTokens;');
+    expect(output).not.toContain('design-systemTokens');
+  });
+
+  it('camelCases the prefix in the .d.ts declaration', () => {
+    const output = generateTokensDts(hyphenConfig);
+    expect(output).toContain('export declare const designSystemTokens:');
+    expect(output).toContain('export default designSystemTokens;');
+    expect(output).not.toContain('design-systemTokens');
+  });
+
+  it('leaves an already-valid prefix untouched', () => {
+    expect(generateTokensJs({ ...hyphenConfig, prefix: 'mylib' })).toContain(
+      'export const mylibTokens = {',
+    );
   });
 });

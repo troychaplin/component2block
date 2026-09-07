@@ -8,7 +8,7 @@
         "fontsDir": "public/fonts",
         "bundleFonts": true,
         "emitScssAlongside": true,
-        "scssVars": ["mediaQuery", "spacing"]
+        "scssVars": ["viewport", "spacing"]
     },
 
     "tokens": {
@@ -18,11 +18,9 @@
             "narrowSize": { "value": "600px", "cssOnly": true }
         },
 
-        "mediaQuery": {
-            "sm": "600px",
-            "md": "784px",
-            "lg": "1024px",
-            "xl": "1280px"
+        "viewport": {
+            "mobile": "500px",
+            "tablet": "800px"
         },
 
         "color": {
