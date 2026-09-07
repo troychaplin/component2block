@@ -402,8 +402,8 @@ describe('integration: generate() — scssVars', () => {
     const content = readFileSync(resolve(SV_TEST_DIR, 'src/_sv-variables.scss'), 'utf-8');
     expect(content).toContain('$sv-viewport-mobile: 500px;');
     expect(content).toContain('$sv-viewport-tablet: 800px;');
-    expect(content).toContain('@mixin tablet {');
-    expect(content).toContain('@media (#{$sv-viewport-mobile} < width <= #{$sv-viewport-tablet})');
+    expect(content).toContain('@mixin above-tablet {');
+    expect(content).toContain('@media (width > #{$sv-viewport-tablet})');
     expect(content).toContain('$sv-spacing-sm: 0.5rem;');
     expect(content).toContain('$sv-spacing-md: 1rem;');
     expect(content).not.toContain('$sv-color-');

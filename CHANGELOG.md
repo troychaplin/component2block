@@ -17,6 +17,33 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** the viewport SCSS mixins are renamed and reshaped. `mobile`, `tablet` and `tablet-down` are replaced by four mixins forming two complementary pairs:
+
+  | mixin | query |
+  |---|---|
+  | `below-mobile` | `(width <= mobile)` |
+  | `above-mobile` | `(width > mobile)` |
+  | `below-tablet` | `(width <= tablet)` |
+  | `above-tablet` | `(width > tablet)` |
+
+  ```scss
+  @use '../styles/design-system-variables' as ds;
+
+  .card {
+    padding: 2rem;
+    @include ds.above-tablet { padding: 3rem; }
+    @include ds.below-mobile { padding: 1rem; }
+  }
+  ```
+
+  `above-*` uses a strict `>` so each pair is an exact complement — no viewport width matches both members, which removes the need for the `- 0.02px` offset normally written between a hand-rolled max/min pair.
+
+  The `tablet` band mixin (`mobile < width <= tablet`) is **removed**. It mirrored the media query WordPress generates for `@tablet` block styles, but c2b emits no viewport-scoped styles into `theme.json` — `styles` contains only `typography`, `color`, `spacing` and `elements` — so nothing c2b produces needed to agree with that shape. The band is still expressible by nesting: `@include above-mobile { @include below-tablet { … } }`.
+
+  This changes only SCSS output. The `settings.viewport` values written to `theme.json`, which are what WordPress actually consumes, are unaffected.
+
 ## [0.7.0] - 2026-09-07
 
 ### Added

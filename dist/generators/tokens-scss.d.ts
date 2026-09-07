@@ -7,17 +7,19 @@ import type { C2bConfig, TokenGroup } from '../types.js';
  */
 export declare function generateTokensScss(config: C2bConfig): string | null;
 /**
- * Build the `@mixin` blocks that wrap the viewport breakpoints in the same media
- * queries WordPress generates for `@mobile` / `@tablet` block styles.
+ * Build the `@mixin` blocks wrapping the viewport breakpoints as media queries.
  *
- * `@tablet` is a band (`mobile < width <= tablet`), not a max-width — written by
- * hand as `max-width: tablet` it would also match every mobile viewport, so these
- * mixins exist so consumers don't have to remember that. When only one breakpoint
- * is configured, core falls back to a single max-width query under that
- * breakpoint's own name, which is mirrored here.
+ * The breakpoint values are the ones WordPress reads from `settings.viewport` to
+ * size its own responsive block styles, so component CSS written with these
+ * mixins changes at the same widths the editor does. The mixins themselves are
+ * SCSS-only — nothing in WordPress consumes them.
+ *
+ * Each breakpoint yields a complementary pair: `below-x` uses `<=` and `above-x`
+ * uses `>`, so no viewport width ever matches both. That is what removes the need
+ * for the usual `- 0.02px` offset between a hand-written max/min pair.
  *
  * Mixin names are deliberately unprefixed: the file is meant to be `@use`d, which
- * namespaces them (`@include ds.mobile`).
+ * namespaces them (`@include ds.above-tablet`).
  *
  * Returns an empty array when no viewport tokens are defined.
  */

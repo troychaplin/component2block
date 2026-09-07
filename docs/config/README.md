@@ -262,17 +262,10 @@ $design-system-viewport-mobile: 500px;
 $design-system-viewport-tablet: 800px;
 
 // Viewport media queries
-@mixin mobile {
-  @media (width <= #{$design-system-viewport-mobile}) { @content; }
-}
-
-@mixin tablet {
-  @media (#{$design-system-viewport-mobile} < width <= #{$design-system-viewport-tablet}) { @content; }
-}
-
-@mixin tablet-down {
-  @media (width <= #{$design-system-viewport-tablet}) { @content; }
-}
+@mixin below-mobile { @media (width <= #{$design-system-viewport-mobile}) { @content; } }
+@mixin above-mobile { @media (width > #{$design-system-viewport-mobile}) { @content; } }
+@mixin below-tablet { @media (width <= #{$design-system-viewport-tablet}) { @content; } }
+@mixin above-tablet { @media (width > #{$design-system-viewport-tablet}) { @content; } }
 ```
 
 Use them from your component SCSS. The file is a Sass partial, so `@use` it — that namespaces the mixins, which is why their names aren't prefixed:
@@ -283,14 +276,16 @@ Use them from your component SCSS. The file is a Sass partial, so `@use` it — 
 .card {
   padding: 2rem;
 
-  @include ds.tablet { padding: 1.5rem; }
-  @include ds.mobile { padding: 1rem; }
+  @include ds.above-tablet { padding: 3rem; }
+  @include ds.below-mobile { padding: 1rem; }
 }
 ```
 
-**Why the mixins exist:** `@tablet` is a band, not a max-width. WordPress generates `(500px < width <= 800px)` for it. Writing `@media (max-width: 800px)` by hand would also match every mobile viewport, so your component styles would disagree with the block styles WordPress applies from the same values. The mixins encode that once. Two edge cases they also handle: define only one breakpoint and it becomes a plain max-width query keeping its own name, matching core's fallback; `tablet-down` is the one mixin with no WordPress counterpart, included because "tablet and below" is the common need.
+Each breakpoint produces a **complementary pair** — `below-*` uses `<=`, `above-*` uses `>` — so no viewport width matches both. That is worth more than it looks: a hand-written pair like `max-width: 800px` / `min-width: 800px` both match at exactly 800px, which is why people write `max-width: 799.98px`. These mixins have no such gap or overlap, so the offset is never needed. A breakpoint you don't configure simply contributes no pair.
 
-**JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
+These mixins are SCSS-only. WordPress never sees them — it reads the `settings.viewport` values from theme.json and builds its own queries for `@mobile` / `@tablet` block styles. The mixins exist so your component CSS can change at the same widths the editor does.
+
+**JavaScript** consumers get the raw values**JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
 
 ```js
 import tokens from './design-system-tokens.js';

@@ -45,17 +45,19 @@ export function generateTokensScss(config: C2bConfig): string | null {
 }
 
 /**
- * Build the `@mixin` blocks that wrap the viewport breakpoints in the same media
- * queries WordPress generates for `@mobile` / `@tablet` block styles.
+ * Build the `@mixin` blocks wrapping the viewport breakpoints as media queries.
  *
- * `@tablet` is a band (`mobile < width <= tablet`), not a max-width — written by
- * hand as `max-width: tablet` it would also match every mobile viewport, so these
- * mixins exist so consumers don't have to remember that. When only one breakpoint
- * is configured, core falls back to a single max-width query under that
- * breakpoint's own name, which is mirrored here.
+ * The breakpoint values are the ones WordPress reads from `settings.viewport` to
+ * size its own responsive block styles, so component CSS written with these
+ * mixins changes at the same widths the editor does. The mixins themselves are
+ * SCSS-only — nothing in WordPress consumes them.
+ *
+ * Each breakpoint yields a complementary pair: `below-x` uses `<=` and `above-x`
+ * uses `>`, so no viewport width ever matches both. That is what removes the need
+ * for the usual `- 0.02px` offset between a hand-written max/min pair.
  *
  * Mixin names are deliberately unprefixed: the file is meant to be `@use`d, which
- * namespaces them (`@include ds.mobile`).
+ * namespaces them (`@include ds.above-tablet`).
  *
  * Returns an empty array when no viewport tokens are defined.
  */
@@ -69,7 +71,9 @@ export function buildViewportMixins(prefix: string, group: TokenGroup | undefine
   const lines: string[] = [
     '',
     '// Viewport media queries',
-    '// Matches the @mobile / @tablet breakpoints WordPress applies to block styles.',
+    '// Built from the settings.viewport breakpoints WordPress uses for responsive',
+    '// block styles. Each below-/above- pair is an exact complement, so no viewport',
+    '// width matches both.',
   ];
 
   const mixin = (name: string, condition: string) => {
@@ -81,22 +85,15 @@ export function buildViewportMixins(prefix: string, group: TokenGroup | undefine
     lines.push('}');
   };
 
+  // A breakpoint that isn't configured simply contributes no pair.
   if (mobile) {
-    mixin('mobile', `(width <= #{${mobile}})`);
+    mixin('below-mobile', `(width <= #{${mobile}})`);
+    mixin('above-mobile', `(width > #{${mobile}})`);
   }
 
   if (tablet) {
-    // With both defined, tablet is the band between them. Alone, it keeps its
-    // own name as a plain max-width query — exactly what core does.
-    mixin('tablet', mobile
-      ? `(#{${mobile}} < width <= #{${tablet}})`
-      : `(width <= #{${tablet}})`);
-  }
-
-  if (mobile && tablet) {
-    // No WordPress counterpart. "Tablet and below" is the common need, and
-    // omitting it just pushes people back to hand-written queries.
-    mixin('tablet-down', `(width <= #{${tablet}})`);
+    mixin('below-tablet', `(width <= #{${tablet}})`);
+    mixin('above-tablet', `(width > #{${tablet}})`);
   }
 
   return lines;

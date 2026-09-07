@@ -268,7 +268,7 @@ The variable pattern is always `--{prefix}--{css-segment}-{key}`.
 
 ### Media queries
 
-CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and `mobile` / `tablet` / `tablet-down` mixins that match the queries WordPress generates for `@mobile` / `@tablet` block styles:
+CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and four mixins — `below-mobile`, `above-mobile`, `below-tablet`, `above-tablet` — built from the same values WordPress uses to size its responsive block styles:
 
 ```scss
 @use '../styles/mylib-variables' as ds;
@@ -276,12 +276,12 @@ CSS custom properties don't work inside a `@media` condition. Opt into SCSS vari
 .mylib-card {
   padding: var(--mylib--spacing-lg);
 
-  @include ds.tablet { padding: var(--mylib--spacing-md); }
-  @include ds.mobile { padding: var(--mylib--spacing-sm); }
+  @include ds.above-tablet { padding: var(--mylib--spacing-lg); }
+  @include ds.below-mobile { padding: var(--mylib--spacing-sm); }
 }
 ```
 
-`tablet` is a band (`mobile < width <= tablet`), not a max-width — see [viewport](../config/README.md#viewport) for why that matters and what the mixins handle for you. `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic.
+Each breakpoint gives a complementary pair (`<=` below, `>` above), so nothing overlaps at the boundary — see [viewport](../config/README.md#viewport). `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic.
 
 ## Updating Tokens
 

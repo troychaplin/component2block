@@ -209,22 +209,30 @@ describe('generateTokensScss — snapshot', () => {
         '$rds-viewport-tablet: 800px;',
         '',
         '// Viewport media queries',
-        '// Matches the @mobile / @tablet breakpoints WordPress applies to block styles.',
+        '// Built from the settings.viewport breakpoints WordPress uses for responsive',
+        '// block styles. Each below-/above- pair is an exact complement, so no viewport',
+        '// width matches both.',
         '',
-        '@mixin mobile {',
+        '@mixin below-mobile {',
         '  @media (width <= #{$rds-viewport-mobile}) {',
         '    @content;',
         '  }',
         '}',
         '',
-        '@mixin tablet {',
-        '  @media (#{$rds-viewport-mobile} < width <= #{$rds-viewport-tablet}) {',
+        '@mixin above-mobile {',
+        '  @media (width > #{$rds-viewport-mobile}) {',
         '    @content;',
         '  }',
         '}',
         '',
-        '@mixin tablet-down {',
+        '@mixin below-tablet {',
         '  @media (width <= #{$rds-viewport-tablet}) {',
+        '    @content;',
+        '  }',
+        '}',
+        '',
+        '@mixin above-tablet {',
+        '  @media (width > #{$rds-viewport-tablet}) {',
         '    @content;',
         '  }',
         '}',
@@ -245,45 +253,46 @@ describe('generateTokensScss — viewport media-query mixins', () => {
       tokens: { viewport },
     })!;
 
-  it('emits mobile as a max-width query', () => {
-    const output = build({ mobile: { value: '500px' }, tablet: { value: '800px' } });
-    expect(output).toContain('@mixin mobile {');
+  const both = () => build({ mobile: { value: '500px' }, tablet: { value: '800px' } });
+
+  it('emits a complementary pair for mobile', () => {
+    const output = both();
+    expect(output).toContain('@mixin below-mobile {');
     expect(output).toContain('  @media (width <= #{$test-viewport-mobile}) {');
+    expect(output).toContain('@mixin above-mobile {');
+    expect(output).toContain('  @media (width > #{$test-viewport-mobile}) {');
   });
 
-  it('emits tablet as the band between the two breakpoints, matching WordPress', () => {
-    const output = build({ mobile: { value: '500px' }, tablet: { value: '800px' } });
-    expect(output).toContain('@mixin tablet {');
-    expect(output).toContain(
-      '  @media (#{$test-viewport-mobile} < width <= #{$test-viewport-tablet}) {',
-    );
-  });
-
-  it('emits a tablet-down convenience mixin when both are defined', () => {
-    const output = build({ mobile: { value: '500px' }, tablet: { value: '800px' } });
-    expect(output).toContain('@mixin tablet-down {');
+  it('emits a complementary pair for tablet', () => {
+    const output = both();
+    expect(output).toContain('@mixin below-tablet {');
     expect(output).toContain('  @media (width <= #{$test-viewport-tablet}) {');
+    expect(output).toContain('@mixin above-tablet {');
+    expect(output).toContain('  @media (width > #{$test-viewport-tablet}) {');
+  });
+
+  it('uses strict > for above so the pairs never overlap', () => {
+    // A `>=` on the above- side would make both mixins match at exactly the
+    // breakpoint width, which is the bug the 0.02px offset usually works around.
+    expect(both()).not.toContain('>=');
   });
 
   it('passes @content through every mixin', () => {
-    const output = build({ mobile: { value: '500px' }, tablet: { value: '800px' } });
-    expect(output.match(/@content;/g)).toHaveLength(3);
+    expect(both().match(/@content;/g)).toHaveLength(4);
   });
 
-  it('falls back to a single max-width query when only mobile is defined', () => {
+  it('emits only the mobile pair when tablet is undefined', () => {
     const output = build({ mobile: { value: '500px' } });
-    expect(output).toContain('@mixin mobile {');
-    expect(output).toContain('  @media (width <= #{$test-viewport-mobile}) {');
-    expect(output).not.toContain('@mixin tablet {');
-    expect(output).not.toContain('@mixin tablet-down {');
+    expect(output).toContain('@mixin below-mobile {');
+    expect(output).toContain('@mixin above-mobile {');
+    expect(output).not.toContain('tablet');
   });
 
-  it('keeps the tablet name with a single max-width query when only tablet is defined', () => {
+  it('emits only the tablet pair when mobile is undefined', () => {
     const output = build({ tablet: { value: '800px' } });
-    expect(output).toContain('@mixin tablet {');
-    expect(output).toContain('  @media (width <= #{$test-viewport-tablet}) {');
-    expect(output).not.toContain('@mixin mobile {');
-    expect(output).not.toContain('@mixin tablet-down {');
+    expect(output).toContain('@mixin below-tablet {');
+    expect(output).toContain('@mixin above-tablet {');
+    expect(output).not.toContain('mobile');
   });
 
   it('emits no mixins when viewport is not opted into scssVars', () => {
