@@ -17,6 +17,13 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Fixed
+
+- The generated tokens JS module (`<prefix>-tokens.js`) could be emitted as syntactically invalid JavaScript, breaking the consuming project's bundler at parse time. Two causes, both in `generateTokensJs`:
+  - Token values were interpolated into single-quoted string literals without escaping, so any value containing a quote closed the literal early. This hit every quoted font stack — `'Inter Tight', system-ui` was emitted as `interTight: ''Inter Tight', system-ui'`.
+  - `toJsIdentifier` only camelCased a hyphen followed by a letter, so a hyphen sitting before a digit survived into the output as a bare object key — `source-serif-4` became `sourceSerif-4`. It now yields `sourceSerif4`.
+- Token keys that cannot be valid identifiers (a purely numeric `zIndex` key such as `100`) are now quoted rather than emitted bare.
+
 ## [0.7.1] - 2026-09-07
 
 ### Changed

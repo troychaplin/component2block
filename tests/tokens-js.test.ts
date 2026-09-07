@@ -242,3 +242,88 @@ describe('generateTokensJs — hyphenated prefixes produce valid identifiers', (
     );
   });
 });
+
+// Compiles the generated module and hands back the token object, so a test can
+// assert on real values instead of on substrings. Any syntax error in an emitted
+// key or value throws here — which is the point: every assertion that reads a
+// value through this helper is also a guard that the output actually parses.
+function evalTokens(output: string): Record<string, Record<string, string>> {
+  const body = output
+    .replace(/^export const (\w+) = \{/m, 'const $1 = {')
+    .replace(/^export default (\w+);$/m, 'return $1;');
+  return new Function(body)() as Record<string, Record<string, string>>;
+}
+
+describe('generateTokensJs — emitted output is valid JavaScript', () => {
+  it('parses the output for a representative config', () => {
+    expect(() => evalTokens(generateTokensJs(config))).not.toThrow();
+  });
+
+  it('escapes single quotes so quoted font stacks survive', () => {
+    const fontConfig: C2bConfig = {
+      prefix: 'test',
+      srcDir: 'src/styles',
+      outputDir: 'dist/wp',
+      bundleFonts: false,
+      tokens: {
+        fontFamily: {
+          'inter-tight': { value: "'Inter Tight', system-ui, 'Segoe UI', roboto, sans-serif" },
+        },
+      },
+    };
+
+    const tokens = evalTokens(generateTokensJs(fontConfig));
+    expect(tokens.fontFamily.interTight).toBe(
+      "'Inter Tight', system-ui, 'Segoe UI', roboto, sans-serif",
+    );
+  });
+
+  it('escapes backslashes before quotes, so both round-trip', () => {
+    const escapeConfig: C2bConfig = {
+      prefix: 'test',
+      srcDir: 'src/styles',
+      outputDir: 'dist/wp',
+      bundleFonts: false,
+      tokens: {
+        fontFamily: { odd: { value: String.raw`a\b'c` } },
+      },
+    };
+
+    expect(evalTokens(generateTokensJs(escapeConfig)).fontFamily.odd).toBe(String.raw`a\b'c`);
+  });
+
+  it('camelCases a hyphen sitting before a digit', () => {
+    const digitConfig: C2bConfig = {
+      prefix: 'test',
+      srcDir: 'src/styles',
+      outputDir: 'dist/wp',
+      bundleFonts: false,
+      tokens: {
+        fontFamily: {
+          'source-serif-4': { value: "'Source Serif 4', ui-serif, georgia, serif" },
+        },
+        spacing: { 'spacing-10': { value: '0.175rem' } },
+      },
+    };
+
+    const tokens = evalTokens(generateTokensJs(digitConfig));
+    expect(Object.keys(tokens.fontFamily)).toEqual(['sourceSerif4']);
+    expect(Object.keys(tokens.spacing)).toEqual(['spacing10']);
+  });
+
+  it('quotes keys that are not valid identifiers', () => {
+    const zConfig: C2bConfig = {
+      prefix: 'test',
+      srcDir: 'src/styles',
+      outputDir: 'dist/wp',
+      bundleFonts: false,
+      tokens: {
+        zIndex: { '100': { value: '100' }, '200': { value: '200' } },
+      },
+    };
+
+    const output = generateTokensJs(zConfig);
+    expect(output).toContain("        '100': '100'");
+    expect(evalTokens(output).z).toEqual({ '100': '100', '200': '200' });
+  });
+});

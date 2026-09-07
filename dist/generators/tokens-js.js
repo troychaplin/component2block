@@ -1,10 +1,24 @@
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, kebabToCamel } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
+const VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+// Wraps a token value in a single-quoted JS string literal. Values are raw CSS,
+// and font stacks carry their own quotes ("'Inter Tight', system-ui"), which
+// would close the literal early if they weren't escaped.
+function quote(value) {
+    return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+}
+// Object keys that aren't valid identifiers — a purely numeric zIndex key like
+// "100" — have to be quoted rather than emitted bare.
+function emitKey(key) {
+    return VALID_IDENTIFIER.test(key) ? key : quote(key);
+}
 // Converts a token key to a valid camelCase JS identifier.
 // Keys starting with digits (e.g. "2-x-small" → "2XSmall") are reordered
 // so the leading digit follows the first letter: "2XSmall" → "x2Small".
 function toJsIdentifier(key) {
-    const camel = kebabToCamel(key);
+    // kebabToCamel only lifts a letter that follows a hyphen, so a hyphen sitting
+    // before a digit ("source-serif-4") survives into the output. Drop those too.
+    const camel = kebabToCamel(key).replace(/-+([0-9])/g, '$1');
     return camel.replace(/^(\d+)([A-Za-z])/, (_, digits, letter) => letter.toLowerCase() + digits);
 }
 export function generateTokensDts(config) {
@@ -45,10 +59,10 @@ export function generateTokensJs(config) {
     }
     populated.forEach(({ jsKey, entries }, catIdx) => {
         const lastCat = catIdx === populated.length - 1;
-        lines.push(`    ${jsKey}: {`);
+        lines.push(`    ${emitKey(jsKey)}: {`);
         entries.forEach(({ jsTokenKey, value }, tokIdx) => {
             const lastTok = tokIdx === entries.length - 1;
-            lines.push(`        ${jsTokenKey}: '${value}'${lastTok ? '' : ','}`);
+            lines.push(`        ${emitKey(jsTokenKey)}: ${quote(value)}${lastTok ? '' : ','}`);
         });
         lines.push(`    }${lastCat ? '' : ','}`);
     });
