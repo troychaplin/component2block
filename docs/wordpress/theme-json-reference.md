@@ -106,6 +106,21 @@ In locked mode (`output.themeable: false`), the generator also sets:
 }
 ```
 
+### settings.viewport
+
+Breakpoint widths for the `@mobile` / `@tablet` responsive block styles introduced in WordPress 7.1. Only `mobile` and `tablet` are recognized, and values must be a non-negative number with a `px`, `em`, or `rem` unit — WordPress ignores anything else and falls back to its own defaults (mobile `576px`, tablet `782px`).
+
+```json
+{
+    "settings": {
+        "viewport": {
+            "mobile": "500px",
+            "tablet": "800px"
+        }
+    }
+}
+```
+
 ### settings.custom
 
 Categories without native WordPress preset support:

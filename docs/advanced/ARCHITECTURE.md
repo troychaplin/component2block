@@ -6,7 +6,7 @@ Design decisions, project structure, and internals of the `component2block` pack
 
 - **Zero runtime dependencies** — Uses only Node.js built-ins (`fs`, `path`)
 - **Pure generator functions** — Each generator takes config in, returns string out. No side effects.
-- **Registry-driven** — `CATEGORY_REGISTRY` in `src/types.ts` defines behavior for all 12 token categories. Adding a new category to this registry enables it across every generator automatically.
+- **Registry-driven** — `CATEGORY_REGISTRY` in `src/types.ts` defines behavior for all 14 token categories. Adding a new category to this registry enables it across every generator automatically.
 - **TypeScript with ESM** — Strict mode, ES modules, compiled to `dist/` for consumption
 - **Template for PHP** — `integrate.php` is generated from a template (`templates/integrate.php.tpl`). The PHP reads `theme.json` at runtime — no hardcoded values baked in.
 - **Zero-specificity content styles** — `:where()` selectors ensure component BEM classes always win over base typography
@@ -107,7 +107,8 @@ Each generator is a pure function: takes `C2bConfig` in, returns a string out. T
 | `wpPreset` | WordPress preset prefix for `--wp--preset--*` mapping |
 | `custom` | Key under `settings.custom` for non-preset categories |
 | `exclude` | When `true`, excluded from theme.json entirely (zIndex) |
-| `directMap` | When `true`, maps directly to settings path (layout) |
+| `directMap` | When `true`, maps directly to settings path (layout, viewport) |
+| `scssOnly` | When `true`, skipped by the CSS, WP CSS and theme.json generators — exists only to be opted into `output.scssVars` (mediaQuery) |
 
 User-facing category names map to internal names via `INPUT_CATEGORY_MAP` (e.g. `color` → `colorPalette`, `gradient` → `colorGradient`).
 

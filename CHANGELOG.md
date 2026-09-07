@@ -17,6 +17,16 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- New `viewport` token category, mapping directly to `settings.viewport` in theme.json (WordPress 7.1+), which sets the breakpoint widths that `@mobile` / `@tablet` responsive block styles resolve against. It behaves exactly like `layout`: same config shape, same `directMap` generation path, CSS variables in `tokens.css` / `tokens.wp.css`, entries in `tokens.js`/`.d.ts`, `_variables.scss` via `output.scssVars`, and `cssOnly` support.
+
+  ```json
+  { "tokens": { "viewport": { "mobile": "500px", "tablet": "800px" } } }
+  ```
+
+  Only `mobile` and `tablet` are accepted — any other key throws at config load, since WordPress recognizes no others and silently discards them. In locked mode (`themeable: false`), `integrate.php` now re-applies `settings.viewport` alongside `settings.layout` so a consuming theme cannot override the breakpoints.
+
 ## [0.6.0] - 2026-08-02
 
 ### Changed

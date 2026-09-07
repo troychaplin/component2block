@@ -118,10 +118,17 @@ export const CATEGORY_REGISTRY = {
         directMap: true,
         themeJson: { path: 'layout', valueKey: 'direct' },
     },
+    viewport: {
+        cssSegment: 'viewport',
+        label: 'Viewport',
+        order: 12,
+        directMap: true,
+        themeJson: { path: 'viewport', valueKey: 'direct' },
+    },
     mediaQuery: {
         cssSegment: 'media-query',
         label: 'Media Queries',
-        order: 12,
+        order: 13,
         scssOnly: true,
     },
 };

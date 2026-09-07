@@ -616,6 +616,48 @@ describe('validateConfig — layout camelCase keys', () => {
   });
 });
 
+describe('validateConfig — viewport keys', () => {
+  it('accepts the mobile and tablet keys', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: {
+        viewport: {
+          mobile: '500px',
+          tablet: '800px',
+        },
+      },
+    });
+    expect(result.tokens.viewport!.mobile.value).toBe('500px');
+    expect(result.tokens.viewport!.tablet.value).toBe('800px');
+  });
+
+  it('does not add slug/name to viewport tokens (directMap)', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: { viewport: { mobile: '500px' } },
+    });
+    expect(result.tokens.viewport!.mobile.slug).toBeUndefined();
+    expect(result.tokens.viewport!.mobile.name).toBeUndefined();
+  });
+
+  it('preserves cssOnly on viewport tokens', () => {
+    const result = validateConfig({
+      prefix: 'test',
+      tokens: { viewport: { tablet: { value: '800px', cssOnly: true } } },
+    });
+    expect(result.tokens.viewport!.tablet.cssOnly).toBe(true);
+  });
+
+  it('throws on a viewport key WordPress does not support', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: { viewport: { mobile: '500px', desktop: '1200px' } },
+      }),
+    ).toThrow('Token "viewport.desktop" is not a supported viewport key');
+  });
+});
+
 describe('validateConfig — flow-spacing baseStyles properties', () => {
   const tokensWithSpacing: C2bConfigInput = {
     prefix: 'test',

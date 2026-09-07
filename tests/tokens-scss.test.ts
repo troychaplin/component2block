@@ -127,6 +127,24 @@ describe('generateTokensScss — category-specific formatting', () => {
     expect(output).toContain('$test-layout-wide-size: 1340px;');
   });
 
+  it('emits viewport tokens when opted into scssVars', () => {
+    const output = generateTokensScss({
+      prefix: 'test',
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      bundleFonts: false,
+      scssVars: ['viewport'],
+      tokens: {
+        viewport: {
+          mobile: { value: '500px' },
+          tablet: { value: '800px' },
+        },
+      },
+    })!;
+    expect(output).toContain('$test-viewport-mobile: 500px;');
+    expect(output).toContain('$test-viewport-tablet: 800px;');
+  });
+
   it('emits fluid clamp() identical to tokens.css', () => {
     const output = generateTokensScss({
       prefix: 'test',

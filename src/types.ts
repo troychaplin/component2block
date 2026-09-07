@@ -146,7 +146,7 @@ export interface CategoryDef {
   custom?: string;
   /** If true, category is excluded from theme.json entirely (e.g. zIndex) */
   exclude?: boolean;
-  /** If true, tokens map directly to a settings object (not a preset array). Used by layout. */
+  /** If true, tokens map directly to a settings object (not a preset array). Used by layout and viewport. */
   directMap?: boolean;
   /**
    * If true, category is SCSS-only — skipped by the CSS, WP CSS, and theme.json
@@ -250,10 +250,17 @@ export const CATEGORY_REGISTRY: Record<string, CategoryDef> = {
     directMap: true,
     themeJson: { path: 'layout', valueKey: 'direct' },
   },
+  viewport: {
+    cssSegment: 'viewport',
+    label: 'Viewport',
+    order: 12,
+    directMap: true,
+    themeJson: { path: 'viewport', valueKey: 'direct' },
+  },
   mediaQuery: {
     cssSegment: 'media-query',
     label: 'Media Queries',
-    order: 12,
+    order: 13,
     scssOnly: true,
   },
 };
@@ -261,7 +268,7 @@ export const CATEGORY_REGISTRY: Record<string, CategoryDef> = {
 export type TokenCategory =
   | 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize'
   | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex'
-  | 'layout' | 'mediaQuery';
+  | 'layout' | 'viewport' | 'mediaQuery';
 
 /** All valid category names, derived from the registry */
 export const VALID_CATEGORIES = Object.keys(CATEGORY_REGISTRY) as TokenCategory[];

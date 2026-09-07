@@ -27,6 +27,10 @@ const testConfig = {
     zIndex: {
       modal: '300',
     },
+    viewport: {
+      mobile: '500px',
+      tablet: '800px',
+    },
   },
 };
 
@@ -65,6 +69,8 @@ describe('integration: generate() — default (locked)', () => {
     expect(content).toContain('--inttest--spacing-md: 1rem;');
     expect(content).toContain('--inttest--font-weight-bold: 700;');
     expect(content).toContain('--inttest--z-modal: 300;');
+    expect(content).toContain('--inttest--viewport-mobile: 500px;');
+    expect(content).toContain('--inttest--viewport-tablet: 800px;');
   });
 
   it('writes theme.json — only object tokens appear in presets', () => {
@@ -79,6 +85,7 @@ describe('integration: generate() — default (locked)', () => {
     ]);
     expect(parsed.settings.custom.fontWeight).toEqual({ bold: '700' });
     expect(parsed.settings.custom).not.toHaveProperty('zIndex');
+    expect(parsed.settings.viewport).toEqual({ mobile: '500px', tablet: '800px' });
   });
 
   it('writes integrate.php with theme.json filter and token enqueue', () => {
@@ -90,6 +97,12 @@ describe('integration: generate() — default (locked)', () => {
     expect(content).toContain('tokens.css');
     expect(content).toContain('wp_enqueue_scripts');
     expect(content).toContain('enqueue_block_editor_assets');
+  });
+
+  it('integrate.php locks settings.viewport in locked mode', () => {
+    const content = readFileSync(resolve(TEST_DIR, 'out/wp/integrate.php'), 'utf-8');
+    expect(content).toContain("$library_data['settings']['viewport']");
+    expect(content).toContain("$enforced['settings']['viewport']");
   });
 });
 

@@ -90,6 +90,7 @@ add_action( 'enqueue_block_editor_assets', $c2b_enqueue_tokens );
  * theme layer so the theme's theme.json cannot override them:
  *
  *   - Layout sizes (contentSize, wideSize) are locked
+ *   - Viewport breakpoints (mobile, tablet) are locked
  *   - Custom color/gradient creation is disabled in the Site Editor
  *
  * When themeable: true (tokens.wp.css exists), none of these
@@ -126,6 +127,11 @@ if ( ! file_exists( __DIR__ . '/tokens.wp.css' ) ) {
 		// Lock layout sizes if defined
 		if ( isset( $library_data['settings']['layout'] ) ) {
 			$enforced['settings']['layout'] = $library_data['settings']['layout'];
+		}
+
+		// Lock viewport breakpoints if defined
+		if ( isset( $library_data['settings']['viewport'] ) ) {
+			$enforced['settings']['viewport'] = $library_data['settings']['viewport'];
 		}
 
 		return $theme_json->update_with( $enforced );

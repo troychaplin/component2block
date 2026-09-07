@@ -148,6 +148,58 @@ describe('generateThemeJson — layout tokens', () => {
   });
 });
 
+describe('generateThemeJson — viewport tokens', () => {
+  const viewportConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    themeDir: 'dist/wp',
+  bundleFonts: false,
+    themeable: false,
+    tokens: {
+      viewport: {
+        mobile: { value: '500px' },
+        tablet: { value: '800px' },
+      },
+    },
+  };
+
+  const output = generateThemeJson(viewportConfig);
+  const parsed = JSON.parse(output);
+
+  it('generates settings.viewport with the WordPress breakpoint keys', () => {
+    expect(parsed.settings.viewport).toEqual({
+      mobile: '500px',
+      tablet: '800px',
+    });
+  });
+
+  it('excludes cssOnly viewport tokens from theme.json', () => {
+    const cssOnlyOutput = generateThemeJson({
+      ...viewportConfig,
+      tokens: {
+        viewport: {
+          mobile: { value: '500px' },
+          tablet: { value: '800px', cssOnly: true },
+        },
+      },
+    });
+    expect(JSON.parse(cssOnlyOutput).settings.viewport).toEqual({ mobile: '500px' });
+  });
+
+  it('omits settings.viewport entirely when every token is cssOnly', () => {
+    const cssOnlyOutput = generateThemeJson({
+      ...viewportConfig,
+      tokens: {
+        viewport: {
+          mobile: { value: '500px', cssOnly: true },
+          tablet: { value: '800px', cssOnly: true },
+        },
+      },
+    });
+    expect(JSON.parse(cssOnlyOutput).settings.viewport).toBeUndefined();
+  });
+});
+
 describe('generateThemeJson — shadow presets', () => {
   const shadowConfig: C2bConfig = {
     prefix: 'test',

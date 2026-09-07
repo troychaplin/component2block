@@ -413,8 +413,21 @@ export function ensureFontStyle(def: BaseStyleElementDef): BaseStyleElementDef {
   return { ...def, fontStyle: 'normal' };
 }
 
+/**
+ * Keys WordPress recognizes under `settings.viewport`. Anything else is silently
+ * dropped by core, so c2b rejects it at config load instead of writing dead output.
+ */
+const VIEWPORT_KEYS = ['mobile', 'tablet'] as const;
+
 function validateTokenGroup(category: string, group: TokenGroup): void {
   for (const [key, entry] of Object.entries(group)) {
+    if (category === 'viewport' && !(VIEWPORT_KEYS as readonly string[]).includes(key)) {
+      throw new Error(
+        `Config error: Token "viewport.${key}" is not a supported viewport key.\n` +
+        `  WordPress only recognizes ${VIEWPORT_KEYS.map(k => `"${k}"`).join(' and ')} under settings.viewport.`,
+      );
+    }
+
     if (!entry.value && entry.value !== '0') {
       throw new Error(`Config error: Token "${category}.${key}" is missing a "value".`);
     }

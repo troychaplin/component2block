@@ -154,9 +154,11 @@ Categories without a WordPress preset instead appear under `settings.custom` in 
 | radius | ✓ | | ✓ |
 | transition | ✓ | | ✓ |
 | layout | ✓ | | |
+| viewport | ✓ | | |
 | zIndex | ✓ | | |
+| mediaQuery | | | |
 
-`layout` maps directly to `settings.layout` in theme.json rather than a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely.
+`layout` and `viewport` map directly to `settings.layout` / `settings.viewport` in theme.json rather than to a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely. `mediaQuery` is SCSS-only — it produces no CSS variables at all, and exists to be opted into `output.scssVars`.
 
 ## Token Categories
 
@@ -172,7 +174,15 @@ These appear in the WordPress Site Editor controls:
 | `fontFamily` | `--prefix--font-family-*` | `settings.typography.fontFamilies` | Font picker |
 | `fontSize` | `--prefix--font-size-*` | `settings.typography.fontSizes` | Size picker |
 | `shadow` | `--prefix--shadow-*` | `settings.shadow.presets` | Shadow picker |
-| `layout` | `--prefix--layout-*` | `settings.layout` | Layout controls |
+
+### Direct-Map Categories
+
+These map their keys straight onto a theme.json settings object rather than into a preset array:
+
+| Category | CSS Variable | WordPress Mapping | Keys |
+|----------|-------------|-------------------|------|
+| `layout` | `--prefix--layout-*` | `settings.layout` | `contentSize`, `wideSize` (plus your own, `cssOnly`) |
+| `viewport` | `--prefix--viewport-*` | `settings.viewport` | `mobile`, `tablet` only |
 
 ### Custom Categories
 
@@ -207,6 +217,9 @@ Every token becomes a CSS custom property with static values:
 
   /* Layout */
   --mylib--layout-content-size: 768px;
+
+  /* Viewport */
+  --mylib--viewport-mobile: 500px;
 }
 ```
 

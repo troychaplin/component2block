@@ -122,7 +122,7 @@ export interface CategoryDef {
     custom?: string;
     /** If true, category is excluded from theme.json entirely (e.g. zIndex) */
     exclude?: boolean;
-    /** If true, tokens map directly to a settings object (not a preset array). Used by layout. */
+    /** If true, tokens map directly to a settings object (not a preset array). Used by layout and viewport. */
     directMap?: boolean;
     /**
      * If true, category is SCSS-only — skipped by the CSS, WP CSS, and theme.json
@@ -141,7 +141,7 @@ export interface CategoryDef {
  */
 export declare const INPUT_CATEGORY_MAP: Record<string, TokenCategory>;
 export declare const CATEGORY_REGISTRY: Record<string, CategoryDef>;
-export type TokenCategory = 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize' | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex' | 'layout' | 'mediaQuery';
+export type TokenCategory = 'colorPalette' | 'colorGradient' | 'spacing' | 'fontFamily' | 'fontSize' | 'shadow' | 'fontWeight' | 'lineHeight' | 'radius' | 'transition' | 'zIndex' | 'layout' | 'viewport' | 'mediaQuery';
 /** All valid category names, derived from the registry */
 export declare const VALID_CATEGORIES: TokenCategory[];
 /** Categories sorted by their output order */

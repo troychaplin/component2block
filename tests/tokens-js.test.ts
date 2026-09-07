@@ -27,6 +27,10 @@ const config: C2bConfig = {
       contentSize: { value: '645px' },
       wideSize: { value: '1340px' },
     },
+    viewport: {
+      mobile: { value: '500px' },
+      tablet: { value: '800px' },
+    },
   },
 };
 
@@ -81,6 +85,11 @@ describe('generateTokensJs', () => {
   it('emits layout tokens with directMap key conversion', () => {
     expect(output).toContain("        contentSize: '645px'");
     expect(output).toContain("        wideSize: '1340px'");
+  });
+
+  it('emits viewport tokens', () => {
+    expect(output).toContain("        mobile: '500px'");
+    expect(output).toContain("        tablet: '800px'");
   });
 
   it('has no trailing comma on the last token in each category', () => {

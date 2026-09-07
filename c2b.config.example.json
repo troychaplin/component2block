@@ -18,6 +18,11 @@
             "narrowSize": { "value": "600px", "cssOnly": true }
         },
 
+        "viewport": {
+            "mobile": "500px",
+            "tablet": "800px"
+        },
+
         "mediaQuery": {
             "sm": "600px",
             "md": "784px",

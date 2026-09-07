@@ -33,11 +33,13 @@ All token categories are nested under the `tokens` key in the config. Categories
 | `fontSize` | `--prefix--font-size-*` | `settings.typography.fontSizes` | [Fonts](./fonts.md) |
 | `shadow` | `--prefix--shadow-*` | `settings.shadow.presets` | [Shadows](./shadow.md) |
 | `layout` | `--prefix--layout-*` | `settings.layout` (direct map) | [layout](#layout) |
+| `viewport` | `--prefix--viewport-*` | `settings.viewport` (direct map) | [viewport](#viewport) |
 | `fontWeight` | `--prefix--font-weight-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `lineHeight` | `--prefix--line-height-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `radius` | `--prefix--radius-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `transition` | `--prefix--transition-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `zIndex` | `--prefix--z-*` | Excluded from theme.json | [Custom-Only Categories](#custom-only-categories) |
+| `mediaQuery` | SCSS only (`$prefix-media-query-*`) | Excluded from theme.json | — |
 
 ### baseStyles
 
@@ -215,6 +217,43 @@ This produces:
 
 And CSS variables `--prefix--layout-content-size` / `--prefix--layout-wide-size` used by the layout constraint rules in SCSS. See [Base Styles](./base-styles.md) for the generated `.is-layout-constrained` rules.
 
+### viewport
+
+The `viewport` category maps directly to `settings.viewport` in theme.json, the same way `layout` does. It sets the breakpoint widths that WordPress 7.1+ resolves `@mobile` and `@tablet` responsive block styles against:
+
+```json
+{
+  "tokens": {
+    "viewport": {
+      "mobile": "500px",
+      "tablet": "800px"
+    }
+  }
+}
+```
+
+This produces:
+
+```json
+{
+  "settings": {
+    "viewport": {
+      "mobile": "500px",
+      "tablet": "800px"
+    }
+  }
+}
+```
+
+Plus CSS variables `--prefix--viewport-mobile` / `--prefix--viewport-tablet`.
+
+Two constraints come from WordPress itself:
+
+- **Only `mobile` and `tablet` are supported.** Core recognizes no other keys, so c2b rejects them at config load rather than writing output WordPress would silently discard.
+- **Values must be a non-negative number with a `px`, `em`, or `rem` unit.** CSS functions, percentages, unitless values, and other units are ignored by WordPress, which falls back to its own defaults (mobile `576px`, tablet `782px`). c2b passes values through as written, so this one is on you.
+
+Note that CSS custom properties cannot be used inside `@media` queries. If you need these breakpoints in your own media queries, either add `"scssVars": ["viewport"]` to `output` to get `$prefix-viewport-mobile` in the generated `_variables.scss`, or use the separate `mediaQuery` category.
+
 ---
 
 ## Locked vs Themeable Mode
@@ -255,6 +294,11 @@ See [Colors & Gradients](./colors.md#locked-vs-themeable-mode) for details on ho
     "layout": {
       "contentSize": "768px",
       "wideSize": "1280px"
+    },
+
+    "viewport": {
+      "mobile": "500px",
+      "tablet": "800px"
     },
 
     "color": {
