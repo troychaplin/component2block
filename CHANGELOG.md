@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-09-07
+
 ### Fixed
 
 - The generated tokens JS module (`<prefix>-tokens.js`) could be emitted as syntactically invalid JavaScript, breaking the consuming project's bundler at parse time. Two causes, both in `generateTokensJs`:
