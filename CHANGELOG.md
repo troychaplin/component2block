@@ -27,6 +27,35 @@ Prefix the change with one of these keywords:
 
   Only `mobile` and `tablet` are accepted — any other key throws at config load, since WordPress recognizes no others and silently discards them. In locked mode (`themeable: false`), `integrate.php` now re-applies `settings.viewport` alongside `settings.layout` so a consuming theme cannot override the breakpoints.
 
+- `output.scssVars: ["viewport"]` now also emits `mobile`, `tablet` and `tablet-down` SCSS mixins into `_{prefix}-variables.scss`, wrapping the breakpoints in the same media queries WordPress generates for `@mobile` / `@tablet` block styles. `@tablet` is a band (`mobile < width <= tablet`), not a max-width, so a hand-written `max-width: tablet` query would also match every mobile viewport and disagree with the block styles WordPress applies from the same values. The mixins encode that once, including core's single-breakpoint fallback (one breakpoint configured becomes a plain max-width query under its own name).
+
+  ```scss
+  @use '../styles/design-system-variables' as ds;
+
+  .card {
+    @include ds.tablet { padding: 1.5rem; }
+    @include ds.mobile { padding: 1rem; }
+  }
+  ```
+
+  Mixin names are unprefixed because the file is a Sass partial meant to be `@use`d, which namespaces them. `tablet-down` has no WordPress counterpart and is a convenience for "tablet and below".
+
+- `viewport.tablet` must now be larger than `viewport.mobile`, throwing at config load when it isn't. WordPress silently discards the tablet band in that case; c2b reports it instead. Values in different units are not compared, since that would need a root font size — core leaves mixed units to the theme author too.
+
+### Fixed
+
+- `tokens.js` and `tokens.d.ts` produced a syntax error for any `prefix` containing a hyphen — `export const design-systemTokens = { … }` is not a valid declaration, so the module could not be imported at all. This affected the `design-system` prefix shipped by `c2b init`. The prefix is now run through the same identifier conversion already applied to token keys, giving `designSystemTokens`. Prefixes without hyphens are unchanged.
+
+### Removed
+
+- **Breaking:** the `mediaQuery` token category. `viewport` supersedes it for the `mobile` and `tablet` breakpoints — and unlike `mediaQuery`, those values also reach WordPress through `settings.viewport` rather than being SCSS-only. Configs that still declare a `mediaQuery` token group, or list it in `output.scssVars`, now throw at config load with a message pointing at the replacement.
+
+  To migrate: move `mobile`/`tablet`-equivalent breakpoints into `tokens.viewport` and add `"scssVars": ["viewport"]` to keep the `$prefix-viewport-*` variables available in `@media` queries. Declare any additional breakpoints directly in your own SCSS — c2b no longer has a category for values it never emits anywhere but `_variables.scss`.
+
+- The `CategoryDef.scssOnly` registry flag, along with its guards in the CSS, WP CSS, JS, and theme.json generators. `mediaQuery` was its only user. Removing it changes output for no remaining category.
+
+- The scaffolded `c2b.config.example.json` no longer includes a `mediaQuery` block, and its `output.scssVars` now reads `["viewport", "spacing"]`.
+
 ## [0.6.0] - 2026-08-02
 
 ### Changed

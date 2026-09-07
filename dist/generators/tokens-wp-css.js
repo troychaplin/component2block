@@ -12,8 +12,6 @@ export function generateTokensWpCss(config) {
         if (!group)
             continue;
         const def = CATEGORY_REGISTRY[category];
-        if (def.scssOnly)
-            continue;
         if (!firstCategory) {
             lines.push('');
         }

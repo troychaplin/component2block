@@ -156,9 +156,8 @@ Categories without a WordPress preset instead appear under `settings.custom` in 
 | layout | ✓ | | |
 | viewport | ✓ | | |
 | zIndex | ✓ | | |
-| mediaQuery | | | |
 
-`layout` and `viewport` map directly to `settings.layout` / `settings.viewport` in theme.json rather than to a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely. `mediaQuery` is SCSS-only — it produces no CSS variables at all, and exists to be opted into `output.scssVars`.
+`layout` and `viewport` map directly to `settings.layout` / `settings.viewport` in theme.json rather than to a preset or custom value. `zIndex` is CSS-only and excluded from theme.json entirely.
 
 ## Token Categories
 
@@ -266,6 +265,23 @@ Reference the generated CSS variables in component SCSS:
 ```
 
 The variable pattern is always `--{prefix}--{css-segment}-{key}`.
+
+### Media queries
+
+CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and `mobile` / `tablet` / `tablet-down` mixins that match the queries WordPress generates for `@mobile` / `@tablet` block styles:
+
+```scss
+@use '../styles/mylib-variables' as ds;
+
+.mylib-card {
+  padding: var(--mylib--spacing-lg);
+
+  @include ds.tablet { padding: var(--mylib--spacing-md); }
+  @include ds.mobile { padding: var(--mylib--spacing-sm); }
+}
+```
+
+`tablet` is a band (`mobile < width <= tablet`), not a max-width — see [viewport](../config/README.md#viewport) for why that matters and what the mixins handle for you. `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic.
 
 ## Updating Tokens
 

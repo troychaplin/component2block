@@ -33,7 +33,7 @@ Your components always reference `--prefix--*` CSS variables. In Storybook, thos
 ## Key Concepts
 
 - **Single source of truth** — One config drives all outputs. Change a color once, it updates everywhere.
-- **14 token categories** — Colors, gradients, spacing, font families, font sizes, shadows, layout, viewport breakpoints, font weights, line heights, border radii, transitions, z-index, and media queries.
+- **13 token categories** — Colors, gradients, spacing, font families, font sizes, shadows, layout, viewport breakpoints, font weights, line heights, border radii, transitions, and z-index.
 - **Locked vs themeable** — By default, tokens are hardcoded (locked). Set `output.themeable: true` to let WordPress themes override them.
 - **Zero-specificity base styles** — Generated SCSS uses `:where()` selectors so component BEM classes always win over base typography.
 - **Storybook preset** — Auto-injects all generated styles into Storybook. No manual imports.

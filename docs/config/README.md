@@ -39,7 +39,6 @@ All token categories are nested under the `tokens` key in the config. Categories
 | `radius` | `--prefix--radius-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `transition` | `--prefix--transition-*` | `settings.custom` (CSS only) | [Custom-Only Categories](#custom-only-categories) |
 | `zIndex` | `--prefix--z-*` | Excluded from theme.json | [Custom-Only Categories](#custom-only-categories) |
-| `mediaQuery` | SCSS only (`$prefix-media-query-*`) | Excluded from theme.json | — |
 
 ### baseStyles
 
@@ -247,12 +246,58 @@ This produces:
 
 Plus CSS variables `--prefix--viewport-mobile` / `--prefix--viewport-tablet`.
 
-Two constraints come from WordPress itself:
+Three constraints come from WordPress itself:
 
 - **Only `mobile` and `tablet` are supported.** Core recognizes no other keys, so c2b rejects them at config load rather than writing output WordPress would silently discard.
-- **Values must be a non-negative number with a `px`, `em`, or `rem` unit.** CSS functions, percentages, unitless values, and other units are ignored by WordPress, which falls back to its own defaults (mobile `576px`, tablet `782px`). c2b passes values through as written, so this one is on you.
+- **Values must be a non-negative number with a `px`, `em`, or `rem` unit.** CSS functions, percentages, unitless values, and other units are ignored by WordPress, which falls back to its own defaults. c2b passes values through as written, so this one is on you.
+- **`tablet` must be larger than `mobile`.** WordPress builds the tablet breakpoint as the *band* between the two, so a tablet that isn't larger produces a query matching nothing. c2b throws at config load; values in different units aren't compared, since that needs a root font size.
 
-Note that CSS custom properties cannot be used inside `@media` queries. If you need these breakpoints in your own media queries, either add `"scssVars": ["viewport"]` to `output` to get `$prefix-viewport-mobile` in the generated `_variables.scss`, or use the separate `mediaQuery` category.
+#### Using the breakpoints in your own media queries
+
+CSS custom properties cannot be used inside a `@media` condition, so `--prefix--viewport-*` is for JS reads and documentation only. Add `"scssVars": ["viewport"]` to `output` and c2b emits both the variables *and* ready-made mixins into `_{prefix}-variables.scss`:
+
+```scss
+// Viewport
+$design-system-viewport-mobile: 500px;
+$design-system-viewport-tablet: 800px;
+
+// Viewport media queries
+@mixin mobile {
+  @media (width <= #{$design-system-viewport-mobile}) { @content; }
+}
+
+@mixin tablet {
+  @media (#{$design-system-viewport-mobile} < width <= #{$design-system-viewport-tablet}) { @content; }
+}
+
+@mixin tablet-down {
+  @media (width <= #{$design-system-viewport-tablet}) { @content; }
+}
+```
+
+Use them from your component SCSS. The file is a Sass partial, so `@use` it — that namespaces the mixins, which is why their names aren't prefixed:
+
+```scss
+@use '../styles/design-system-variables' as ds;
+
+.card {
+  padding: 2rem;
+
+  @include ds.tablet { padding: 1.5rem; }
+  @include ds.mobile { padding: 1rem; }
+}
+```
+
+**Why the mixins exist:** `@tablet` is a band, not a max-width. WordPress generates `(500px < width <= 800px)` for it. Writing `@media (max-width: 800px)` by hand would also match every mobile viewport, so your component styles would disagree with the block styles WordPress applies from the same values. The mixins encode that once. Two edge cases they also handle: define only one breakpoint and it becomes a plain max-width query keeping its own name, matching core's fallback; `tablet-down` is the one mixin with no WordPress counterpart, included because "tablet and below" is the common need.
+
+**JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
+
+```js
+import tokens from './design-system-tokens.js';
+matchMedia(`(width <= ${tokens.viewport.mobile})`);
+```
+
+One caveat: a `cssOnly: true` viewport token still reaches `_variables.scss` and the mixins (consistent with every other category there) but is withheld from theme.json — so the mixin and WordPress will disagree on that breakpoint.
 
 ---
 

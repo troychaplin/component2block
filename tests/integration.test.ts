@@ -359,7 +359,7 @@ describe('integration: generate() — themeable', () => {
   });
 });
 
-describe('integration: generate() — scssVars + mediaQuery', () => {
+describe('integration: generate() — scssVars', () => {
   const SV_TEST_DIR = resolve(import.meta.dirname ?? '.', '__test-output-sv__');
   const SV_CONFIG_PATH = resolve(SV_TEST_DIR, 'c2b.config.json');
 
@@ -368,7 +368,7 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
     output: {
       srcDir: 'src',
       outputDir: 'out/wp',
-      scssVars: ['mediaQuery', 'spacing'],
+      scssVars: ['viewport', 'spacing'],
     },
     tokens: {
       color: {
@@ -378,10 +378,9 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
         sm: { value: '0.5rem', slug: '30', name: 'Small' },
         md: { value: '1rem', slug: '40', name: 'Medium' },
       },
-      mediaQuery: {
-        sm: '600px',
-        md: '784px',
-        lg: '1024px',
+      viewport: {
+        mobile: '500px',
+        tablet: '800px',
       },
     },
   };
@@ -401,24 +400,13 @@ describe('integration: generate() — scssVars + mediaQuery', () => {
     expect(paths).toContain('src/_sv-variables.scss');
 
     const content = readFileSync(resolve(SV_TEST_DIR, 'src/_sv-variables.scss'), 'utf-8');
-    expect(content).toContain('$sv-media-query-sm: 600px;');
-    expect(content).toContain('$sv-media-query-md: 784px;');
-    expect(content).toContain('$sv-media-query-lg: 1024px;');
+    expect(content).toContain('$sv-viewport-mobile: 500px;');
+    expect(content).toContain('$sv-viewport-tablet: 800px;');
+    expect(content).toContain('@mixin tablet {');
+    expect(content).toContain('@media (#{$sv-viewport-mobile} < width <= #{$sv-viewport-tablet})');
     expect(content).toContain('$sv-spacing-sm: 0.5rem;');
     expect(content).toContain('$sv-spacing-md: 1rem;');
     expect(content).not.toContain('$sv-color-');
-  });
-
-  it('keeps mediaQuery tokens out of tokens.css, tokens.wp.css, and theme.json', () => {
-    generate(SV_CONFIG_PATH, SV_TEST_DIR);
-    const tokensCss = readFileSync(resolve(SV_TEST_DIR, 'src/sv-tokens.css'), 'utf-8');
-    expect(tokensCss).not.toContain('media-query');
-
-    const themeJson = JSON.parse(
-      readFileSync(resolve(SV_TEST_DIR, 'out/wp/theme-sv.json'), 'utf-8'),
-    );
-    expect(JSON.stringify(themeJson)).not.toContain('media-query');
-    expect(JSON.stringify(themeJson)).not.toContain('mediaQuery');
   });
 
   it('throws on unknown category in scssVars', () => {

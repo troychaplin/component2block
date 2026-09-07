@@ -616,6 +616,63 @@ describe('validateConfig — layout camelCase keys', () => {
   });
 });
 
+describe('validateConfig — viewport breakpoint ordering', () => {
+  const cfg = (mobile: string, tablet: string) => ({
+    prefix: 'test',
+    tokens: { viewport: { mobile, tablet } },
+  });
+
+  it('accepts tablet larger than mobile', () => {
+    const result = validateConfig(cfg('500px', '800px'));
+    expect(result.tokens.viewport!.tablet.value).toBe('800px');
+  });
+
+  it('throws when tablet is smaller than mobile in the same unit', () => {
+    expect(() => validateConfig(cfg('800px', '500px'))).toThrow(
+      /viewport\.tablet \(500px\) must be larger than viewport\.mobile \(800px\)/,
+    );
+  });
+
+  it('throws when tablet equals mobile', () => {
+    expect(() => validateConfig(cfg('600px', '600px'))).toThrow(/must be larger than/);
+  });
+
+  it('explains that WordPress builds tablet as a band', () => {
+    expect(() => validateConfig(cfg('800px', '500px'))).toThrow(/band between them/);
+  });
+
+  it('does not compare across units, matching what core leaves to the author', () => {
+    expect(() => validateConfig(cfg('30rem', '500px'))).not.toThrow();
+  });
+
+  it('skips the check when only one breakpoint is defined', () => {
+    expect(() =>
+      validateConfig({ prefix: 'test', tokens: { viewport: { mobile: '500px' } } }),
+    ).not.toThrow();
+  });
+});
+
+describe('validateConfig — removed mediaQuery category', () => {
+  it('throws with a migration hint when tokens still declare mediaQuery', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: { mediaQuery: { sm: '600px' } },
+      }),
+    ).toThrow(/Unknown token category "mediaQuery"[\s\S]*was removed[\s\S]*viewport/);
+  });
+
+  it('throws with a migration hint when scssVars still lists mediaQuery', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        output: { scssVars: ['mediaQuery'] },
+        tokens: { viewport: { mobile: '500px' } },
+      }),
+    ).toThrow(/output\.scssVars contains unknown category "mediaQuery"[\s\S]*was removed[\s\S]*viewport/);
+  });
+});
+
 describe('validateConfig — viewport keys', () => {
   it('accepts the mobile and tablet keys', () => {
     const result = validateConfig({

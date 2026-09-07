@@ -66,7 +66,7 @@ Config error: baseStyles.body.color = "text-black" is not a valid token or CSS k
 
 ### Category Registry
 
-`CATEGORY_REGISTRY` in `src/types.ts` is the central registry. Each category defines: `cssSegment`, `label`, `order`, `themeJson` path, `wpPreset` prefix, `custom` key, `exclude` flag, `directMap` flag, and `scssOnly` flag. Adding a new category to this registry is nearly all that's needed to support it across all generators — the one non-derived edit is the hand-maintained `TokenCategory` union just below the registry.
+`CATEGORY_REGISTRY` in `src/types.ts` is the central registry. Each category defines: `cssSegment`, `label`, `order`, `themeJson` path, `wpPreset` prefix, `custom` key, `exclude` flag, and `directMap` flag. Adding a new category to this registry is nearly all that's needed to support it across all generators — the one non-derived edit is the hand-maintained `TokenCategory` union just below the registry.
 
 `layout` and `viewport` are the two `directMap` categories: their keys map straight onto `settings.layout` / `settings.viewport` in theme.json rather than into a preset array. `viewport` is the only category with restricted keys — `validateTokenGroup()` in `src/config.ts` rejects anything but `mobile` and `tablet`, because WordPress recognizes no others and silently discards them.
 

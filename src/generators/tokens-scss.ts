@@ -1,4 +1,4 @@
-import type { C2bConfig } from '../types.js';
+import type { C2bConfig, TokenGroup } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
 
@@ -35,7 +35,69 @@ export function generateTokensScss(config: C2bConfig): string | null {
     }
   }
 
+  if (selected.has('viewport')) {
+    lines.push(...buildViewportMixins(config.prefix, config.tokens.viewport));
+  }
+
   lines.push('');
 
   return lines.join('\n');
+}
+
+/**
+ * Build the `@mixin` blocks that wrap the viewport breakpoints in the same media
+ * queries WordPress generates for `@mobile` / `@tablet` block styles.
+ *
+ * `@tablet` is a band (`mobile < width <= tablet`), not a max-width — written by
+ * hand as `max-width: tablet` it would also match every mobile viewport, so these
+ * mixins exist so consumers don't have to remember that. When only one breakpoint
+ * is configured, core falls back to a single max-width query under that
+ * breakpoint's own name, which is mirrored here.
+ *
+ * Mixin names are deliberately unprefixed: the file is meant to be `@use`d, which
+ * namespaces them (`@include ds.mobile`).
+ *
+ * Returns an empty array when no viewport tokens are defined.
+ */
+export function buildViewportMixins(prefix: string, group: TokenGroup | undefined): string[] {
+  if (!group) return [];
+
+  const mobile = group.mobile ? `$${prefix}-viewport-mobile` : null;
+  const tablet = group.tablet ? `$${prefix}-viewport-tablet` : null;
+  if (!mobile && !tablet) return [];
+
+  const lines: string[] = [
+    '',
+    '// Viewport media queries',
+    '// Matches the @mobile / @tablet breakpoints WordPress applies to block styles.',
+  ];
+
+  const mixin = (name: string, condition: string) => {
+    lines.push('');
+    lines.push(`@mixin ${name} {`);
+    lines.push(`  @media ${condition} {`);
+    lines.push('    @content;');
+    lines.push('  }');
+    lines.push('}');
+  };
+
+  if (mobile) {
+    mixin('mobile', `(width <= #{${mobile}})`);
+  }
+
+  if (tablet) {
+    // With both defined, tablet is the band between them. Alone, it keeps its
+    // own name as a plain max-width query — exactly what core does.
+    mixin('tablet', mobile
+      ? `(#{${mobile}} < width <= #{${tablet}})`
+      : `(width <= #{${tablet}})`);
+  }
+
+  if (mobile && tablet) {
+    // No WordPress counterpart. "Tablet and below" is the common need, and
+    // omitting it just pushes people back to hand-written queries.
+    mixin('tablet-down', `(width <= #{${tablet}})`);
+  }
+
+  return lines;
 }
