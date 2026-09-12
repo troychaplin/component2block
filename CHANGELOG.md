@@ -33,6 +33,21 @@ Prefix the change with one of these keywords:
 
 - `baseStyles.spacing.padding` accepts `x` (right and left) and `y` (top and bottom) alongside the four sides, and a side set on its own wins over its axis. Without an explicit `x`/`y`, an axis takes the value both of its sides share, so existing four-side configs get the axis tokens with no change. theme.json still receives the four sides.
 
+- Generated token keys, so component libraries can pull token groups into their props, story options and utility classes instead of keeping the lists by hand. No config needed:
+  - `<prefix>-tokens.js` exports `<prefix>TokenKeys`: every category's keys exactly as they appear in the CSS variable names (kebab-case for `layout` and `viewport`), as identity maps that spread straight into a prop-class map. `<prefix>-tokens.d.ts` types each map key by key, so a removed token fails type-checking wherever its key is still used.
+
+    ```ts
+    import { mylibTokenKeys } from './mylib-tokens';
+
+    export const radiusClasses = {
+        none: 'none',
+        ...mylibTokenKeys.radius,
+    };
+    export type RadiusKey = keyof typeof radiusClasses;
+    ```
+
+  - `_<prefix>-variables.scss` follows each `scssVars` category with a map of the same tokens, e.g. `$mylib-spacing: ('x-small': $mylib-spacing-x-small, …)`, for `@each $step in map.keys(…)` loops.
+
 ### Changed
 
 - `layout.css` no longer declares the root padding and block-gap custom properties in a `body { }` block. They keep their names and now live on `:root` in `tokens.css`, which `layout.css` already depended on for spacing values. The `.has-global-padding` rules are emitted only when horizontal root padding is configured.

@@ -204,9 +204,19 @@ describe('generateTokensScss — snapshot', () => {
         '$rds-spacing-sm: 0.5rem;',
         '$rds-spacing-md: 1rem;',
         '',
+        '$rds-spacing: (',
+        "  'sm': $rds-spacing-sm,",
+        "  'md': $rds-spacing-md,",
+        ');',
+        '',
         '// Viewport',
         '$rds-viewport-mobile: 500px;',
         '$rds-viewport-tablet: 800px;',
+        '',
+        '$rds-viewport: (',
+        "  'mobile': $rds-viewport-mobile,",
+        "  'tablet': $rds-viewport-tablet,",
+        ');',
         '',
         '// Viewport media queries',
         '// Built from the settings.viewport breakpoints WordPress uses for responsive',
@@ -309,5 +319,62 @@ describe('generateTokensScss — viewport media-query mixins', () => {
     })!;
     expect(output).not.toContain('@mixin');
     expect(output).not.toContain('Viewport media queries');
+  });
+});
+
+describe('generateTokensScss — token maps', () => {
+  it("follows each category's variables with a map of the same tokens", () => {
+    const output = generateTokensScss({
+      prefix: 'test',
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      bundleFonts: false,
+      scssVars: ['spacing'],
+      tokens: {
+        spacing: {
+          '3-x-small': { value: '0.175rem' },
+          md: { value: '1rem' },
+        },
+      },
+    })!;
+    expect(output).toContain(
+      [
+        '$test-spacing-md: 1rem;',
+        '',
+        '$test-spacing: (',
+        "  '3-x-small': $test-spacing-3-x-small,",
+        "  'md': $test-spacing-md,",
+        ');',
+      ].join('\n'),
+    );
+  });
+
+  it('uses kebab-case keys for the layout map', () => {
+    const output = generateTokensScss({
+      prefix: 'test',
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      bundleFonts: false,
+      scssVars: ['layout'],
+      tokens: {
+        layout: { contentSize: { value: '645px' } },
+      },
+    })!;
+    expect(output).toContain("  'content-size': $test-layout-content-size,");
+  });
+
+  it('emits no map for categories left out of scssVars', () => {
+    const output = generateTokensScss({
+      prefix: 'test',
+      srcDir: 'src/styles',
+      themeDir: 'dist/wp',
+      bundleFonts: false,
+      scssVars: ['spacing'],
+      tokens: {
+        colorPalette: { primary: { value: '#0073aa' } },
+        spacing: { md: { value: '1rem' } },
+      },
+    })!;
+    expect(output).not.toContain('$test-color');
   });
 });

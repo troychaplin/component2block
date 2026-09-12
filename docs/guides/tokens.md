@@ -266,6 +266,48 @@ Reference the generated CSS variables in component SCSS:
 
 The variable pattern is always `--{prefix}--{css-segment}-{key}`.
 
+### Token keys
+
+`tokens.js` also exports every category's keys, exactly as they appear in the CSS variable names. Each category is an identity map, so you can pull the groups you want into your component library's own prop-class maps:
+
+```js
+export const mylibTokenKeys = {
+    spacing: { 'x-small': 'x-small', small: 'small', medium: 'medium', large: 'large' },
+    radius: { sm: 'sm', md: 'md', lg: 'lg', full: 'full' },
+    layout: { 'content-size': 'content-size', 'wide-size': 'wide-size' },
+};
+```
+
+Spread a group into a map and add any options that aren't tokens, like `none`, alongside it. `tokens.d.ts` types each map key by key, so `keyof typeof` gives the full union:
+
+```tsx
+import { mylibTokenKeys } from '../styles/mylib-tokens';
+
+export const radiusClasses = {
+    none: 'none',
+    ...mylibTokenKeys.radius,
+};
+
+export type RadiusKey = keyof typeof radiusClasses; // 'none' | 'sm' | 'md' | 'lg' | 'full'
+```
+
+Storybook options can come from the same map with `Object.keys(radiusClasses)`. Remove a token from the config and every place that still uses its key fails type-checking, instead of compiling to a class with no rule behind it.
+
+On the Sass side, each category listed in `scssVars` also gets a map of the same tokens in `_{prefix}-variables.scss`. The keys are quoted, so digit-leading ones like `2-x-small` stay strings:
+
+```scss
+@use 'sass:map';
+@use '../styles/mylib-variables' as ds;
+
+@each $step in map.keys(ds.$mylib-spacing) {
+  .mylib-stack--gap-#{$step} {
+    gap: var(--mylib--spacing-#{$step});
+  }
+}
+```
+
+Keys for `layout` and `viewport` are kebab-case (`content-size`), matching the CSS variables rather than the camelCase config keys. The root spacing tokens below aren't a category, so they have no key list.
+
 ### Root spacing tokens
 
 `baseStyles.spacing` adds a group of tokens that isn't a token category: the root padding and block gap. `tokens.css` and `tokens.wp.css` declare them on `:root`, and `tokens.js` mirrors them as `root`.
@@ -306,7 +348,7 @@ CSS custom properties don't work inside a `@media` condition. Opt into SCSS vari
 }
 ```
 
-Each breakpoint gives a complementary pair (`<=` below, `>` above), so nothing overlaps at the boundary — see [viewport](../config/README.md#viewport). `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic.
+Each breakpoint gives a complementary pair (`<=` below, `>` above), so nothing overlaps at the boundary — see [viewport](../config/README.md#viewport). `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic, plus a `$mylib-spacing` map to loop over (see [Token keys](#token-keys)).
 
 ## Updating Tokens
 
