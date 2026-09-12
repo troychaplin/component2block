@@ -5,8 +5,9 @@ import { buildFluidClamp } from './fluid.js';
 /**
  * Generate `_variables.scss` content. Only emits categories listed in
  * `config.scssVars`, iterated in registry order so the file stays grouped
- * consistently. Returns `null` when `scssVars` is empty — the caller should
- * skip writing the file.
+ * consistently. Each category's variables are followed by a map of the same
+ * tokens, so Sass can loop over the keys. Returns `null` when `scssVars` is
+ * empty — the caller should skip writing the file.
  */
 export function generateTokensScss(config: C2bConfig): string | null {
   const scssVars = config.scssVars ?? [];
@@ -27,12 +28,21 @@ export function generateTokensScss(config: C2bConfig): string | null {
     lines.push('');
     lines.push(`// ${def.label}`);
 
+    const mapEntries: string[] = [];
     for (const [key, entry] of Object.entries(group)) {
       const cssKey = def.directMap ? camelToKebab(key) : key;
       const varName = `$${config.prefix}-${def.cssSegment}-${cssKey}`;
       const clampValue = entry.fluid ? buildFluidClamp(entry, config.fluid ?? DEFAULT_FLUID) : null;
       lines.push(`${varName}: ${clampValue ?? entry.value};`);
+      mapEntries.push(`  '${cssKey}': ${varName},`);
     }
+
+    // Keys are quoted so digit-leading ones like `3-x-small` stay strings
+    // instead of parsing as a number with a unit.
+    lines.push('');
+    lines.push(`$${config.prefix}-${def.cssSegment}: (`);
+    lines.push(...mapEntries);
+    lines.push(');');
   }
 
   if (selected.has('viewport')) {

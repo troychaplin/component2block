@@ -95,6 +95,10 @@ User-facing category names map to internal names via `INPUT_CATEGORY_MAP` (e.g. 
 
 The exclusion logic for `settings.custom.*` lives in `theme-json.ts` (one `if (entry.cssOnly) continue;` guard in the custom loop). The fallback for baseStyles references lives in `resolveBaseStyleValueForThemeJson`, which only emits a preset var when `ref.wpPreset && ref.slug` are both truthy.
 
+### Token Keys
+
+`tokens.js` also exports `{prefix}TokenKeys` — each category's keys exactly as they appear in CSS variable names (kebab-case for `directMap` categories), as identity maps (`{ sm: 'sm' }`) typed key by key in `tokens.d.ts`, so a component library can spread a group into its own prop-class map — and `_variables.scss` follows each `scssVars` category with a `$prefix-{segment}` map of the same tokens. Both are derived from the token table with no config option. The derived `root` spacing group isn't a category and has no key map.
+
 ### Base Styles
 
 `baseStyles` in config generates two outputs from the same data:

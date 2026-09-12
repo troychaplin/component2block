@@ -285,7 +285,7 @@ Each breakpoint produces a **complementary pair** — `below-*` uses `<=`, `abov
 
 These mixins are SCSS-only. WordPress never sees them — it reads the `settings.viewport` values from theme.json and builds its own queries for `@mobile` / `@tablet` block styles. The mixins exist so your component CSS can change at the same widths the editor does.
 
-**JavaScript** consumers get the raw values**JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
+**JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
 
 ```js
 import tokens from './design-system-tokens.js';

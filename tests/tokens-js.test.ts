@@ -243,15 +243,23 @@ describe('generateTokensJs — hyphenated prefixes produce valid identifiers', (
   });
 });
 
-// Compiles the generated module and hands back the token object, so a test can
+// Compiles the generated module and hands back one of its exports, so a test can
 // assert on real values instead of on substrings. Any syntax error in an emitted
 // key or value throws here — which is the point: every assertion that reads a
-// value through this helper is also a guard that the output actually parses.
-function evalTokens(output: string): Record<string, Record<string, string>> {
+// value through these helpers is also a guard that the output actually parses.
+function evalExport(output: string, suffix: 'Tokens' | 'TokenKeys'): unknown {
   const body = output
-    .replace(/^export const (\w+) = \{/m, 'const $1 = {')
-    .replace(/^export default (\w+);$/m, 'return $1;');
-  return new Function(body)() as Record<string, Record<string, string>>;
+    .replace(/^export const /gm, 'const ')
+    .replace(/^export default (\w+)Tokens;$/m, `return $1${suffix};`);
+  return new Function(body)();
+}
+
+function evalTokens(output: string): Record<string, Record<string, string>> {
+  return evalExport(output, 'Tokens') as Record<string, Record<string, string>>;
+}
+
+function evalTokenKeys(output: string): Record<string, Record<string, string>> {
+  return evalExport(output, 'TokenKeys') as Record<string, Record<string, string>>;
 }
 
 describe('generateTokensJs — emitted output is valid JavaScript', () => {
@@ -354,5 +362,94 @@ describe('generateTokensJs — root spacing tokens', () => {
 
   it('omits the root group without baseStyles.spacing', () => {
     expect(evalTokens(generateTokensJs({ ...rootConfig, baseStyles: undefined })).root).toBeUndefined();
+  });
+});
+
+describe('generateTokensJs — token keys', () => {
+  const keysConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      colorPalette: {
+        primary: { value: '#0073aa', slug: 'primary', name: 'Primary' },
+        'primary-hover': { value: '#005a87', cssOnly: true },
+      },
+      spacing: {
+        '2-x-small': { value: '0.25rem' },
+        'x-small': { value: '0.5rem' },
+      },
+      zIndex: { '100': { value: '100' } },
+      layout: { contentSize: { value: '768px' }, wideSize: { value: '1200px' } },
+    },
+    baseStyles: { spacing: { padding: { x: 'x-small' } } },
+  };
+
+  it('maps each category\'s keys to themselves, as they appear in the CSS variable names, without the root group', () => {
+    expect(evalTokenKeys(generateTokensJs(keysConfig))).toEqual({
+      color: { primary: 'primary', 'primary-hover': 'primary-hover' },
+      spacing: { '2-x-small': '2-x-small', 'x-small': 'x-small' },
+      z: { '100': '100' },
+      layout: { 'content-size': 'content-size', 'wide-size': 'wide-size' },
+    });
+  });
+
+  it('emits one line per category, quoting keys that are not identifiers', () => {
+    expect(generateTokensJs(keysConfig)).toContain(
+      "    spacing: { '2-x-small': '2-x-small', 'x-small': 'x-small' },",
+    );
+  });
+
+  it('spreads straight into a prop-class map', () => {
+    const gapClasses = { none: 'none', ...evalTokenKeys(generateTokensJs(keysConfig)).spacing };
+    expect(Object.keys(gapClasses)).toEqual(['none', '2-x-small', 'x-small']);
+  });
+
+  it('emits categories in registry order', () => {
+    expect(Object.keys(evalTokenKeys(generateTokensJs(keysConfig)))).toEqual(['color', 'spacing', 'z', 'layout']);
+  });
+
+  it('leaves the camelCased tokens object as it was', () => {
+    expect(evalTokens(generateTokensJs(keysConfig)).spacing).toEqual({ x2Small: '0.25rem', xSmall: '0.5rem' });
+  });
+
+  it('names the export after a hyphenated prefix', () => {
+    const output = generateTokensJs({ ...keysConfig, prefix: 'design-system' });
+    expect(output).toContain('export const designSystemTokenKeys = {');
+    expect(evalTokenKeys(output).spacing).toEqual({ '2-x-small': '2-x-small', 'x-small': 'x-small' });
+  });
+
+  it('emits a valid empty object when no categories are defined', () => {
+    expect(evalTokenKeys(generateTokensJs({ ...keysConfig, tokens: {}, baseStyles: undefined }))).toEqual({});
+  });
+});
+
+describe('generateTokensDts — token keys', () => {
+  const dts = generateTokensDts({
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      spacing: { '2-x-small': { value: '0.25rem' }, 'x-small': { value: '0.5rem' } },
+      layout: { contentSize: { value: '768px' } },
+    },
+  });
+
+  it('types each category map key by key', () => {
+    expect(dts).toContain(
+      [
+        'export declare const testTokenKeys: {',
+        "    readonly spacing: { readonly '2-x-small': '2-x-small'; readonly 'x-small': 'x-small' };",
+        "    readonly layout: { readonly 'content-size': 'content-size' };",
+        '};',
+      ].join('\n'),
+    );
+  });
+
+  it('keeps the tokens declaration loosely typed', () => {
+    expect(dts).toContain('export declare const testTokens: Record<string, Record<string, string>>;');
+    expect(dts).toContain('export default testTokens;');
   });
 });
