@@ -1,6 +1,7 @@
 import type { C2bConfig } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab, kebabToCamel } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
+import { buildRootTokens } from './root-tokens.js';
 
 const VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
@@ -69,6 +70,15 @@ export function generateTokensJs(config: C2bConfig): string {
     if (entries.length > 0) {
       populated.push({ jsKey, entries });
     }
+  }
+
+  // Root spacing tokens aren't a category — they're derived from baseStyles.spacing.
+  const rootTokens = buildRootTokens(config);
+  if (rootTokens.length > 0) {
+    populated.push({
+      jsKey: 'root',
+      entries: rootTokens.map(({ key, value }) => ({ jsTokenKey: toJsIdentifier(key), value })),
+    });
   }
 
   populated.forEach(({ jsKey, entries }, catIdx) => {

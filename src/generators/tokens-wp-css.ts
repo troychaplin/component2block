@@ -1,6 +1,7 @@
 import type { C2bConfig } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
+import { appendRootTokens } from './root-tokens.js';
 
 export function generateTokensWpCss(config: C2bConfig): string {
   const lines: string[] = [
@@ -37,6 +38,10 @@ export function generateTokensWpCss(config: C2bConfig): string {
       }
     }
   }
+
+  // Same values as tokens.css: they alias spacing tokens, which already map to
+  // --wp--preset--spacing--* above.
+  appendRootTokens(lines, config, !firstCategory);
 
   lines.push('}');
   lines.push('');

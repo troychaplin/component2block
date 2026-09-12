@@ -1,6 +1,6 @@
 import type { C2bConfig, TokenCategory, TokenGroup, BaseStylesConfig, BaseStyleElementDef } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, ELEMENT_REGISTRY, TYPOGRAPHY_PROPERTIES } from '../types.js';
-import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js';
+import { resolveBaseStyleValueForThemeJson, ensureFontStyle, resolveRootPadding } from '../config.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AnySettings = Record<string, any>;
@@ -212,8 +212,12 @@ function buildStylesBlock(
     }
 
     if (baseStyles.spacing.padding) {
+      // WordPress only takes sides: x/y expand to them, and an explicit side
+      // wins over its axis.
+      const sides = resolveRootPadding(baseStyles.spacing.padding);
       const padding: Record<string, string> = {};
-      for (const [side, value] of Object.entries(baseStyles.spacing.padding)) {
+      for (const side of ['top', 'right', 'bottom', 'left'] as const) {
+        const value = sides[side];
         if (value !== undefined) {
           padding[side] = resolveBaseStyleValueForThemeJson(value, 'padding', tokens);
         }

@@ -1,6 +1,7 @@
 import type { C2bConfig } from '../types.js';
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, camelToKebab } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
+import { appendRootTokens } from './root-tokens.js';
 
 export function generateTokensCss(config: C2bConfig): string {
   const lines: string[] = [
@@ -32,6 +33,8 @@ export function generateTokensCss(config: C2bConfig): string {
       lines.push(`  ${varName}: ${clampValue ?? entry.value};`);
     }
   }
+
+  appendRootTokens(lines, config, !firstCategory);
 
   lines.push('}');
   lines.push('');

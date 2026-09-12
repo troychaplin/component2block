@@ -206,7 +206,7 @@ The block gap value comes from `baseStyles.spacing.blockGap` in your config:
 
 ## How Root Padding Works
 
-The `has-global-padding` class applies the root padding values:
+The `has-global-padding` class applies the root padding tokens, which `tokens.css` declares on `:root`:
 
 ```scss
 .has-global-padding {
@@ -230,17 +230,15 @@ The `alignfull` class on the Section uses negative margins to break out of a par
 }
 ```
 
-The padding values come from `baseStyles.spacing.padding` in your config:
+The padding values come from `baseStyles.spacing.padding` in your config — `x` sets right and left, `y` sets top and bottom, and any side can also be set on its own:
 
 ```json
 {
   "baseStyles": {
     "spacing": {
       "padding": {
-        "top": "0",
-        "right": "large",
-        "bottom": "0",
-        "left": "large"
+        "x": "large",
+        "y": "0"
       }
     }
   }

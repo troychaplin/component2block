@@ -259,7 +259,7 @@ When `baseStyles` is configured, the generator adds a `styles` block. See [Base 
 
 ### styles.spacing
 
-When `baseStyles.spacing` is configured:
+When `baseStyles.spacing` is configured (`padding.x` / `padding.y` expand to the four sides, since WordPress only accepts sides; a side set on its own wins over its axis):
 
 ```json
 {

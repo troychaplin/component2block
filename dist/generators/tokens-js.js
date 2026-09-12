@@ -1,5 +1,6 @@
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, kebabToCamel } from '../types.js';
 import { buildFluidClamp } from './fluid.js';
+import { buildRootTokens } from './root-tokens.js';
 const VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 // Wraps a token value in a single-quoted JS string literal. Values are raw CSS,
 // and font stacks carry their own quotes ("'Inter Tight', system-ui"), which
@@ -56,6 +57,14 @@ export function generateTokensJs(config) {
         if (entries.length > 0) {
             populated.push({ jsKey, entries });
         }
+    }
+    // Root spacing tokens aren't a category — they're derived from baseStyles.spacing.
+    const rootTokens = buildRootTokens(config);
+    if (rootTokens.length > 0) {
+        populated.push({
+            jsKey: 'root',
+            entries: rootTokens.map(({ key, value }) => ({ jsTokenKey: toJsIdentifier(key), value })),
+        });
     }
     populated.forEach(({ jsKey, entries }, catIdx) => {
         const lastCat = catIdx === populated.length - 1;

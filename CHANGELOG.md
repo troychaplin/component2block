@@ -17,6 +17,27 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+### Added
+
+- Root spacing tokens. `baseStyles.spacing` now produces a `Root Spacing` group on `:root` in `<prefix>-tokens.css` (and `tokens.wp.css` when themeable), mirrored in `<prefix>-tokens.js` as `root`, so components can use the page gutter anywhere — including WordPress block themes, which don't load `layout.css`:
+
+  ```css
+  --mylib--root-padding-x: var(--mylib--spacing-large);
+  --mylib--root-padding-y: 0;
+  --mylib--root-padding-top: var(--mylib--root-padding-y);
+  --mylib--root-padding-right: var(--mylib--root-padding-x);
+  --mylib--root-padding-bottom: var(--mylib--root-padding-y);
+  --mylib--root-padding-left: var(--mylib--root-padding-x);
+  --mylib--root-block-gap: var(--mylib--spacing-medium);
+  ```
+
+- `baseStyles.spacing.padding` accepts `x` (right and left) and `y` (top and bottom) alongside the four sides, and a side set on its own wins over its axis. Without an explicit `x`/`y`, an axis takes the value both of its sides share, so existing four-side configs get the axis tokens with no change. theme.json still receives the four sides.
+
+### Changed
+
+- `layout.css` no longer declares the root padding and block-gap custom properties in a `body { }` block. They keep their names and now live on `:root` in `tokens.css`, which `layout.css` already depended on for spacing values. The `.has-global-padding` rules are emitted only when horizontal root padding is configured.
+- Unknown keys under `baseStyles.spacing.padding` now throw at config load instead of passing through into theme.json.
+
 ## [0.7.2] - 2026-09-07
 
 ### Fixed

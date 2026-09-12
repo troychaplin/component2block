@@ -156,7 +156,7 @@ CSS-only tokens are excluded from theme.json entirely.
 
 ## Spacing in Base Styles
 
-The `baseStyles.spacing` section controls root-level block gap and padding. These values flow into both the generated SCSS and theme.json.
+The `baseStyles.spacing` section controls root-level block gap and padding. These values become root spacing tokens in `tokens.css`, drive the layout rules in `layout.css`, and flow into theme.json.
 
 ```json
 {
@@ -164,10 +164,8 @@ The `baseStyles.spacing` section controls root-level block gap and padding. Thes
     "spacing": {
       "blockGap": "medium",
       "padding": {
-        "top": "0",
-        "right": "large",
-        "bottom": "0",
-        "left": "large"
+        "x": "large",
+        "y": "0"
       }
     }
   }
@@ -178,10 +176,10 @@ Token keys like `"medium"` and `"large"` resolve to the corresponding spacing to
 
 ### Block Gap
 
-The `blockGap` value controls the default vertical spacing between WordPress blocks. It generates a CSS custom property:
+The `blockGap` value controls the default vertical spacing between WordPress blocks. It generates a root spacing token in `tokens.css`, which the block-gap rules in `layout.css` read:
 
-```scss
-body {
+```css
+:root {
   --mylib--root-block-gap: var(--mylib--spacing-medium);
 }
 ```
@@ -200,16 +198,54 @@ In theme.json, it maps to `styles.spacing.blockGap`:
 
 ### Root Padding
 
-The `padding` object controls root-level page padding. Only defined sides are output. The generator produces root padding CSS custom properties and global padding utility classes:
+The `padding` object controls root-level page padding. It takes six keys, each a spacing token key or a raw CSS value:
 
-```scss
-body {
-  --mylib--root-padding-top: 0;
-  --mylib--root-padding-right: var(--mylib--spacing-large);
-  --mylib--root-padding-bottom: 0;
-  --mylib--root-padding-left: var(--mylib--spacing-large);
+| Key | Sets |
+|-----|------|
+| `x` | right and left |
+| `y` | top and bottom |
+| `top`, `right`, `bottom`, `left` | one side — wins over its axis |
+
+```json
+{
+  "padding": {
+    "x": "large",
+    "y": "0",
+    "left": "x-large"
+  }
 }
+```
 
+Here the right edge gets `large` and the left edge `x-large`. Unknown keys throw at config load.
+
+#### Root spacing tokens
+
+Root padding becomes tokens declared on `:root` in `tokens.css` (and `tokens.wp.css`), so components can use the page gutter anywhere — including WordPress block themes, which don't load `layout.css`. With the config at the top of this section, `tokens.css` gets:
+
+```css
+:root {
+  /* Root Spacing */
+  --mylib--root-padding-x: var(--mylib--spacing-large);
+  --mylib--root-padding-y: 0;
+  --mylib--root-padding-top: var(--mylib--root-padding-y);
+  --mylib--root-padding-right: var(--mylib--root-padding-x);
+  --mylib--root-padding-bottom: var(--mylib--root-padding-y);
+  --mylib--root-padding-left: var(--mylib--root-padding-x);
+  --mylib--root-block-gap: var(--mylib--spacing-medium);
+}
+```
+
+- A side you don't set, or set to the same value as its axis, aliases the axis token. A side set to a different value emits its own — `"left": "x-large"` would give `--mylib--root-padding-left: var(--mylib--spacing-x-large);`.
+- Without an explicit `x` or `y`, an axis takes the value its two sides share, so `{ "top": "0", "right": "large", "bottom": "0", "left": "large" }` produces the same tokens. If the two sides differ, or only one is set, the axis token is omitted and the side tokens are still emitted.
+- `tokens.js` mirrors the group as `root`: `paddingX`, `paddingY`, `paddingTop`, `paddingRight`, `paddingBottom`, `paddingLeft`, `blockGap`.
+
+See [Tokens](../guides/tokens.md#root-spacing-tokens) for how the aliases behave when you override them.
+
+#### Layout rules
+
+`layout.css` applies the side tokens through WordPress-compatible global padding utility classes:
+
+```css
 .has-global-padding {
   padding-right: var(--mylib--root-padding-right);
   padding-left: var(--mylib--root-padding-left);
@@ -227,9 +263,9 @@ body {
 }
 ```
 
-The `.has-global-padding` and `.alignfull` rules mirror WordPress's root padding-aware alignment system, allowing full-width blocks to break out of the content area while nested content retains proper padding.
+The `.has-global-padding` and `.alignfull` rules mirror WordPress's root padding-aware alignment system, allowing full-width blocks to break out of the content area while nested content retains proper padding. They read the side tokens rather than `-x`, so a per-side override still matches what WordPress applies from theme.json.
 
-In theme.json, root padding maps to `styles.spacing.padding`:
+In theme.json, root padding maps to `styles.spacing.padding`. WordPress only takes sides, so `x` and `y` expand to them:
 
 ```json
 {
@@ -264,3 +300,11 @@ Reference the generated CSS variables directly:
 ```
 
 The variable pattern is `--{prefix}--spacing-{key}`.
+
+To line a component up with the page gutter, use a root padding token instead of a spacing token:
+
+```scss
+.mylib-banner {
+  padding-inline: var(--mylib--root-padding-x);
+}
+```

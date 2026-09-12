@@ -109,6 +109,8 @@ Individual headings (h1-h6) get `fontStyle: 'normal'` default via `ensureFontSty
 
 Link's `hoverColor` generates `:hover` pseudo-class in both theme.json (nested `":hover"` key) and SCSS (`:where(a:hover)` rule).
 
+**Root spacing tokens**: `baseStyles.spacing` also produces `--{prefix}--root-padding-x`/`-y`, `--{prefix}--root-padding-{top,right,bottom,left}` and `--{prefix}--root-block-gap`. `src/generators/root-tokens.ts` builds them; `tokens.css`/`tokens.wp.css` declare them on `:root` and `tokens.js` mirrors them as `root`. `padding` accepts `x`, `y` and the four sides; `resolveRootPadding()` in `config.ts` is the single source of truth — an axis is its explicit value or the value both its sides share, and a side is its explicit value or its axis (emitted as a `var()` alias of the axis token). `layout.css` holds only rules: its `.has-global-padding` rules read the side tokens so per-side overrides still match theme.json, where `x`/`y` expand to the four sides.
+
 ### Locked vs Themeable Mode
 
 - **`themeable: false`** (default): Hardcoded token values, `custom`/`customDuotone`/`customGradient` set to `false` in theme.json. integrate.php enforces layout lock and editor restrictions at theme layer.
@@ -143,6 +145,7 @@ src/
   generators/
     tokens-css.ts     CSS custom properties (:root { --prefix--* })
     tokens-wp-css.ts  WordPress preset-mapped CSS variables
+    root-tokens.ts    Root spacing tokens from baseStyles.spacing (shared by tokens css/wp.css/js)
     theme-json.ts     WordPress theme.json (settings + styles)
     fonts-css.ts      @font-face declarations
     copy-fonts.ts     Font file copying from fontsDir to dist

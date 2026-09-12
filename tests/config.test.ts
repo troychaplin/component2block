@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateConfig } from '../src/config.js';
+import { validateConfig, resolveRootPadding } from '../src/config.js';
 import type { C2bConfigInput } from '../src/types.js';
 
 const minimalConfig: C2bConfigInput = {
@@ -804,5 +804,76 @@ describe('validateConfig — flow-spacing baseStyles properties', () => {
         },
       }),
     ).not.toThrow();
+  });
+});
+
+describe('validateConfig — root padding', () => {
+  const tokens = {
+    spacing: {
+      medium: { value: '1rem', slug: '50' },
+      large: { value: '2rem', slug: '60' },
+    },
+  };
+
+  it('accepts the x/y axes alongside the four sides', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens,
+        baseStyles: { spacing: { padding: { x: 'large', y: '0', left: 'medium' } } },
+      } as C2bConfigInput),
+    ).not.toThrow();
+  });
+
+  it('reports an invalid axis value with its path', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens,
+        baseStyles: { spacing: { padding: { x: 'huge' } } },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.spacing\.padding\.x = "huge"/);
+  });
+
+  it('rejects unknown padding keys', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens,
+        baseStyles: { spacing: { padding: { rigth: 'large' } } },
+      } as C2bConfigInput),
+    ).toThrow(/baseStyles\.spacing\.padding\.rigth is not a supported padding key/);
+  });
+});
+
+describe('resolveRootPadding', () => {
+  it('returns nothing for missing padding', () => {
+    expect(resolveRootPadding(undefined)).toEqual({});
+  });
+
+  it('fills the sides from explicit axes', () => {
+    expect(resolveRootPadding({ x: 'large', y: '0' })).toEqual({
+      x: 'large', y: '0', top: '0', right: 'large', bottom: '0', left: 'large',
+    });
+  });
+
+  it('derives an axis from two matching sides', () => {
+    expect(resolveRootPadding({ top: '0', right: 'large', bottom: '0', left: 'large' })).toEqual({
+      x: 'large', y: '0', top: '0', right: 'large', bottom: '0', left: 'large',
+    });
+  });
+
+  it('leaves an axis undefined when its sides differ or only one is set', () => {
+    const resolved = resolveRootPadding({ right: 'medium', left: 'large', top: '1rem' });
+    expect(resolved.x).toBeUndefined();
+    expect(resolved.y).toBeUndefined();
+    expect(resolved).toMatchObject({ right: 'medium', left: 'large', top: '1rem' });
+    expect(resolved.bottom).toBeUndefined();
+  });
+
+  it('lets an explicit side win over its axis', () => {
+    expect(resolveRootPadding({ x: 'large', left: 'medium' })).toMatchObject({
+      x: 'large', right: 'large', left: 'medium',
+    });
   });
 });

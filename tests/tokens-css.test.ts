@@ -283,3 +283,97 @@ describe('generateTokensCss — fluid font sizes', () => {
     );
   });
 });
+
+describe('generateTokensCss — root spacing tokens', () => {
+  const base: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      spacing: {
+        medium: { value: '1rem', slug: '50', name: 'Medium' },
+        large: { value: '2rem', slug: '60', name: 'Large' },
+      },
+    },
+  };
+
+  const rootLines = (config: C2bConfig): string[] =>
+    generateTokensCss(config).split('\n').filter(line => line.startsWith('  --test--root-'));
+
+  it('emits the axes, the four sides as axis aliases, and the block gap', () => {
+    const output = generateTokensCss({
+      ...base,
+      baseStyles: { spacing: { blockGap: 'medium', padding: { x: 'large', y: '0' } } },
+    });
+    expect(output).toContain(
+      [
+        '  --test--spacing-large: 2rem;',
+        '',
+        '  /* Root Spacing */',
+        '  --test--root-padding-x: var(--test--spacing-large);',
+        '  --test--root-padding-y: 0;',
+        '  --test--root-padding-top: var(--test--root-padding-y);',
+        '  --test--root-padding-right: var(--test--root-padding-x);',
+        '  --test--root-padding-bottom: var(--test--root-padding-y);',
+        '  --test--root-padding-left: var(--test--root-padding-x);',
+        '  --test--root-block-gap: var(--test--spacing-medium);',
+        '}',
+      ].join('\n'),
+    );
+  });
+
+  it('derives the axes from matching sides, so both config forms produce identical output', () => {
+    const fromAxes = generateTokensCss({
+      ...base,
+      baseStyles: { spacing: { padding: { x: 'large', y: '0' } } },
+    });
+    const fromSides = generateTokensCss({
+      ...base,
+      baseStyles: { spacing: { padding: { top: '0', right: 'large', bottom: '0', left: 'large' } } },
+    });
+    expect(fromSides).toBe(fromAxes);
+  });
+
+  it('gives a side set to a different value its own token value', () => {
+    const output = generateTokensCss({
+      ...base,
+      baseStyles: { spacing: { padding: { x: 'medium', left: 'large' } } },
+    });
+    expect(output).toContain('--test--root-padding-right: var(--test--root-padding-x);');
+    expect(output).toContain('--test--root-padding-left: var(--test--spacing-large);');
+  });
+
+  it('omits an axis whose sides differ, but still emits the sides', () => {
+    expect(rootLines({
+      ...base,
+      baseStyles: { spacing: { padding: { right: 'medium', left: 'large' } } },
+    })).toEqual([
+      '  --test--root-padding-right: var(--test--spacing-medium);',
+      '  --test--root-padding-left: var(--test--spacing-large);',
+    ]);
+  });
+
+  it('passes raw padding values through unchanged', () => {
+    const output = generateTokensCss({
+      ...base,
+      baseStyles: { spacing: { padding: { x: '1rem', top: '12px' } } },
+    });
+    expect(output).toContain('--test--root-padding-x: 1rem;');
+    expect(output).toContain('--test--root-padding-top: 12px;');
+  });
+
+  it('emits no group without baseStyles.spacing', () => {
+    expect(generateTokensCss(base)).not.toContain('--test--root-');
+    expect(generateTokensCss({ ...base, baseStyles: { body: { fontSize: '1rem' } } })).not.toContain('Root Spacing');
+  });
+
+  it('skips the separator line when the group is the only content', () => {
+    const output = generateTokensCss({
+      ...base,
+      tokens: {},
+      baseStyles: { spacing: { blockGap: '1rem' } },
+    });
+    expect(output).toContain(':root {\n  /* Root Spacing */\n  --test--root-block-gap: 1rem;\n}');
+  });
+});

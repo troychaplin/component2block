@@ -127,10 +127,8 @@
             "blockGap": "medium",
             "entryContent": "large",
             "padding": {
-                "top": "0",
-                "right": "large",
-                "bottom": "0",
-                "left": "large"
+                "x": "large",
+                "y": "0"
             }
         }
     }
