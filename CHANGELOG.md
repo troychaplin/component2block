@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-12
+
 ### Added
 
 - Root spacing tokens. `baseStyles.spacing` now produces a `Root Spacing` group on `:root` in `<prefix>-tokens.css` (and `tokens.wp.css` when themeable), mirrored in `<prefix>-tokens.js` as `root`, so components can use the page gutter anywhere — including WordPress block themes, which don't load `layout.css`:
