@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { C2bConfig, C2bConfigInput, FluidConfig, TokenCategory, TokenEntry, TokenEntryInput, TokenGroup, TokenGroupInput, BaseStyleElementDef, BaseStylesConfig, FluidInput } from './types.js';
+import type { C2bConfig, C2bConfigInput, FluidConfig, TokenCategory, TokenEntry, TokenEntryInput, TokenGroup, TokenGroupInput, BaseStyleElementDef, BaseStylesConfig, BaseStylesSpacingPadding, FluidInput } from './types.js';
 import { CATEGORY_REGISTRY, DEFAULT_FLUID, ELEMENT_REGISTRY, INPUT_CATEGORY_MAP, TYPOGRAPHY_PROPERTIES, VALID_CATEGORIES, kebabToTitle } from './types.js';
 
 const DEFAULTS = {
@@ -435,6 +435,38 @@ export function ensureFontStyle(def: BaseStyleElementDef): BaseStyleElementDef {
   return { ...def, fontStyle: 'normal' };
 }
 
+/** Keys accepted under `baseStyles.spacing.padding`. */
+const ROOT_PADDING_KEYS = ['x', 'y', 'top', 'right', 'bottom', 'left'] as const;
+
+/**
+ * Resolve `baseStyles.spacing.padding` into its two axes and four sides — the
+ * single source of truth for root padding in the token outputs, layout.css and
+ * theme.json. Values stay as written in config (token keys or raw CSS).
+ *
+ * - An axis is its explicit `x`/`y`, else the shared value when both of its
+ *   sides are set and identical. A lone or asymmetric pair has no single axis
+ *   value, so the axis stays undefined.
+ * - A side is its explicit value, else its axis.
+ */
+export function resolveRootPadding(padding: BaseStylesSpacingPadding | undefined): BaseStylesSpacingPadding {
+  if (!padding) return {};
+  const x = padding.x ?? sharedValue(padding.right, padding.left);
+  const y = padding.y ?? sharedValue(padding.top, padding.bottom);
+  return {
+    x,
+    y,
+    top: padding.top ?? y,
+    right: padding.right ?? x,
+    bottom: padding.bottom ?? y,
+    left: padding.left ?? x,
+  };
+}
+
+/** The value two sides share, or undefined when either is unset or they differ. */
+function sharedValue(a: string | undefined, b: string | undefined): string | undefined {
+  return a !== undefined && a === b ? a : undefined;
+}
+
 /**
  * Keys WordPress recognizes under `settings.viewport`. Anything else is silently
  * dropped by core, so c2b rejects it at config load instead of writing dead output.
@@ -753,14 +785,24 @@ export function validateBaseStyles(
     }
   }
 
-  // Spacing padding sides
-  if (baseStyles.spacing?.padding) {
-    for (const side of ['top', 'right', 'bottom', 'left'] as const) {
-      const value = baseStyles.spacing.padding[side];
+  // Spacing padding — the x/y axes and the four sides. Unknown keys throw:
+  // every output reads only these six, so a typo would otherwise vanish.
+  const padding = baseStyles.spacing?.padding;
+  if (padding) {
+    for (const key of Object.keys(padding)) {
+      if (!(ROOT_PADDING_KEYS as readonly string[]).includes(key)) {
+        throw new Error(
+          `Config error: baseStyles.spacing.padding.${key} is not a supported padding key.\n` +
+          `  Supported keys: ${ROOT_PADDING_KEYS.map(k => `"${k}"`).join(', ')}.`,
+        );
+      }
+    }
+    for (const key of ROOT_PADDING_KEYS) {
+      const value = padding[key];
       if (value === undefined) continue;
       const c = classifyBaseStyleValue(value, 'padding', tokens);
       if (c.kind === 'invalid') {
-        throw new Error(buildBaseStyleValueError(`spacing.padding.${side}`, value, 'padding', c));
+        throw new Error(buildBaseStyleValueError(`spacing.padding.${key}`, value, 'padding', c));
       }
     }
   }

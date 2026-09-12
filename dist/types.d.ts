@@ -54,8 +54,15 @@ export declare const HEADING_KEYS: Array<"h1" | "h2" | "h3" | "h4" | "h5" | "h6"
  * generator (typography.fontFamily/fontSize/...) so the two outputs can't drift.
  */
 export declare const TYPOGRAPHY_PROPERTIES: Array<'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'lineHeight' | 'letterSpacing'>;
-/** Padding values for each side */
+/**
+ * Root padding. `x` and `y` set both sides of an axis; an explicit side wins
+ * over its axis. Every value is a spacing token key or a raw CSS value.
+ */
 export interface BaseStylesSpacingPadding {
+    /** Horizontal root padding — the default for `right` and `left`. */
+    x?: string;
+    /** Vertical root padding — the default for `top` and `bottom`. */
+    y?: string;
     top?: string;
     right?: string;
     bottom?: string;

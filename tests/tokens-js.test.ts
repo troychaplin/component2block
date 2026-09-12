@@ -327,3 +327,32 @@ describe('generateTokensJs — emitted output is valid JavaScript', () => {
     expect(evalTokens(output).z).toEqual({ '100': '100', '200': '200' });
   });
 });
+
+describe('generateTokensJs — root spacing tokens', () => {
+  const rootConfig: C2bConfig = {
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      spacing: { large: { value: '2rem', slug: '60', name: 'Large' } },
+    },
+    baseStyles: { spacing: { blockGap: '0', padding: { x: 'large', y: '0' } } },
+  };
+
+  it('mirrors the root spacing tokens as a root group', () => {
+    expect(evalTokens(generateTokensJs(rootConfig)).root).toEqual({
+      paddingX: 'var(--test--spacing-large)',
+      paddingY: '0',
+      paddingTop: 'var(--test--root-padding-y)',
+      paddingRight: 'var(--test--root-padding-x)',
+      paddingBottom: 'var(--test--root-padding-y)',
+      paddingLeft: 'var(--test--root-padding-x)',
+      blockGap: '0',
+    });
+  });
+
+  it('omits the root group without baseStyles.spacing', () => {
+    expect(evalTokens(generateTokensJs({ ...rootConfig, baseStyles: undefined })).root).toBeUndefined();
+  });
+});

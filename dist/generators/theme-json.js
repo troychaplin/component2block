@@ -1,5 +1,5 @@
 import { CATEGORY_REGISTRY, CATEGORY_ORDER, DEFAULT_FLUID, ELEMENT_REGISTRY, TYPOGRAPHY_PROPERTIES } from '../types.js';
-import { resolveBaseStyleValueForThemeJson, ensureFontStyle } from '../config.js';
+import { resolveBaseStyleValueForThemeJson, ensureFontStyle, resolveRootPadding } from '../config.js';
 export function generateThemeJson(config) {
     const settings = {};
     const custom = {};
@@ -186,8 +186,12 @@ function buildStylesBlock(baseStyles, tokens) {
             spacingBlock.blockGap = resolveBaseStyleValueForThemeJson(baseStyles.spacing.blockGap, 'blockGap', tokens);
         }
         if (baseStyles.spacing.padding) {
+            // WordPress only takes sides: x/y expand to them, and an explicit side
+            // wins over its axis.
+            const sides = resolveRootPadding(baseStyles.spacing.padding);
             const padding = {};
-            for (const [side, value] of Object.entries(baseStyles.spacing.padding)) {
+            for (const side of ['top', 'right', 'bottom', 'left']) {
+                const value = sides[side];
                 if (value !== undefined) {
                     padding[side] = resolveBaseStyleValueForThemeJson(value, 'padding', tokens);
                 }

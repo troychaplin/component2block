@@ -198,3 +198,27 @@ describe('generateTokensWpCss — fluid font size fallbacks', () => {
     );
   });
 });
+
+describe('generateTokensWpCss — root spacing tokens', () => {
+  const output = generateTokensWpCss({
+    prefix: 'test',
+    srcDir: 'src/styles',
+    outputDir: 'dist/wp',
+    bundleFonts: false,
+    tokens: {
+      spacing: {
+        large: { value: '2rem', slug: '60', name: 'Large' },
+      },
+    },
+    baseStyles: { spacing: { blockGap: '0', padding: { x: 'large', y: '0' } } },
+  });
+
+  it('aliases the preset-mapped spacing token rather than a WP root padding var', () => {
+    expect(output).toContain('--test--spacing-large: var(--wp--preset--spacing--60, 2rem);');
+    expect(output).toContain('  /* Root Spacing */');
+    expect(output).toContain('--test--root-padding-x: var(--test--spacing-large);');
+    expect(output).toContain('--test--root-padding-left: var(--test--root-padding-x);');
+    expect(output).toContain('--test--root-block-gap: 0;');
+    expect(output).not.toContain('--wp--style--root');
+  });
+});

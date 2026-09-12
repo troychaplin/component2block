@@ -1,4 +1,4 @@
-import type { C2bConfig, C2bConfigInput, TokenCategory, BaseStyleElementDef, BaseStylesConfig } from './types.js';
+import type { C2bConfig, C2bConfigInput, TokenCategory, BaseStyleElementDef, BaseStylesConfig, BaseStylesSpacingPadding } from './types.js';
 export declare function loadConfig(configPath?: string): C2bConfig;
 export declare function validateConfig(input: C2bConfigInput): C2bConfig;
 export interface ResolvedTokenRef {
@@ -35,6 +35,17 @@ export declare function resolveForThemeJson(value: string, tokens: C2bConfig['to
  * If the config doesn't specify fontStyle, default to "normal".
  */
 export declare function ensureFontStyle(def: BaseStyleElementDef): BaseStyleElementDef;
+/**
+ * Resolve `baseStyles.spacing.padding` into its two axes and four sides — the
+ * single source of truth for root padding in the token outputs, layout.css and
+ * theme.json. Values stay as written in config (token keys or raw CSS).
+ *
+ * - An axis is its explicit `x`/`y`, else the shared value when both of its
+ *   sides are set and identical. A lone or asymmetric pair has no single axis
+ *   value, so the axis stays undefined.
+ * - A side is its explicit value, else its axis.
+ */
+export declare function resolveRootPadding(padding: BaseStylesSpacingPadding | undefined): BaseStylesSpacingPadding;
 /** Classification result for a baseStyles value. */
 export type BaseStyleValueClass = {
     kind: 'token';

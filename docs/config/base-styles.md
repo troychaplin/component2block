@@ -43,10 +43,8 @@ The `baseStyles` section sits at the top level of the config alongside `prefix`,
     "spacing": {
       "blockGap": "medium",
       "padding": {
-        "top": "0",
-        "right": "large",
-        "bottom": "0",
-        "left": "large"
+        "x": "large",
+        "y": "0"
       }
     }
   }
@@ -272,10 +270,8 @@ The `spacing` key within `baseStyles` controls root-level block gap and page pad
     "spacing": {
       "blockGap": "medium",
       "padding": {
-        "top": "0",
-        "right": "large",
-        "bottom": "0",
-        "left": "large"
+        "x": "large",
+        "y": "0"
       }
     }
   }
@@ -284,12 +280,12 @@ The `spacing` key within `baseStyles` controls root-level block gap and page pad
 
 ### blockGap
 
-Controls the default vertical spacing between WordPress blocks. Generates a CSS custom property and layout utility rules:
+Controls the default vertical spacing between WordPress blocks. Generates a root spacing token in `tokens.css` and layout utility rules in `layout.css`:
 
-**SCSS output:**
+**CSS output:**
 
-```scss
-body {
+```css
+:root {
   --mylib--root-block-gap: var(--mylib--spacing-medium);
 }
 
@@ -326,16 +322,18 @@ The layout utility rules mirror WordPress's block gap behavior:
 
 ### padding
 
-Controls root-level page padding. Only defined sides are output. Generates root padding CSS custom properties and WordPress-compatible global padding utility classes:
+Controls root-level page padding. Set an axis with `x` (right and left) or `y` (top and bottom), a single side with `top`, `right`, `bottom` or `left`, or mix them — a side set on its own wins over its axis. Generates root spacing tokens in `tokens.css` and WordPress-compatible global padding utility classes in `layout.css`:
 
-**SCSS output:**
+**CSS output:**
 
-```scss
-body {
-  --mylib--root-padding-top: 0;
-  --mylib--root-padding-right: var(--mylib--spacing-large);
-  --mylib--root-padding-bottom: 0;
-  --mylib--root-padding-left: var(--mylib--spacing-large);
+```css
+:root {
+  --mylib--root-padding-x: var(--mylib--spacing-large);
+  --mylib--root-padding-y: 0;
+  --mylib--root-padding-top: var(--mylib--root-padding-y);
+  --mylib--root-padding-right: var(--mylib--root-padding-x);
+  --mylib--root-padding-bottom: var(--mylib--root-padding-y);
+  --mylib--root-padding-left: var(--mylib--root-padding-x);
 }
 
 .has-global-padding {
@@ -355,7 +353,9 @@ body {
 }
 ```
 
-The `.has-global-padding` and `.alignfull` rules mirror WordPress's root padding-aware alignment system. Full-width blocks break out of the content padding, while nested content within them retains it.
+The `.has-global-padding` and `.alignfull` rules mirror WordPress's root padding-aware alignment system. Full-width blocks break out of the content padding, while nested content within them retains it. The rules read the side tokens rather than `-x`, so a per-side override still matches what WordPress applies from theme.json.
+
+Components can read the same tokens — `padding-inline: var(--mylib--root-padding-x)` lines a component up with the page gutter. See [Spacing](./spacing.md#root-padding) for how sides fall back to their axis.
 
 **theme.json output:**
 
@@ -404,7 +404,7 @@ All elements support the following properties. Values are classified strictly pe
 
 | Property | Expected token category | CSS keyword fallbacks |
 |----------|------------------------|----------------------|
-| `spacing.padding.{top,right,bottom,left}` | `spacing` | — |
+| `spacing.padding.{x,y,top,right,bottom,left}` | `spacing` | — |
 | `spacing.blockGap` | `spacing` | — |
 
 ### Value Resolution
@@ -645,10 +645,8 @@ Here's a complete `baseStyles` section with all supported elements, assuming mat
     "spacing": {
       "blockGap": "medium",
       "padding": {
-        "top": "0",
-        "right": "large",
-        "bottom": "0",
-        "left": "large"
+        "x": "large",
+        "y": "0"
       }
     }
   }

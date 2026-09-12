@@ -274,7 +274,7 @@ describe('integration: generate() — baseStyles spacing', () => {
     expect(parsed.styles.spacing.padding.top).toBe('0');
   });
 
-  it('layout.css includes root padding and alignfull rules (dual-output)', () => {
+  it('layout.css includes the alignfull rules reading the root padding tokens (dual-output)', () => {
     generate(SP_CONFIG_PATH, SP_TEST_DIR);
     const srcContent = readFileSync(
       resolve(SP_TEST_DIR, 'src/inttest-layout.css'),
@@ -285,10 +285,21 @@ describe('integration: generate() — baseStyles spacing', () => {
       'utf-8',
     );
 
-    expect(srcContent).toContain('--inttest--root-padding-right: var(--inttest--spacing-large);');
+    expect(srcContent).toContain('padding-right: var(--inttest--root-padding-right);');
     expect(srcContent).toContain('.has-global-padding');
     expect(srcContent).toContain('.alignfull');
+    expect(srcContent).not.toContain('body {');
     expect(srcContent).toBe(wpContent);
+  });
+
+  it('tokens.css declares the root padding tokens on :root', () => {
+    generate(SP_CONFIG_PATH, SP_TEST_DIR);
+    const content = readFileSync(resolve(SP_TEST_DIR, 'src/inttest-tokens.css'), 'utf-8');
+
+    expect(content).toContain('  /* Root Spacing */');
+    expect(content).toContain('--inttest--root-padding-x: var(--inttest--spacing-large);');
+    expect(content).toContain('--inttest--root-padding-y: 0;');
+    expect(content).toContain('--inttest--root-padding-left: var(--inttest--root-padding-x);');
   });
 
   it('base-styles.css does NOT contain layout utilities', () => {

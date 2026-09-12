@@ -839,6 +839,31 @@ describe('generateThemeJson — baseStyles spacing', () => {
     const result = JSON.parse(generateThemeJson(noSpacingConfig));
     expect(result.styles.spacing).toBeUndefined();
   });
+
+  it('expands the x/y axes to the four sides WordPress expects', () => {
+    const result = JSON.parse(generateThemeJson({
+      ...spacingConfig,
+      baseStyles: { spacing: { padding: { x: 'large', y: '0' } } },
+    }));
+    expect(result.styles.spacing.padding).toEqual({
+      top: '0',
+      right: 'var(--wp--preset--spacing--60)',
+      bottom: '0',
+      left: 'var(--wp--preset--spacing--60)',
+    });
+    expect(Object.keys(result.styles.spacing.padding)).toEqual(['top', 'right', 'bottom', 'left']);
+  });
+
+  it('lets an explicit side win over its axis', () => {
+    const result = JSON.parse(generateThemeJson({
+      ...spacingConfig,
+      baseStyles: { spacing: { padding: { x: 'large', left: '2rem' } } },
+    }));
+    expect(result.styles.spacing.padding).toEqual({
+      right: 'var(--wp--preset--spacing--60)',
+      left: '2rem',
+    });
+  });
 });
 
 describe('generateThemeJson — baseStyles blockGap', () => {

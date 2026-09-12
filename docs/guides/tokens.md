@@ -266,6 +266,31 @@ Reference the generated CSS variables in component SCSS:
 
 The variable pattern is always `--{prefix}--{css-segment}-{key}`.
 
+### Root spacing tokens
+
+`baseStyles.spacing` adds a group of tokens that isn't a token category: the root padding and block gap. `tokens.css` and `tokens.wp.css` declare them on `:root`, and `tokens.js` mirrors them as `root`.
+
+| Token | Value |
+|-------|-------|
+| `--mylib--root-padding-x`, `--mylib--root-padding-y` | `padding.x` / `padding.y`, or the value both sides of the axis share |
+| `--mylib--root-padding-{top,right,bottom,left}` | the side's own value, else an alias of its axis token |
+| `--mylib--root-block-gap` | `spacing.blockGap` |
+
+Use them to line a component up with the page gutter:
+
+```scss
+.mylib-banner {
+  padding-inline: var(--mylib--root-padding-x);
+}
+```
+
+Two things to know about the side aliases:
+
+- They resolve on `:root`. Overriding `--mylib--root-padding-x` on `:root`, for example in a media query, moves the sides with it. Overriding it on a descendant doesn't, because the sides were already resolved higher up — override the side tokens you read, or read `-x` directly.
+- In themeable mode they follow spacing preset changes, since they alias spacing tokens that map to `--wp--preset--spacing--*`. They don't follow a theme's own `styles.spacing.padding`: WordPress declares `--wp--style--root--padding-*` on `body`, where `:root` can't read it.
+
+See [Spacing](../config/spacing.md#root-padding) for the config.
+
 ### Media queries
 
 CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and four mixins — `below-mobile`, `above-mobile`, `below-tablet`, `above-tablet` — built from the same values WordPress uses to size its responsive block styles:
