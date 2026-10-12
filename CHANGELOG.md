@@ -17,6 +17,23 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+Viewport handling now matches WordPress core exactly (checked against Gutenberg trunk: `WP_Theme_JSON::get_viewport_media_queries()` and the editor's `global-styles-engine` viewport utils), so component media queries and WordPress's `@mobile` / `@tablet` block styles, block visibility, and editor device previews always switch at the same widths.
+
+### Added
+
+- `only-tablet` viewport mixin, emitted when both breakpoints are set: `(mobile < width <= tablet)`, the same band WordPress uses for `@tablet` and for "tablet" block visibility. With `below-mobile` (`@mobile`) and `above-tablet` (desktop), the mixins now cover every query WordPress builds from `settings.viewport`.
+
+### Changed
+
+- **Breaking:** viewport values WordPress can't parse now throw at config load. Core only accepts a non-negative number with a `px`, `em`, or `rem` unit and silently replaces anything else with its default (mobile `480px`, tablet `782px`), which left the SCSS mixins using a different value than WordPress.
+- **Breaking:** `cssOnly: true` on a viewport token now throws. It withheld the breakpoint from theme.json, so WordPress used its default while the mixins used the config value.
+- The `tablet > mobile` check now compares mixed units, converting `em`/`rem` at the same 16px base core uses. Previously mixed units were skipped, so a config like `mobile: "50rem"`, `tablet: "800px"` passed even though WordPress drops that tablet breakpoint.
+- `integrate.php` locks `settings.viewport` in themeable mode as well as locked mode. Compiled media queries can't follow CSS variables, so a theme overriding the breakpoints would have split WordPress and the components apart. Colour, gradient, and layout behaviour per mode is unchanged.
+
+### Fixed
+
+- Docs listed WordPress's default mobile breakpoint as `576px`; core's default is `480px`.
+
 ## [0.8.0] - 2026-09-12
 
 ### Added

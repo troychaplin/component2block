@@ -474,15 +474,26 @@ function sharedValue(a: string | undefined, b: string | undefined): string | und
 const VIEWPORT_KEYS = ['mobile', 'tablet'] as const;
 
 /**
- * Parse a non-negative CSS length in the units WordPress accepts for viewport
- * breakpoints. Returns null for anything else, including CSS functions and
- * unitless values — which core ignores in favour of its own defaults.
+ * WordPress's defaults for `settings.viewport`, used whenever a configured value
+ * is missing or invalid. Quoted in error messages so the fallback is explicit.
  */
-function parseLength(value: string | undefined): { value: number; unit: string } | null {
+const WP_DEFAULT_VIEWPORT = { mobile: '480px', tablet: '782px' } as const;
+
+/**
+ * Convert a viewport breakpoint to px. Accepts exactly what WordPress accepts —
+ * a non-negative number with a `px`, `em`, or `rem` unit — and returns null for
+ * anything else (CSS functions, unitless values, other units), which core
+ * ignores in favour of its defaults. `em`/`rem` use the same 16px base core uses
+ * to order breakpoints (`get_viewport_breakpoint_value_in_pixels` in PHP,
+ * `getViewportBreakpointValueInPixels` in the editor); the emitted value keeps
+ * its original unit.
+ */
+function viewportLengthInPx(value: string | undefined): number | null {
   if (!value) return null;
   const match = /^(\d+|\d*\.\d+)(px|em|rem)$/.exec(value.trim());
   if (!match) return null;
-  return { value: parseFloat(match[1]), unit: match[2] };
+  const length = parseFloat(match[1]);
+  return match[2] === 'px' ? length : length * 16;
 }
 
 /**
@@ -491,17 +502,16 @@ function parseLength(value: string | undefined): { value: number; unit: string }
  * query that matches nothing. Core silently discards it; c2b throws instead, the
  * same way it rejects unsupported viewport keys rather than letting them vanish.
  *
- * Only comparable when both use the same unit — px against rem needs a root font
- * size, which is why core leaves mixed units to the theme author too.
+ * Mixed units are compared in px at core's 16px base, so c2b reaches the same
+ * verdict WordPress does.
  */
 function validateViewport(group: TokenGroup | undefined): void {
   if (!group) return;
 
-  const mobile = parseLength(group.mobile?.value);
-  const tablet = parseLength(group.tablet?.value);
-  if (!mobile || !tablet) return;
-  if (mobile.unit !== tablet.unit) return;
-  if (tablet.value > mobile.value) return;
+  const mobile = viewportLengthInPx(group.mobile?.value);
+  const tablet = viewportLengthInPx(group.tablet?.value);
+  if (mobile === null || tablet === null) return;
+  if (tablet > mobile) return;
 
   throw new Error(
     `Config error: viewport.tablet (${group.tablet!.value}) must be larger than ` +
@@ -509,6 +519,32 @@ function validateViewport(group: TokenGroup | undefined): void {
     `  WordPress builds the @tablet breakpoint as the band between them ` +
     `(${group.mobile!.value} < width <= ${group.tablet!.value}), which matches no viewport as written.`,
   );
+}
+
+/**
+ * Per-token viewport checks. Viewport tokens exist only to mirror the breakpoints
+ * WordPress reads from `settings.viewport`, so anything that would make WordPress
+ * use a different value than the SCSS mixins is rejected:
+ *   - a value core can't parse, which it silently replaces with its default
+ *   - `cssOnly`, which withholds the token from theme.json so core uses its default
+ */
+function validateViewportEntry(key: keyof typeof WP_DEFAULT_VIEWPORT, entry: TokenEntry): void {
+  const fallback = `WordPress would fall back to its default (${WP_DEFAULT_VIEWPORT[key]}) while the SCSS mixins use this value.`;
+
+  if (entry.cssOnly) {
+    throw new Error(
+      `Config error: Token "viewport.${key}" cannot be cssOnly.\n` +
+      `  Viewport tokens must reach settings.viewport in theme.json — without it, ${fallback}`,
+    );
+  }
+
+  if (viewportLengthInPx(entry.value) === null) {
+    throw new Error(
+      `Config error: Token "viewport.${key}" has an unsupported value "${entry.value}".\n` +
+      `  WordPress only accepts a non-negative number with a px, em, or rem unit (e.g. "600px"). ` +
+      `For anything else, ${fallback}`,
+    );
+  }
 }
 
 function validateTokenGroup(category: string, group: TokenGroup): void {
@@ -526,6 +562,10 @@ function validateTokenGroup(category: string, group: TokenGroup): void {
 
     if (typeof entry.value !== 'string') {
       throw new Error(`Config error: Token "${category}.${key}.value" must be a string.`);
+    }
+
+    if (category === 'viewport') {
+      validateViewportEntry(key as keyof typeof WP_DEFAULT_VIEWPORT, entry);
     }
 
     // Validate fontFace entries if present

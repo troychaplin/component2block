@@ -108,7 +108,7 @@ In locked mode (`output.themeable: false`), the generator also sets:
 
 ### settings.viewport
 
-Breakpoint widths for the `@mobile` / `@tablet` responsive block styles introduced in WordPress 7.1. Only `mobile` and `tablet` are recognized, and values must be a non-negative number with a `px`, `em`, or `rem` unit — WordPress ignores anything else and falls back to its own defaults (mobile `576px`, tablet `782px`).
+Breakpoint widths for the `@mobile` / `@tablet` responsive block styles introduced in WordPress 7.1. Only `mobile` and `tablet` are recognized, and values must be a non-negative number with a `px`, `em`, or `rem` unit — WordPress ignores anything else and falls back to its own defaults (mobile `480px`, tablet `782px`). `tablet` must be larger than `mobile` (compared with `em`/`rem` at a 16px base) or WordPress drops it. c2b validates all of this at config load.
 
 ```json
 {

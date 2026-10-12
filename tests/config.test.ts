@@ -641,8 +641,19 @@ describe('validateConfig — viewport breakpoint ordering', () => {
     expect(() => validateConfig(cfg('800px', '500px'))).toThrow(/band between them/);
   });
 
-  it('does not compare across units, matching what core leaves to the author', () => {
-    expect(() => validateConfig(cfg('30rem', '500px'))).not.toThrow();
+  it('compares mixed units at the 16px base core uses', () => {
+    // 40rem = 640px, so a 600px tablet is not larger — core drops it.
+    expect(() => validateConfig(cfg('40rem', '600px'))).toThrow(/must be larger than/);
+  });
+
+  it('treats equal widths in different units as equal', () => {
+    // 50rem = 800px
+    expect(() => validateConfig(cfg('50rem', '800px'))).toThrow(/must be larger than/);
+  });
+
+  it('accepts mixed units when tablet is larger', () => {
+    // 30em = 480px
+    expect(() => validateConfig(cfg('30em', '800px'))).not.toThrow();
   });
 
   it('skips the check when only one breakpoint is defined', () => {
@@ -697,12 +708,13 @@ describe('validateConfig — viewport keys', () => {
     expect(result.tokens.viewport!.mobile.name).toBeUndefined();
   });
 
-  it('preserves cssOnly on viewport tokens', () => {
-    const result = validateConfig({
-      prefix: 'test',
-      tokens: { viewport: { tablet: { value: '800px', cssOnly: true } } },
-    });
-    expect(result.tokens.viewport!.tablet.cssOnly).toBe(true);
+  it('throws on a cssOnly viewport token, since WordPress would use its default', () => {
+    expect(() =>
+      validateConfig({
+        prefix: 'test',
+        tokens: { viewport: { tablet: { value: '800px', cssOnly: true } } },
+      }),
+    ).toThrow(/Token "viewport\.tablet" cannot be cssOnly[\s\S]*default \(782px\)/);
   });
 
   it('throws on a viewport key WordPress does not support', () => {
@@ -712,6 +724,27 @@ describe('validateConfig — viewport keys', () => {
         tokens: { viewport: { mobile: '500px', desktop: '1200px' } },
       }),
     ).toThrow('Token "viewport.desktop" is not a supported viewport key');
+  });
+});
+
+describe('validateConfig — viewport values', () => {
+  const cfg = (mobile: string) => ({ prefix: 'test', tokens: { viewport: { mobile } } });
+
+  it.each(['600px', '37.5rem', '40em', '.5rem', ' 600px '])('accepts %j, a length WordPress parses', (value) => {
+    expect(() => validateConfig(cfg(value))).not.toThrow();
+  });
+
+  it.each(['40vw', '600', 'clamp(30rem, 50vw, 50rem)', '-600px', '50%'])(
+    'throws on %j, which WordPress ignores',
+    (value) => {
+      expect(() => validateConfig(cfg(value))).toThrow(
+        `Token "viewport.mobile" has an unsupported value "${value}"`,
+      );
+    },
+  );
+
+  it("names WordPress's fallback for the offending breakpoint", () => {
+    expect(() => validateConfig(cfg('40vw'))).toThrow(/default \(480px\)/);
   });
 });
 

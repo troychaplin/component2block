@@ -99,10 +99,16 @@ describe('integration: generate() — default (locked)', () => {
     expect(content).toContain('enqueue_block_editor_assets');
   });
 
-  it('integrate.php locks settings.viewport in locked mode', () => {
+  it('integrate.php locks settings.viewport in both locked and themeable mode', () => {
+    // Mode is detected at runtime (tokens.wp.css present = themeable), so the
+    // viewport lock must sit outside the locked-only block to apply in both.
     const content = readFileSync(resolve(TEST_DIR, 'out/wp/integrate.php'), 'utf-8');
-    expect(content).toContain("$library_data['settings']['viewport']");
-    expect(content).toContain("$enforced['settings']['viewport']");
+    const parts = content.split("if ( ! file_exists( __DIR__ . '/tokens.wp.css' ) ) {");
+    expect(parts).toHaveLength(2);
+    const [alwaysOn, lockedOnly] = parts;
+    expect(alwaysOn).toContain("'viewport' => $library_data['settings']['viewport']");
+    expect(lockedOnly).not.toContain('viewport');
+    expect(lockedOnly).toContain("$enforced['settings']['layout']");
   });
 });
 

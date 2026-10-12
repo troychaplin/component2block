@@ -335,7 +335,7 @@ See [Spacing](../config/spacing.md#root-padding) for the config.
 
 ### Media queries
 
-CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and four mixins — `below-mobile`, `above-mobile`, `below-tablet`, `above-tablet` — built from the same values WordPress uses to size its responsive block styles:
+CSS custom properties don't work inside a `@media` condition. Opt into SCSS variables with `"scssVars": ["viewport"]` and c2b emits `_{prefix}-variables.scss` containing both the breakpoint variables and their mixins — `below-mobile`, `above-mobile`, `below-tablet`, `above-tablet`, plus `only-tablet` when both breakpoints are set — built from the same values WordPress uses to size its responsive block styles:
 
 ```scss
 @use '../styles/mylib-variables' as ds;
@@ -348,7 +348,7 @@ CSS custom properties don't work inside a `@media` condition. Opt into SCSS vari
 }
 ```
 
-Each breakpoint gives a complementary pair (`<=` below, `>` above), so nothing overlaps at the boundary — see [viewport](../config/README.md#viewport). `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic, plus a `$mylib-spacing` map to loop over (see [Token keys](#token-keys)).
+Each breakpoint gives a complementary pair (`<=` below, `>` above), so nothing overlaps at the boundary, and `only-tablet` is the same band WordPress uses for `@tablet` — see [viewport](../config/README.md#viewport). `scssVars` accepts any category, so the same opt-in gives you `$mylib-spacing-md` for Sass math or `@media` arithmetic, plus a `$mylib-spacing` map to loop over (see [Token keys](#token-keys)).
 
 ## Updating Tokens
 

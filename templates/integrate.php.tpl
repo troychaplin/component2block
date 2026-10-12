@@ -83,18 +83,54 @@ add_action( 'wp_enqueue_scripts', $c2b_enqueue_tokens );
 add_action( 'enqueue_block_editor_assets', $c2b_enqueue_tokens );
 
 /**
+ * Viewport breakpoint enforcement — applies in both locked and themeable mode.
+ *
+ * The library's component CSS compiles its media queries from the same
+ * mobile/tablet breakpoints, and media queries cannot read CSS variables,
+ * so components cannot follow a theme that changes them. Re-applying the
+ * library's breakpoints at the theme layer keeps WordPress's @mobile and
+ * @tablet block styles, block visibility, and the editor's device previews
+ * switching at the same widths as the components.
+ */
+add_filter( 'wp_theme_json_data_theme', function ( $theme_json ) {
+	$library_json_path = __DIR__ . '/theme.json';
+
+	if ( ! file_exists( $library_json_path ) ) {
+		return $theme_json;
+	}
+
+	$library_data = json_decode(
+		file_get_contents( $library_json_path ),
+		true
+	);
+
+	if ( ! is_array( $library_data ) || ! isset( $library_data['settings']['viewport'] ) ) {
+		return $theme_json;
+	}
+
+	return $theme_json->update_with(
+		array(
+			'version'  => $library_data['version'] ?? 3,
+			'settings' => array(
+				'viewport' => $library_data['settings']['viewport'],
+			),
+		)
+	);
+} );
+
+/**
  * Locked mode enforcement.
  *
  * When the library was built with themeable: false (detected by the
  * absence of tokens.wp.css), enforce design system restrictions at the
- * theme layer so the theme's theme.json cannot override them:
+ * theme layer so the active theme cannot override them:
  *
  *   - Layout sizes (contentSize, wideSize) are locked
- *   - Viewport breakpoints (mobile, tablet) are locked
  *   - Custom color/gradient creation is disabled in the Site Editor
  *
  * When themeable: true (tokens.wp.css exists), none of these
- * restrictions apply — the theme has full control.
+ * restrictions apply — the theme has full control apart from the
+ * viewport breakpoints, which are enforced above in both modes.
  */
 if ( ! file_exists( __DIR__ . '/tokens.wp.css' ) ) {
 	add_filter( 'wp_theme_json_data_theme', function ( $theme_json ) {
@@ -127,11 +163,6 @@ if ( ! file_exists( __DIR__ . '/tokens.wp.css' ) ) {
 		// Lock layout sizes if defined
 		if ( isset( $library_data['settings']['layout'] ) ) {
 			$enforced['settings']['layout'] = $library_data['settings']['layout'];
-		}
-
-		// Lock viewport breakpoints if defined
-		if ( isset( $library_data['settings']['viewport'] ) ) {
-			$enforced['settings']['viewport'] = $library_data['settings']['viewport'];
 		}
 
 		return $theme_json->update_with( $enforced );

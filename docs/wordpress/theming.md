@@ -16,13 +16,16 @@ The `output.themeable` flag in `c2b.config.json` controls how much freedom theme
 | Custom duotone creator | Disabled | Enabled |
 | Custom gradient creator | Disabled | Enabled |
 | Layout sizes | Locked | Overridable |
+| Viewport breakpoints | Locked | Locked |
 | Components follow theme overrides | No | Yes |
 
 ### Locked Mode (default)
 
 Components use hardcoded CSS values. The design system is consistent everywhere — themes cannot change it via the Site Editor.
 
-`integrate.php` enforces this by adding restrictions at the `wp_theme_json_data_theme` filter layer. The generated `theme.json` sets `custom: false`, `customDuotone: false`, and `customGradient: false` in settings.
+`integrate.php` enforces this by adding restrictions at the `wp_theme_json_data_theme` filter layer.
+
+Viewport breakpoints are locked in both modes. Components compile their media queries from the same `mobile`/`tablet` values, and media queries can't read CSS variables, so a theme that changed the breakpoints would leave WordPress's `@mobile`/`@tablet` block styles and block visibility switching at different widths than the components. The generated `theme.json` sets `custom: false`, `customDuotone: false`, and `customGradient: false` in settings.
 
 ### Themeable Mode
 

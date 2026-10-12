@@ -57,6 +57,10 @@ export function generateTokensScss(config) {
  * uses `>`, so no viewport width ever matches both. That is what removes the need
  * for the usual `- 0.02px` offset between a hand-written max/min pair.
  *
+ * With both breakpoints set, `only-tablet` adds the band between them. Together
+ * these copy core's queries exactly: `below-mobile` is `@mobile`, `only-tablet`
+ * is `@tablet`, and `above-tablet` is desktop (as block visibility uses it).
+ *
  * Mixin names are deliberately unprefixed: the file is meant to be `@use`d, which
  * namespaces them (`@include ds.above-tablet`).
  *
@@ -76,8 +80,10 @@ export function buildViewportMixins(prefix, group) {
         '// block styles. Each below-/above- pair is an exact complement, so no viewport',
         '// width matches both.',
     ];
-    const mixin = (name, condition) => {
+    const mixin = (name, condition, comment) => {
         lines.push('');
+        if (comment)
+            lines.push(`// ${comment}`);
         lines.push(`@mixin ${name} {`);
         lines.push(`  @media ${condition} {`);
         lines.push('    @content;');
@@ -92,6 +98,11 @@ export function buildViewportMixins(prefix, group) {
     if (tablet) {
         mixin('below-tablet', `(width <= #{${tablet}})`);
         mixin('above-tablet', `(width > #{${tablet}})`);
+    }
+    // The @tablet band only exists when both breakpoints do; with tablet alone,
+    // core's @tablet is plain `width <= tablet`, which below-tablet already covers.
+    if (mobile && tablet) {
+        mixin('only-tablet', `(#{${mobile}} < width <= #{${tablet}})`, "Same query as WordPress's @tablet: the band between the two breakpoints.");
     }
     return lines;
 }

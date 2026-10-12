@@ -19,6 +19,10 @@ export declare function generateTokensScss(config: C2bConfig): string | null;
  * uses `>`, so no viewport width ever matches both. That is what removes the need
  * for the usual `- 0.02px` offset between a hand-written max/min pair.
  *
+ * With both breakpoints set, `only-tablet` adds the band between them. Together
+ * these copy core's queries exactly: `below-mobile` is `@mobile`, `only-tablet`
+ * is `@tablet`, and `above-tablet` is desktop (as block visibility uses it).
+ *
  * Mixin names are deliberately unprefixed: the file is meant to be `@use`d, which
  * namespaces them (`@include ds.above-tablet`).
  *

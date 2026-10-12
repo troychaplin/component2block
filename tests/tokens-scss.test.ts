@@ -247,6 +247,13 @@ describe('generateTokensScss — snapshot', () => {
         '  }',
         '}',
         '',
+        "// Same query as WordPress's @tablet: the band between the two breakpoints.",
+        '@mixin only-tablet {',
+        '  @media (#{$rds-viewport-mobile} < width <= #{$rds-viewport-tablet}) {',
+        '    @content;',
+        '  }',
+        '}',
+        '',
       ].join('\n'),
     );
   });
@@ -287,8 +294,16 @@ describe('generateTokensScss — viewport media-query mixins', () => {
     expect(both()).not.toContain('>=');
   });
 
+  it('emits only-tablet with the same band query WordPress uses for @tablet', () => {
+    const output = both();
+    expect(output).toContain('@mixin only-tablet {');
+    expect(output).toContain(
+      '  @media (#{$test-viewport-mobile} < width <= #{$test-viewport-tablet}) {',
+    );
+  });
+
   it('passes @content through every mixin', () => {
-    expect(both().match(/@content;/g)).toHaveLength(4);
+    expect(both().match(/@content;/g)).toHaveLength(5);
   });
 
   it('emits only the mobile pair when tablet is undefined', () => {
@@ -298,11 +313,13 @@ describe('generateTokensScss — viewport media-query mixins', () => {
     expect(output).not.toContain('tablet');
   });
 
-  it('emits only the tablet pair when mobile is undefined', () => {
+  it('emits only the tablet pair, without only-tablet, when mobile is undefined', () => {
+    // With tablet alone, core's @tablet is plain `width <= tablet` — below-tablet.
     const output = build({ tablet: { value: '800px' } });
     expect(output).toContain('@mixin below-tablet {');
     expect(output).toContain('@mixin above-tablet {');
     expect(output).not.toContain('mobile');
+    expect(output).not.toContain('only-tablet');
   });
 
   it('emits no mixins when viewport is not opted into scssVars', () => {

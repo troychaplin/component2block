@@ -246,11 +246,15 @@ This produces:
 
 Plus CSS variables `--prefix--viewport-mobile` / `--prefix--viewport-tablet`.
 
-Three constraints come from WordPress itself:
+Three constraints come from WordPress itself. c2b enforces each one at config load, so your SCSS can never disagree with the breakpoints WordPress actually uses:
 
-- **Only `mobile` and `tablet` are supported.** Core recognizes no other keys, so c2b rejects them at config load rather than writing output WordPress would silently discard.
-- **Values must be a non-negative number with a `px`, `em`, or `rem` unit.** CSS functions, percentages, unitless values, and other units are ignored by WordPress, which falls back to its own defaults. c2b passes values through as written, so this one is on you.
-- **`tablet` must be larger than `mobile`.** WordPress builds the tablet breakpoint as the *band* between the two, so a tablet that isn't larger produces a query matching nothing. c2b throws at config load; values in different units aren't compared, since that needs a root font size.
+- **Only `mobile` and `tablet` are supported.** Core recognizes no other keys, so c2b rejects them rather than writing output WordPress would silently discard.
+- **Values must be a non-negative number with a `px`, `em`, or `rem` unit** (e.g. `"600px"`, `"37.5rem"`). WordPress ignores anything else — CSS functions, percentages, unitless values, other units — and falls back to its defaults (mobile `480px`, tablet `782px`), while your mixins would use the value as written. c2b throws instead.
+- **`tablet` must be larger than `mobile`.** WordPress builds the tablet breakpoint as the *band* between the two and drops `tablet` when it isn't larger. Mixed units are compared the way core compares them, with `em`/`rem` at a 16px base — so `"50rem"` and `"800px"` count as equal and throw.
+
+Viewport tokens can't be `cssOnly` either: that would withhold the breakpoint from theme.json, so WordPress would use its default while the mixins use your value.
+
+`integrate.php` re-applies `settings.viewport` at the theme layer in both locked and themeable mode — media queries can't read CSS variables, so compiled component CSS couldn't follow a theme that changed the breakpoints. See [Theming](../wordpress/theming.md).
 
 #### Using the breakpoints in your own media queries
 
@@ -266,6 +270,7 @@ $design-system-viewport-tablet: 800px;
 @mixin above-mobile { @media (width > #{$design-system-viewport-mobile}) { @content; } }
 @mixin below-tablet { @media (width <= #{$design-system-viewport-tablet}) { @content; } }
 @mixin above-tablet { @media (width > #{$design-system-viewport-tablet}) { @content; } }
+@mixin only-tablet { @media (#{$design-system-viewport-mobile} < width <= #{$design-system-viewport-tablet}) { @content; } }
 ```
 
 Use them from your component SCSS. The file is a Sass partial, so `@use` it — that namespaces the mixins, which is why their names aren't prefixed:
@@ -283,6 +288,16 @@ Use them from your component SCSS. The file is a Sass partial, so `@use` it — 
 
 Each breakpoint produces a **complementary pair** — `below-*` uses `<=`, `above-*` uses `>` — so no viewport width matches both. That is worth more than it looks: a hand-written pair like `max-width: 800px` / `min-width: 800px` both match at exactly 800px, which is why people write `max-width: 799.98px`. These mixins have no such gap or overlap, so the offset is never needed. A breakpoint you don't configure simply contributes no pair.
 
+With both breakpoints set you also get `only-tablet`, the band between them. Together the mixins reproduce every query WordPress builds from these values:
+
+| WordPress | Query | Mixin |
+|-----------|-------|-------|
+| `@mobile` block styles, "mobile" block visibility | `width <= mobile` | `below-mobile` |
+| `@tablet` block styles, "tablet" block visibility | `mobile < width <= tablet` | `only-tablet` |
+| Desktop block visibility | `width > tablet` | `above-tablet` |
+
+With only one breakpoint configured, WordPress uses a plain `width <=` query for it — `below-mobile` or `below-tablet` — and c2b skips `only-tablet`. The editor's Mobile and Tablet device previews size the canvas 1px under the matching breakpoint, so a preview always lands inside the same mixin as the real device width.
+
 These mixins are SCSS-only. WordPress never sees them — it reads the `settings.viewport` values from theme.json and builds its own queries for `@mobile` / `@tablet` block styles. The mixins exist so your component CSS can change at the same widths the editor does.
 
 **JavaScript** consumers get the raw values from `tokens.js`, ready for `matchMedia`:
@@ -291,8 +306,6 @@ These mixins are SCSS-only. WordPress never sees them — it reads the `settings
 import tokens from './design-system-tokens.js';
 matchMedia(`(width <= ${tokens.viewport.mobile})`);
 ```
-
-One caveat: a `cssOnly: true` viewport token still reaches `_variables.scss` and the mixins (consistent with every other category there) but is withheld from theme.json — so the mixin and WordPress will disagree on that breakpoint.
 
 ---
 
