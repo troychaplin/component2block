@@ -17,6 +17,8 @@ Prefix the change with one of these keywords:
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-12
+
 Viewport handling now matches WordPress core exactly (checked against Gutenberg trunk: `WP_Theme_JSON::get_viewport_media_queries()` and the editor's `global-styles-engine` viewport utils), so component media queries and WordPress's `@mobile` / `@tablet` block styles, block visibility, and editor device previews always switch at the same widths.
 
 ### Added
